@@ -17,7 +17,7 @@ import { BareRecord } from '../types/BareRecord';
 
 export async function parseRuleSheet(
   buffer: Buffer | string,
-): Promise<Record<keyof typeof FlavorizationLevel, Multireplacer>> {
+): Promise<Record<keyof typeof FlavorizationLevel, Multireplacer<BareRecord>>> {
   const rawRecords = await parseCSV(buffer);
 
   const dtos: FlavorizationRuleDTO[] = rawRecords.map((r, rowIndex) => ({
@@ -36,7 +36,10 @@ export async function parseRuleSheet(
     replacement5: r.replacement5 || '',
   }));
 
-  const replacers: Record<keyof typeof FlavorizationLevel, Multireplacer> = {
+  const replacers: Record<
+    keyof typeof FlavorizationLevel,
+    Multireplacer<BareRecord>
+  > = {
     Reverse: new Multireplacer(),
     Standard: new Multireplacer(),
     Silly: new Multireplacer(),
@@ -112,9 +115,7 @@ export async function parseRuleSheet(
         _.identity,
       );
 
-      const predicate: MultireplacerPredicate<BareRecord> = (
-        p,
-      ) => {
+      const predicate: MultireplacerPredicate<BareRecord> = (p) => {
         return _.isMatch(p.context.partOfSpeech, partOfSpeech);
       };
 

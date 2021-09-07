@@ -4,6 +4,7 @@ import { core } from '@interslavic/steen-utils';
 import { Odometer } from '@interslavic/odometer';
 
 import { parseRuleSheet, parseVocabulary } from '../utils';
+import { BareRecord } from '../types';
 
 async function main() {
   const [rulesBuffer, isvBuffer, translationBuffer] = await Promise.all(
@@ -16,7 +17,7 @@ async function main() {
   const translations = await parseVocabulary(isvBuffer, translationBuffer);
 
   const values = (s: core.Synset) => [...s.lemmas()].map((l) => l.value);
-  const odometer = new Odometer();
+  const odometer = new Odometer<BareRecord>();
   for (const t of translations) {
     if (!t.translation || t.id > 30) {
       continue;
@@ -32,12 +33,12 @@ async function main() {
     if (a && b) {
       const chainA = [...a.replacements()]
         .map((r) => rules.Standard.rules.find(r))
-        .map((r) => `${r?.id}`)
+        .map((r) => `${r?.comment}`)
         .join(', ');
 
       const chainB = [...b.replacements()]
         .map((r) => rules.Standard.rules.find(r))
-        .map((r) => `${r && r.id}`)
+        .map((r) => `${r && r.comment}`)
         .join(', ');
 
       let report = '';
@@ -46,7 +47,7 @@ async function main() {
       report += `\nCS: ${b.root} → ${b} (${chainB})`;
       report += `\nΔ(${a}, ${b}) ≈ ${distance}`;
 
-      expect(report).toMatchSnapshot(`${t.id}: ${t.isv}`);
+      console.log(report);
     }
   }
 }
