@@ -40,6 +40,7 @@ export async function parseRuleSheet(
     keyof typeof FlavorizationLevel,
     Multireplacer<BareRecord>
   > = {
+    Heuristic: new Multireplacer(),
     Reverse: new Multireplacer(),
     Standard: new Multireplacer(),
     Silly: new Multireplacer(),
@@ -155,6 +156,10 @@ export async function parseRuleSheet(
         break;
       case FlavorizationLevel.Reverse:
         replacers.Reverse.rules.add(rule);
+        break;
+      case FlavorizationLevel.Heuristic:
+        replacers.Reverse.rules.add(rule);
+        replacers.Heuristic.rules.add(rule);
         break;
       default:
         replacers.Silly.rules.add(rule);

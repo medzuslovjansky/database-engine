@@ -1,20 +1,13 @@
-import { promises as fs } from 'fs';
-
 import { core } from '@interslavic/steen-utils';
 import { Odometer } from '@interslavic/odometer';
 
-import { parseRuleSheet, parseVocabulary } from '../utils';
 import { BareRecord } from '../types';
+import { readRules, readTranslations } from '../utils/fixtures';
 
 async function main() {
-  const [rulesBuffer, isvBuffer, translationBuffer] = await Promise.all(
-    ['rules_cs', 'vocab_isv', 'translation_cs'].map((name) =>
-      fs.readFile(require.resolve(`../../__fixtures__/${name}.csv`)),
-    ),
-  );
-
-  const rules = await parseRuleSheet(rulesBuffer);
-  const translations = await parseVocabulary(isvBuffer, translationBuffer);
+  const lang = 'cs';
+  const rules = await readRules(lang);
+  const translations = await readTranslations(lang);
 
   const values = (s: core.Synset) => [...s.lemmas()].map((l) => l.value);
   const odometer = new Odometer<BareRecord>();
