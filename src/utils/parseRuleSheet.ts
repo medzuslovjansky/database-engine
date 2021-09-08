@@ -18,7 +18,7 @@ import { BareRecord } from '../types/BareRecord';
 export async function parseRuleSheet(
   buffer: Buffer | string,
 ): Promise<Record<keyof typeof FlavorizationLevel, Multireplacer<BareRecord>>> {
-  const rawRecords = await parseCSV(buffer);
+  const rawRecords = await parseCSV(buffer, ';');
 
   const dtos: FlavorizationRuleDTO[] = rawRecords.map((r, rowIndex) => ({
     rowIndex,
@@ -156,9 +156,9 @@ export async function parseRuleSheet(
         break;
       case FlavorizationLevel.Reverse:
         replacers.Reverse.rules.add(rule);
+        replacers.Heuristic.rules.add(rule);
         break;
       case FlavorizationLevel.Heuristic:
-        replacers.Reverse.rules.add(rule);
         replacers.Heuristic.rules.add(rule);
         break;
       default:

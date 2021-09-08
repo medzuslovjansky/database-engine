@@ -3,10 +3,11 @@ import parse from 'csv-parse';
 
 export async function parseCSV(
   buffer: Buffer | string,
+  delimiter = ',',
 ): Promise<Record<string, string>[]> {
   const rawRecords = await new Promise<Record<string, string>[]>(
     (resolve, reject) => {
-      parse(buffer, function (err, data) {
+      parse(buffer, { delimiter }, function (err, data) {
         if (err) {
           return reject(err);
         }
