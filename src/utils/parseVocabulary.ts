@@ -7,7 +7,7 @@ export async function parseVocabulary(
   lang: Buffer | string,
 ): Promise<BareRecord[]> {
   const rawIsv = await parseCSV(isv);
-  const rawLang = await parseCSV(lang);
+  const rawLang = await parseCSV(lang, ';');
 
   const translations = new Map(rawLang.map((r) => [+r.id, r.translation]));
 
@@ -16,10 +16,10 @@ export async function parseVocabulary(
     const partOfSpeech = steenparse.partOfSpeech(r.partOfSpeech);
     const genesis = r.etymology ? steenparse.genesis(r.etymology) : undefined;
     const isPhrase = partOfSpeech.name === 'phrase';
-    const isv = steenparse.synset(r.lemma, { isPhrase });
+    const isv = steenparse.synset(r.lemma.toLowerCase(), { isPhrase });
     const rawTranslation = translations.get(id);
     const translation = rawTranslation
-      ? steenparse.synset(rawTranslation, {
+      ? steenparse.synset(rawTranslation.toLowerCase(), {
           isPhrase,
         })
       : undefined;
