@@ -1,19 +1,58 @@
 import { promises as fs } from 'fs';
-import { parseRuleSheet } from './parseRuleSheet';
-import { parseVocabulary } from './parseVocabulary';
+import { mapFlavorizationRule } from '../mappers/flavorizationRule';
+import { mapWords } from '../mappers/words';
+import { parseCSV } from './parseCSV';
+import { mapIntelligibilityRecord } from '../mappers/intelligibility';
+import { PartOfSpeech } from '@interslavic/steen-utils/types';
+import { FlavorizationRuleDTO, IntelligibilityDTO, WordsDTO } from '../types';
+import { DatabaseContext } from '../types/core/DatabaseContext';
 
 async function readFixture(filePath: string) {
-  return fs.readFile(require.resolve(`../../__fixtures__/${filePath}`));
+  const buffer = await fs.readFile(
+    require.resolve(`../../__fixtures__/${filePath}`),
+  );
+
+  return await parseCSV(buffer);
 }
 
-export async function readRules(lang: string) {
-  const content = await readFixture(`rules/${lang}.csv`);
-  return await parseRuleSheet(content);
+export async function readRules(lang: string): Promise<FlavorizationRuleDTO[]> {
+  const rawRecords = await readFixture(`rules/${lang}.csv`);
+  const rules = rawRecords.map(mapFlavorizationRule);
+
+  return rules;
 }
 
-export async function readTranslations(lang: string) {
-  const vocabulary = await readFixture('vocabulary.csv');
-  const translations = await readFixture(`translations/${lang}.csv`);
+export async function readWords(): Promise<WordsDTO[]> {
+  const rawVocabulary = await readFixture('words.csv');
+  return rawVocabulary.map(mapWords);
+}
 
-  return parseVocabulary(vocabulary, translations);
+export function asDB(vocabulary: WordsDTO[]): DatabaseContext {
+  const idToWord = new Map(vocabulary.map((v) => [v.id, v]));
+
+  function getWordById(id: string): WordsDTO {
+    const w = idToWord.get(id);
+    if (!w) {
+      throw new Error(`Not found by id = ${id}`);
+    }
+
+    return w;
+  }
+
+  function getPartOfSpeech(id: string): PartOfSpeech {
+    return getWordById(id).partOfSpeech;
+  }
+
+  return {
+    getWordById,
+    getPartOfSpeech,
+  };
+}
+
+export async function readTranslations(
+  db: DatabaseContext,
+  lang: string,
+): Promise<IntelligibilityDTO[]> {
+  const rawTranslations = await readFixture(`translations/${lang}.csv`);
+  return rawTranslations.map((r) => mapIntelligibilityRecord(r, db));
 }

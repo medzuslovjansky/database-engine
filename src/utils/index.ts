@@ -1,4 +1,4 @@
 export * from './createMapReplacer';
 export * from './parseCSV';
-export * from './parseRuleSheet';
-export * from './parseVocabulary';
+export * from '../mappers/flavorizationRule';
+export * from '../mappers/words';
