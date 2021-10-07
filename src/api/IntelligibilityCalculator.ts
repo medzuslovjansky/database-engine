@@ -9,6 +9,7 @@ import {
 import createMapReplacer from '../utils/createMapReplacer';
 import {
   FlavorizationLevel,
+  FlavorizationMatch,
   FlavorizationRuleDTO,
   SimilarityParams,
   SimilarityReport,
@@ -134,7 +135,7 @@ export class IntelligibilityCalculator {
       params,
     );
 
-    const least = this.odometer.getDifference(
+    const farthest = this.odometer.getDifference(
       mistaken.variants,
       translation.variants,
     );
@@ -144,13 +145,13 @@ export class IntelligibilityCalculator {
       translation.variants,
     );
 
-    let best = this.odometer.getDifference(
+    let closest = this.odometer.getDifference(
       etymological.variants,
       translation.variants,
     );
 
-    if (!least || !average || !best) {
-      throw new Error('What is wrong with you?');
+    if (!farthest || !average || !closest) {
+      throw new Error('InvariantError: odometer.getDifference() != null');
     }
 
     const best2 = this.odometer.getDifference(
@@ -158,27 +159,28 @@ export class IntelligibilityCalculator {
       helpers.variants,
     );
 
-    if (best2 && best.distance < best.distance) {
-      best = best2;
+    if (best2 && closest.distance < closest.distance) {
+      closest = best2;
     }
+
+    const toFlavorizationMatch = (
+      stats: typeof average,
+    ): FlavorizationMatch => ({
+      distance: {
+        percent:
+          (0.5 * stats.distance) /
+          (stats.a.value.length + stats.b.value.length),
+        absolute: stats.distance,
+      },
+      interslavic: stats.a,
+      national: stats.b,
+    });
 
     return {
       id: params.words.id,
-      least: {
-        distance: least.distance,
-        interslavic: least.a,
-        national: least.b,
-      },
-      average: {
-        distance: average.distance,
-        interslavic: average.a,
-        national: average.b,
-      },
-      most: {
-        distance: best.distance,
-        interslavic: best.a,
-        national: best.b,
-      },
+      average: toFlavorizationMatch(average),
+      closest: toFlavorizationMatch(closest),
+      farthest: toFlavorizationMatch(farthest),
     };
   }
 }

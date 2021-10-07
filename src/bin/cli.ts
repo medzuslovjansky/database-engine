@@ -6,9 +6,9 @@ import {
 } from '../utils/fixtures';
 import { IntelligibilityCalculator } from '../api/IntelligibilityCalculator';
 
-function asPercent(v: number): string {
-  return Math.round(v * 100) + '%';
-}
+// function asPercent(v: number): string {
+//   return Math.round(v * 100) + '%';
+// }
 
 async function main(lang: string) {
   const words = await readWords();
@@ -25,11 +25,13 @@ async function main(lang: string) {
       intelligibility,
     });
 
-    console.log(`#${result.id}`);
-    console.log(`\nInterslavic:\n${word.isv}`);
-    console.log(`\nTranslation:\n${intelligibility.translations}`);
-    console.log(`\nBest match:\n${asPercent(result.most.distance)}`);
-    console.log('\nTransformation chain:\n');
+    if (result.farthest.distance.absolute < result.average.distance.absolute) {
+      console.log(`#${result.id}`);
+      console.log(`\nInterslavic:\n${word.isv}`);
+      console.log(`\nTranslation:\n${intelligibility.translations}`);
+      console.log(`\nMinimal distance:\n${result.closest.distance.absolute}`);
+      console.log(`\nMinimal:\n${result.closest.interslavic.value}`);
+    }
   }
 }
 
