@@ -151,7 +151,7 @@ export class IntelligibilityCalculator {
     );
 
     if (!farthest || !average || !closest) {
-      throw new Error('InvariantError: odometer.getDifference() != null');
+      throw new Error('Expected: odometer.getDifference() != null');
     }
 
     const best2 = this.odometer.getDifference(
@@ -178,9 +178,9 @@ export class IntelligibilityCalculator {
 
     return {
       id: params.words.id,
-      average: toFlavorizationMatch(average),
-      closest: toFlavorizationMatch(closest),
-      farthest: toFlavorizationMatch(farthest),
+      standard: toFlavorizationMatch(average),
+      etymological: toFlavorizationMatch(closest),
+      mistaken: toFlavorizationMatch(farthest),
     };
   }
 }

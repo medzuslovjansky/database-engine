@@ -13,9 +13,9 @@ export type FlavorizationMatch = {
 
 export type SimilarityReport = {
   id: string;
-  average: FlavorizationMatch;
-  closest: FlavorizationMatch;
-  farthest: FlavorizationMatch;
+  standard: FlavorizationMatch;
+  etymological: FlavorizationMatch;
+  mistaken: FlavorizationMatch;
 };
 
 export type SimilarityParams = {

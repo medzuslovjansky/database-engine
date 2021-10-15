@@ -5,10 +5,7 @@ import {
   readWords,
 } from '../utils/fixtures';
 import { IntelligibilityCalculator } from '../api/IntelligibilityCalculator';
-
-// function asPercent(v: number): string {
-//   return Math.round(v * 100) + '%';
-// }
+import { FlavorizationMatch } from '../types';
 
 async function main(lang: string) {
   const words = await readWords();
@@ -25,12 +22,25 @@ async function main(lang: string) {
       intelligibility,
     });
 
-    if (result.farthest.distance.absolute < result.average.distance.absolute) {
-      console.log(`#${result.id}`);
-      console.log(`\nInterslavic:\n${word.isv}`);
-      console.log(`\nTranslation:\n${intelligibility.translations}`);
-      console.log(`\nMinimal distance:\n${result.closest.distance.absolute}`);
-      console.log(`\nMinimal:\n${result.closest.interslavic.value}`);
+    const d = (level: 'standard' | 'mistaken' | 'etymological'): number => {
+      return result[level].distance.absolute;
+    };
+
+    const report = (match: FlavorizationMatch): string => {
+      const isv = match.interslavic.value;
+      const nat = match.national.value;
+      return `D(${isv}, ${nat}) = ${match.distance.absolute}`;
+    };
+
+    if (d('mistaken') > (d('standard') + 1) && d('standard') > (d('etymological') + 1)) {
+      if (result.mistaken.interslavic.value.includes('дж')) {
+        console.log(`#${result.id}`);
+        console.log(`Interslavic: ${word.isv}`);
+        console.log(`Translation: ${intelligibility.translations}`);
+        console.log(`Mistaken ${report(result.mistaken)}`);
+        console.log(`Standard ${report(result.standard)}`);
+        console.log(`Etymological ${report(result.etymological)}`);
+      }
     }
   }
 }
