@@ -1,4 +1,4 @@
-import createMapReplacer from '../createMapReplacer';
+import createMapReplacer from '../../api/flavorizationRule/createMapReplacer';
 import { Splitters } from '@interslavic/odometer';
 
 describe('createMapReplacer', () => {
