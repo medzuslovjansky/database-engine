@@ -1,8 +1,10 @@
-import { FlavorizationTable } from '../api/flavorizationTable/FlavorizationTable';
-import { FixtureDatabase } from './db/FixtureDatabase';
-import { FlavorizationRule } from '../api/flavorizationRule';
-import { TranslationContext } from '../api/flavorizationTable/TranslationContext';
-import { LanguageKey } from '../db';
+import { FixtureDatabase } from './local-db/FixtureDatabase';
+import {
+  FlavorizationTable,
+  FlavorizationRule,
+  TranslationContext,
+} from '../api';
+import { LanguageKey } from '../dto';
 
 async function main(lang: LanguageKey) {
   const db = new FixtureDatabase();

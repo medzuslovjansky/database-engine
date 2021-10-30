@@ -4,7 +4,7 @@ import {
   LanguageKey,
   RawRecord,
   WordsDTO,
-} from '../../db';
+} from '../../dto';
 import { promises as fs } from 'fs';
 import __projectwise from '../../__projectwise';
 import { parseCSV } from './parseCSV';

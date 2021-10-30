@@ -1,4 +1,4 @@
-export interface ContextualRecord<T> {
+export interface DTOContext<T> {
   dto: T;
   rowIndex: number;
   tableName: string;

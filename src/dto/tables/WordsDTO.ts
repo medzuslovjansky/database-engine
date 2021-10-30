@@ -1,6 +1,6 @@
 import { LanguageKey, LANGUAGES } from '../common/LanguagesMixin';
 import { RawRecord, TableDTO } from '../common';
-import { asTrimmedString } from '../../../utils';
+import { asTrimmedString } from '../../utils';
 
 export class WordsDTO implements TableDTO, Record<LanguageKey, string> {
   public id: string;

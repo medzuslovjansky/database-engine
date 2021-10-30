@@ -1,5 +1,5 @@
 import { MultireplacerRule, Splitters } from '@interslavic/odometer';
-import { FlavorizationRuleDTO } from '../../db';
+import { FlavorizationRuleDTO } from '../../dto';
 import { FlavorizationContext } from '../common/FlavorizationContext';
 import createMapReplacer from './createMapReplacer';
 import { FlavorizationLevelSet } from './FlavorizationLevelSet';
@@ -44,7 +44,9 @@ export class FlavorizationRule extends MultireplacerRule<FlavorizationContext> {
       this.searchValue = /^.*$/;
       this.replacements.add(fn);
     } else {
-      this.searchValue = modifiers.fixed ? dto.match : new RegExp(dto.match, 'g');
+      this.searchValue = modifiers.fixed
+        ? dto.match
+        : new RegExp(dto.match, 'g');
 
       switch (modifiers.split) {
         case 'by-word':

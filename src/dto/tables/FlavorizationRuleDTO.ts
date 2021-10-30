@@ -1,5 +1,5 @@
 import { RawRecord, TableDTO } from '../common';
-import { asNonTrimmedString, asTrimmedString } from '../../../utils';
+import { asNonTrimmedString, asTrimmedString } from '../../utils';
 
 export class FlavorizationRuleDTO implements TableDTO {
   public disabled: string;

@@ -1,5 +1,5 @@
 import { RawRecord, TableDTO } from '../common';
-import { asTrimmedString } from '../../../utils';
+import { asTrimmedString } from '../../utils';
 
 export class IntelligibilityDTO implements TableDTO {
   public readonly id: string;

@@ -1,4 +1,4 @@
-import { LanguageKey, WordsDTO } from '../../db';
+import { LanguageKey, WordsDTO } from '../../dto';
 import { core, parse as steenparse, types } from '@interslavic/steen-utils';
 
 export class TranslationContext {
