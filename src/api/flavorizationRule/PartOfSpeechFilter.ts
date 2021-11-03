@@ -1,18 +1,18 @@
 import _ from 'lodash';
 import { parse as steenparse } from '@interslavic/steen-utils';
 import { PartOfSpeech } from '@interslavic/steen-utils/types';
-import { MultireplacerPredicateObject } from '@interslavic/odometer';
+import { ObjectPredicate } from '@interslavic/odometer';
 import { FlavorizationContext } from '../common/FlavorizationContext';
 import { FlavorizationIntermediate } from '../flavorizationTable/FlavorizationIntermediate';
 
 export class PartOfSpeechFilter
-  implements MultireplacerPredicateObject<FlavorizationContext>
+  implements ObjectPredicate<FlavorizationContext>
 {
-  constructor(public value: PartOfSpeech, public negated: boolean) {}
+  constructor(public values: PartOfSpeech[], public negated: boolean) {}
 
   public toString() {
     const sign = this.negated ? '!' : '';
-    return sign + this.value;
+    return sign + this.values.join(', ');
   }
 
   public static parse(value: string): PartOfSpeechFilter | null {
@@ -21,18 +21,21 @@ export class PartOfSpeechFilter
     }
 
     const negated = value.startsWith('!');
-    const actualPartOfSpeech = negated ? value.slice(1) : value;
-    const partOfSpeech = _.pickBy(
-      steenparse.partOfSpeech(actualPartOfSpeech),
-      _.identity,
-    ) as PartOfSpeech;
+    const actualPartsOfSpeech = (negated ? value.slice(1) : value).split(
+      /\s*,\s*/,
+    );
+    const partsOfSpeech = actualPartsOfSpeech.map(
+      (p) => _.pickBy(steenparse.partOfSpeech(p), _.identity) as PartOfSpeech,
+    );
 
-    return new PartOfSpeechFilter(partOfSpeech, negated);
+    return new PartOfSpeechFilter(partsOfSpeech, negated);
   }
 
   appliesTo({ context }: FlavorizationIntermediate): boolean {
-    return this.value
-      ? _.isMatch(context.partOfSpeech, this.value) !== this.negated
+    return this.values.length > 0
+      ? this.values.some(
+          (v) => _.isMatch(context.partOfSpeech, v) !== this.negated,
+        )
       : true;
   }
 }

@@ -1,13 +1,18 @@
-import { MultireplacerRule, Splitters } from '@interslavic/odometer';
 import { FlavorizationRuleDTO } from '../../dto';
 import { FlavorizationContext } from '../common/FlavorizationContext';
 import createMapReplacer from './createMapReplacer';
 import { FlavorizationLevelSet } from './FlavorizationLevelSet';
 import { GenesisFilter } from './GenesisFilter';
 import { PartOfSpeechFilter } from './PartOfSpeechFilter';
-import { RuleModifiers } from './RuleModifiers';
+import {
+  FunctionExecutor,
+  Intermediate,
+  MapExecutor,
+  RegExpExecutor,
+  Rule,
+} from '@interslavic/odometer';
 
-export class FlavorizationRule extends MultireplacerRule<FlavorizationContext> {
+export class FlavorizationRule extends Rule<FlavorizationContext> {
   public levels: FlavorizationLevelSet;
 
   constructor(dto: FlavorizationRuleDTO) {
@@ -33,37 +38,23 @@ export class FlavorizationRule extends MultireplacerRule<FlavorizationContext> {
       this.predicates.and(partOfSpeech);
     }
 
-    const modifiers = RuleModifiers.parse(dto.modifiers);
-
-    if (modifiers.case) {
-      const fn =
-        modifiers.case === 'upper'
-          ? (s: string) => s.toUpperCase()
-          : (s: string) => s.toLowerCase();
-
-      this.searchValue = /^.*$/;
-      this.replacements.add(fn);
-    } else {
-      this.searchValue = modifiers.fixed
-        ? dto.match
-        : new RegExp(dto.match, 'g');
-
-      switch (modifiers.split) {
-        case 'by-word':
-          this.splitter = Splitters.word;
-          break;
-        case 'by-letter':
-          this.splitter = Splitters.letter;
-          break;
-      }
-
-      for (const replacement of dto.replacements) {
-        if (modifiers.map) {
-          this.replacements.add(createMapReplacer(replacement));
-        } else {
-          this.replacements.add(replacement);
-        }
-      }
+    switch (dto.modifiers) {
+      case 'regexp':
+        this.executor = new RegExpExecutor(
+          new RegExp(dto.match),
+          dto.replacements.map((r) => this.authorReplacement(r)),
+        );
+        break;
+      case 'map':
+        this.executor = new MapExecutor(
+          this.authorReplacement(createMapReplacer(dto.match)),
+        );
+        break;
+      case 'lowerCase':
+        this.executor = new FunctionExecutor(
+          this.authorReplacement((r: Intermediate) => [r.value.toLowerCase()]),
+        );
+        break;
     }
   }
 }

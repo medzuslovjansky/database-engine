@@ -1,12 +1,10 @@
 import { Genesis } from '@interslavic/steen-utils/types';
 import { parse as steenparse } from '@interslavic/steen-utils';
 import { FlavorizationIntermediate } from '../flavorizationTable/FlavorizationIntermediate';
-import { MultireplacerPredicateObject } from '@interslavic/odometer';
+import { ObjectPredicate } from '@interslavic/odometer';
 import { FlavorizationContext } from '../common/FlavorizationContext';
 
-export class GenesisFilter
-  implements MultireplacerPredicateObject<FlavorizationContext>
-{
+export class GenesisFilter implements ObjectPredicate<FlavorizationContext> {
   public approximate = false;
   public negated = false;
   public readonly values = new Set<keyof typeof Genesis>();

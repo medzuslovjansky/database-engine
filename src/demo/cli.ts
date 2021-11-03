@@ -18,13 +18,20 @@ async function main(lang: LanguageKey) {
 
   for (const t of translations) {
     const result = calculator.analyzeTranslations(t, 'Etymological');
-    const line = [result.id, t.interslavic.toString()];
+    const line = [
+      result.id,
+      t.interslavic.toString(),
+      t.translations.toString(),
+    ];
     for (const { interslavic, distance, national } of result.matches) {
       if (distance.percent < 50) {
         line.push(
           `${national.root?.value} (${distance.percent}%; ${interslavic.value})`,
         );
       }
+    }
+    if (line.length === 3) {
+      line.push('N/A');
     }
     console.log(line.join('\t'));
   }

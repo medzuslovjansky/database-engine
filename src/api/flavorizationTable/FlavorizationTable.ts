@@ -1,4 +1,8 @@
-import { Multireplacer, Odometer } from '@interslavic/odometer';
+import {
+  Multireplacer,
+  Odometer,
+  OdometerComparison,
+} from '@interslavic/odometer';
 import { core } from '@interslavic/steen-utils';
 import { FlavorizationLevel, FlavorizationRule } from '../flavorizationRule';
 import { FlavorizationContext } from '../common/FlavorizationContext';
@@ -49,10 +53,7 @@ export class FlavorizationTable {
       params,
     );
 
-    const sorted = this.odometer.sortByRelevance(
-      interslavic.variants,
-      translation.variants,
-    );
+    const sorted = this.odometer.sortByRelevance(interslavic, translation);
 
     if (sorted.length === 0) {
       throw new Error(
@@ -62,7 +63,7 @@ export class FlavorizationTable {
 
     return {
       id: params.id,
-      matches: sorted.map((s) => {
+      matches: sorted.map((s: OdometerComparison<FlavorizationContext>) => {
         const avgLength = 0.5 * (s.query.value.length + s.result.value.length);
 
         return {
