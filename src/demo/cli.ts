@@ -37,4 +37,4 @@ async function main(lang: LanguageKey) {
   }
 }
 
-main('ru');
+main('pl');
