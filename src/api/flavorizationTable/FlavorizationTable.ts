@@ -10,9 +10,8 @@ import { TranslationAnalysis } from './TranslationAnalysis';
 import { TranslationContext } from './TranslationContext';
 
 export class FlavorizationTable {
-  private readonly replacers: Record<
-    keyof typeof FlavorizationLevel,
-    Multireplacer<FlavorizationContext>
+  public readonly replacers: Readonly<
+    Record<keyof typeof FlavorizationLevel, Multireplacer<FlavorizationContext>>
   > = {
     Heuristic: new Multireplacer(),
     Mistaken: new Multireplacer(),
