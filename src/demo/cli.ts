@@ -78,4 +78,4 @@ async function main(lang: LanguageKey) {
   }
 }
 
-main('uk');
+main('pl');
