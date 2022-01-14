@@ -15,7 +15,7 @@ npm install @interslavic/razumlivost --save
 
 ### Flavorization rules
 
-At the moment, rules are stored in CSV files under [\_\_fixture\_\_/rules](__fixtures__/rules) directory.
+At the moment, rules are stored in CSV files under [\_\_fixture\_\_/rules](../__fixtures__/rules) directory.
 
 To calculate written intelligibility between Interslavic words and words from
 another Slavic language, this repository relies on the following algorithm:
