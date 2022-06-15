@@ -12,6 +12,7 @@
   "parser": "@typescript-eslint/parser",
   "parserOptions": {
     "ecmaVersion": 11,
+    "extraFileExtensions": [".mjs"],
     "project": "tsconfig.json",
     "sourceType": "module"
   },
