@@ -30,7 +30,7 @@ export default () =>
       r.regexp(/kt(?=[aeiouy])/, ['kt', 'tk']),
     )
     .rule('Transposition (vse-sve)', (r) =>
-      r.regexp(/vs(?=[aeěiuųy])/, ['vs', 'sv']),
+      r.regexp(/v[sś](?=[aeěiuųy])/, ['vs', 'sv']),
     )
     .rule('Alteration (-gda-)', (r) => r.regexp(/gd/, ['gd', 'd']))
     //#endregion
