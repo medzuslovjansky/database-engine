@@ -1,3 +1,4 @@
+import identity from 'lodash/identity';
 import {
   Multireplacer,
   Predicate,
@@ -12,7 +13,6 @@ import {
   MultireplacerWrapper,
 } from './MultireplacerWrapper';
 import { FlavorizationContext } from '../../customization';
-import { identity } from 'lodash';
 
 export class MultireplacerBuilder {
   protected multireplacer = new Multireplacer<FlavorizationContext>();

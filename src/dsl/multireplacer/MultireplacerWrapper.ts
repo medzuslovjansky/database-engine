@@ -1,4 +1,4 @@
-import { core, parse } from '@interslavic/steen-utils';
+import { core, parse, types } from '@interslavic/steen-utils';
 import {
   Multireplacer,
   Odometer,
@@ -89,6 +89,7 @@ export class MultireplacerWrapper implements IMultireplacerWrapper {
       context,
       target,
     );
+
     const sorted = this.odometer.sortByRelevance(
       flavorizedIntermediates,
       targetIntermediates,
@@ -98,8 +99,8 @@ export class MultireplacerWrapper implements IMultireplacerWrapper {
       const avgLength = 0.5 * (s.query.value.length + s.result.value.length);
 
       return {
-        interslavic: s.query,
-        national: s.result,
+        source: s.query,
+        target: s.result,
         distance: {
           absolute: s.editingDistance,
           percent: Math.round(100 * (s.editingDistance / avgLength)),
@@ -137,11 +138,10 @@ export class MultireplacerWrapper implements IMultireplacerWrapper {
           : raw.partOfSpeech;
     }
 
-    if (raw.genesis) {
-      context.genesis =
-        typeof raw.genesis === 'string'
-          ? parse.genesis(raw.genesis)
-          : raw.genesis;
+    if (raw.genesis && typeof raw.genesis === 'string') {
+      context.genesis = !Reflect.has(types.Genesis, raw.genesis)
+        ? parse.genesis(raw.genesis)
+        : (raw.genesis as keyof typeof types.Genesis);
     }
 
     return context;

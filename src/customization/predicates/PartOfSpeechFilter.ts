@@ -1,4 +1,6 @@
-import _ from 'lodash';
+import identity from 'lodash/identity';
+import isMatch from 'lodash/isMatch';
+import pickBy from 'lodash/pickBy';
 import { parse as steenparse } from '@interslavic/steen-utils';
 import { PartOfSpeech } from '@interslavic/steen-utils/types';
 import { ObjectPredicate } from '@interslavic/odometer';
@@ -25,7 +27,7 @@ export class PartOfSpeechFilter
       /\s*,\s*/,
     );
     const partsOfSpeech = actualPartsOfSpeech.map(
-      (p) => _.pickBy(steenparse.partOfSpeech(p), _.identity) as PartOfSpeech,
+      (p) => pickBy(steenparse.partOfSpeech(p), identity) as PartOfSpeech,
     );
 
     return new PartOfSpeechFilter(partsOfSpeech, negated);
@@ -34,7 +36,7 @@ export class PartOfSpeechFilter
   appliesTo({ context }: FlavorizationIntermediate): boolean {
     const pos = context.partOfSpeech;
     return this.values.length > 0 && pos
-      ? this.values.some((v) => _.isMatch(pos, v) !== this.negated)
+      ? this.values.some((v) => isMatch(pos, v) !== this.negated)
       : true;
   }
 }

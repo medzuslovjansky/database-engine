@@ -1,9 +1,8 @@
 import {
-  FunctionExecutor,
-  Intermediate,
   MapExecutor,
   RegExpExecutor,
 } from '@interslavic/odometer';
+import { customExecutors } from '../../customization';
 import { ExecutorCallback } from './ExecutorCallback';
 
 export class MultireplacerRuleBuilder {
@@ -26,15 +25,12 @@ export class MultireplacerRuleBuilder {
   }
 
   lowerCase() {
-    this.executor = (rule) =>
-      new FunctionExecutor(
-        rule.authorReplacement((r: Intermediate) => [r.value.toLowerCase()]),
-      );
-
+    this.executor = customExecutors.lowerCase;
     return this;
   }
 
   restoreCase() {
+    this.executor = customExecutors.restoreCase;
     return this;
   }
 }
