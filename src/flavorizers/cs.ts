@@ -1,8 +1,9 @@
-import multireplacer from '../../dsl/multireplacer';
+import multireplacer from '../dsl/multireplacer';
 
 export default () =>
   multireplacer
     .named('Interslavic → Czech')
+    .rule('Ignore case', (r) => r.lowerCase())
     .rule('de-Janizator', (r) =>
       r.map({
         è: 'e',
@@ -279,4 +280,5 @@ export default () =>
       }),
     )
     //#endregion
+    .rule('Restore case', (r) => r.restoreCase())
     .build();

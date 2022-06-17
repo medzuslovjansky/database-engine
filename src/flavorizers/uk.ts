@@ -1,4 +1,4 @@
-import multireplacer from '../../dsl/multireplacer';
+import multireplacer from '../dsl/multireplacer';
 
 export default () =>
   multireplacer

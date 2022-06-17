@@ -1,8 +1,9 @@
-import multireplacer from '../../dsl/multireplacer';
+import multireplacer from '../dsl/multireplacer';
 
 export default () =>
   multireplacer
     .named('Interslavic → Russian')
+    .rule('Ignore case', (r) => r.lowerCase())
     //#region Этимологическая русификация
     .section('Этимологическая русификация')
     .rule('ORO-OLO', (r) => r.regexp(/(\S)([lr])å/, ['$1$2a', '$1o$2o']))
@@ -206,4 +207,5 @@ export default () =>
     .section('Эвристики')
     .rule('Обезёкивание', (r) => r.regexp(/ё/, ['е']))
     //#endregion
+    .rule('Restore case', (r) => r.restoreCase())
     .build();

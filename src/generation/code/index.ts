@@ -13,7 +13,7 @@ function* generateYield(
   name: string,
   rules: RuleDTO[],
 ): IterableIterator<string> {
-  yield "import multireplacer from '../../dsl/multireplacer';\n";
+  yield "import multireplacer from '../dsl/multireplacer';\n";
   yield 'export default () => multireplacer';
   yield indent`.named(${Js(name)})`;
 

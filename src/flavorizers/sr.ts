@@ -1,4 +1,4 @@
-import multireplacer from '../../dsl/multireplacer';
+import multireplacer from '../dsl/multireplacer';
 
 export default () =>
   multireplacer
@@ -195,4 +195,5 @@ export default () =>
       }),
     )
     //#endregion
+    .rule('Restore case', (r) => r.restoreCase())
     .build();

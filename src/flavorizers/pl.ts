@@ -1,14 +1,14 @@
-import multireplacer from '../../dsl/multireplacer';
+import multireplacer from '../dsl/multireplacer';
 
 export default () =>
   multireplacer
     .named('Interslavic → Polish')
+    .rule('Ignore case', (r) => r.lowerCase())
     .rule('de-Janizator', (r) =>
       r.map({
         ľ: 'ĺ',
       }),
     )
-    .rule('Ignore case', (r) => r.lowerCase())
     //#region Prefixes
     .section('Prefixes')
     .rule('Alteration (vòz-)', (r) =>
@@ -140,4 +140,5 @@ export default () =>
       }),
     )
     //#endregion
+    .rule('Restore case', (r) => r.restoreCase())
     .build();

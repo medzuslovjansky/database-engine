@@ -9,8 +9,8 @@ for (const lang of LANGS) {
   const buffer = await fs.readFile(`__fixtures__/rules/${lang}.csv`);
   const rules = await parseCSV(buffer);
   const code = generation.code(`${LANGUAGE_NAMES.isv} → ${LANGUAGE_NAMES[lang]}`, rules);
-  await fs.mkdirp('src/public/flavorizers');
-  await fs.writeFile(`src/public/flavorizers/${lang}.ts`, code);
+  await fs.mkdirp('src/flavorizers');
+  await fs.writeFile(`src/flavorizers/${lang}.ts`, code);
 }
 
-await $`eslint --fix src/public/**/*.ts`;
+await $`eslint --fix src/flavorizers/**/*.ts`;

@@ -30,10 +30,19 @@ export interface IMultireplacerWrapper {
     source: string,
     target: string,
   ): FlavorizationMatch[];
+
+  compare(
+    context: RawFlavorizationContext,
+    source: string,
+    target: string,
+  ): string | null;
 }
 
 export class MultireplacerWrapper implements IMultireplacerWrapper {
-  protected readonly odometer = new Odometer<FlavorizationContext>();
+  protected readonly odometer = new Odometer<FlavorizationContext>({
+    ignoreCase: true,
+    ignoreNonLetters: true,
+  });
 
   constructor(
     public readonly name: string,
@@ -107,6 +116,19 @@ export class MultireplacerWrapper implements IMultireplacerWrapper {
         },
       };
     });
+  }
+
+  compare(
+    context: RawFlavorizationContext,
+    source: string,
+    target: string,
+  ): string | null {
+    const results = this.compareDebug(context, source, target);
+    if (results[0].distance.absolute === 0) {
+      return null;
+    }
+
+    return results[0].source.value;
   }
 
   private static _packFlavorizationContext(

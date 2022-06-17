@@ -29,5 +29,10 @@
   "exclude": [
     "dist/**/*.ts",
     "jest.config.ts"
-  ]
+  ],
+  "typedocOptions": {
+    "entryPoints": ["src/index.ts"],
+    "out": "dist/docs",
+    "hideGenerator": true
+  }
 }

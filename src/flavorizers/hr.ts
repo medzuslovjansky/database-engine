@@ -1,8 +1,9 @@
-import multireplacer from '../../dsl/multireplacer';
+import multireplacer from '../dsl/multireplacer';
 
 export default () =>
   multireplacer
     .named('Interslavic → Croatian')
+    .rule('Ignore case', (r) => r.lowerCase())
     .rule('Southern sounds', (r) =>
       r.map({
         ĺ: 'љ',
@@ -29,4 +30,5 @@ export default () =>
     )
     .rule('Pridavniky', (r) => r.regexp(/čny\b/, ['čan']))
     //#endregion
+    .rule('Restore case', (r) => r.restoreCase())
     .build();

@@ -1,8 +1,9 @@
-import multireplacer from '../../dsl/multireplacer';
+import multireplacer from '../dsl/multireplacer';
 
 export default () =>
   multireplacer
     .named('Interslavic → Belarusian')
+    .rule('Ignore case', (r) => r.lowerCase())
     .rule('Yat', (r) => r.regexp(/ě/, ['e']))
     .rule('Little Yus', (r) => r.regexp(/ę/, ['a', 'ja']))
     .rule('Bid Yus VU', (r) => r.regexp(/vų/, ['vu', 'u']))
@@ -77,6 +78,5 @@ export default () =>
         йе: 'е',
       }),
     )
-    .rule('Обезёкивание', (r) => r.regexp(/ё/, ['е']))
-    .rule('Обезэкивание', (r) => r.regexp(/э/, ['е']))
+    .rule('Restore case', (r) => r.restoreCase())
     .build();

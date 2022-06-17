@@ -1,5 +1,6 @@
 import 'zx/globals';
 import vm from 'node:vm';
+import { LANGS } from "./utils/constants.mjs";
 import parseCSV from './utils/parseCSV.mjs';
 import razumlivost from '../dist/index.js';
 import findMatchingBracket from 'find-matching-bracket';
@@ -10,12 +11,14 @@ const TEST_CASES_MARKER = '.each([';
 
 await main();
 
-async function main() {
+async function main(targetLang) {
   const buffer = await fs.readFile(`__fixtures__/words.csv`);
   const words = await parseCSV(buffer);
 
-  for (const lang of ['pl'] /*LANGS*/) {
-    const testContents = await fs.readFile(`src/public/__tests__/direct-matches-${lang}.ts`, 'utf8');
+  for (const lang of (targetLang ? [targetLang] : LANGS)) {
+    const testFilePath = `src/__tests__/direct-matches-${lang}.ts`;
+    console.log(`Replenishing test cases in: ${chalk.yellow(testFilePath)}`);
+    const testContents = await fs.readFile(testFilePath, 'utf8');
 
     const testCasesSlice = cutCodeBlock(testContents, TEST_CASES_MARKER, 0);
     const hashStorage = new Set();
@@ -63,7 +66,7 @@ async function main() {
     const update1 = testCasesSlice.replace(testCases.map(linearizeTestCase).join(''));
     const skippedTestCasesSlice = cutCodeBlock(update1, TEST_CASES_MARKER, testCasesSlice.start + 1);
     const update2 = skippedTestCasesSlice.replace(skippedTestCases.map(linearizeTestCase).join(''));
-    await fs.writeFile(`src/public/__tests__/direct-matches-${lang}.ts`, update2);
+    await fs.writeFile(testFilePath, update2);
   }
 }
 
