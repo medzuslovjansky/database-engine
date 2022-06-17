@@ -1,8 +1,10 @@
 /*
+**/*.test.js
+**/*.test.d.ts
+**/__snapshots__
+**/__tests__
+!/src
 !/dist
+src/generation
 /dist/docs
 /dist/generation
-/dist/**/*.test.js
-/dist/**/*.test.d.ts
-/dist/**/__snapshots__
-/dist/**/__tests__
