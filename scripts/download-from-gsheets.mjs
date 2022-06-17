@@ -1,16 +1,15 @@
-import 'zx/globals';
-import { GIDs, LANGS } from "./utils/constants.mjs";
+import "zx/globals";
+import { SHEET_URLS, GIDs, LANGS } from "./utils/constants.mjs";
 
-const BASE_URL = `https://docs.google.com/spreadsheets/d/e/2PACX-1vTB2DAu_uRJoHlPx5x_5O7YlsUrbZ89fsHWT7d8bRinQnAWMaYc3rQTwJ_Tt8mLQBXu4pBaKXFIrPdn/pub?output=csv`;
-
-async function downloadSheet(outFile, gid) {
-  const url = `${BASE_URL}&gid=${GIDs[gid]}`;
-
-  await $`curl -L -o ${outFile} ${url}`
+async function downloadSheet(outFile, baseUrl, gid) {
+  await $`curl -L -o ${outFile} ${`${baseUrl}&single=true&gid=${gid}`}`
 }
 
+await fs.mkdirp('__fixtures__/analysis');
 await fs.mkdirp('__fixtures__/rules');
-await downloadSheet(`__fixtures__/words.csv`, 'words');
+
+await downloadSheet(`__fixtures__/words.csv`, SHEET_URLS.new_interslavic_words_list, GIDs.new_interslavic_words_list.words);
 for (const lang of LANGS) {
-  await downloadSheet(`__fixtures__/rules/${lang}.csv`, lang);
+  await downloadSheet(`__fixtures__/analysis/${lang}.csv`, SHEET_URLS.analysis, GIDs.analysis[lang]);
+  await downloadSheet(`__fixtures__/rules/${lang}.csv`, SHEET_URLS.rules, GIDs.rules[lang]);
 }

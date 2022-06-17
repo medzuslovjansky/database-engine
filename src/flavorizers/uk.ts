@@ -22,6 +22,8 @@ export default () =>
     .rule('vy-, iz-, z-', (r) =>
       r.regexp(/(?<=(^|\s|bez|ne))iz/, ['vy', 'z', 'iz']),
     )
+    .rule('sȯ-', (r) => r.regexp(/(?<=s)ȯ/, ['ȯ', 'u', 'i', '']))
+    .rule('s-', (r) => r.regexp(/(?<=(^|\s|ne))s/, ['s', 'z']))
     .rule('vid-, od-', (r) => r.regexp(/(?<=(^|\s|ne))od/, ['vid', 'od']))
     .rule('pry-', (r) => r.regexp(/prı/, ['pry']))
     .rule('pere-, pre-', (r) =>
@@ -31,8 +33,11 @@ export default () =>
     //#endregion
 
     //#region Suffixes
-    .rule('ova[tn]-uva[tn]', (r) => r.regexp(/ôva(?=[tn])/, ['uva', 'ova']))
-    .rule('yva[tn]-uva[tn]', (r) => r.regexp(/yva(?=[tn])/, ['uva', 'yva']))
+    .rule(
+      'yva[tn]-uva[tn]',
+      (r) => r.regexp(/y(?=va[tn])/, ['y', 'u']),
+      (p) => p.partOfSpeech('v., adj., adv.'),
+    )
     .rule('CЬk', (r) => r.regexp(/čs(?=k[ayeio]?(\s|$))/, ['cь']))
     .rule(
       'SЬk',
@@ -87,14 +92,22 @@ export default () =>
 
     //#region Adjectives
     .rule(
-      '(n + jı) → nij',
-      (r) => r.regexp(/(?<=n)jı(?=\s|$)/, ['ij']),
-      (p) => p.partOfSpeech('adj., m.').and(p.partOfSpeech('!m. pl.')),
+      '(n + ji) → nij',
+      (r) => r.regexp(/(?<=n)ji(?=\s|$)/, ['ij']),
+      (p) =>
+        p
+          .and(p.partOfSpeech('adj., m.'))
+          .and(p.partOfSpeech('!m. pl.'))
+          .and(p.partOfSpeech('!m. indecl.')),
     )
     .rule(
-      'y/jı → yj',
-      (r) => r.regexp(/(?:jı|y)(?=\s|$)/, ['yj']),
-      (p) => p.partOfSpeech('adj., m.').and(p.partOfSpeech('!m. pl.')),
+      'y/ji → yj',
+      (r) => r.regexp(/(?<=\S)(?:j?i|y)(?=\s|$)/, ['yj']),
+      (p) =>
+        p
+          .and(p.partOfSpeech('adj., m.'))
+          .and(p.partOfSpeech('!m. pl.'))
+          .and(p.partOfSpeech('!m. indecl.')),
     )
     //#endregion Adjectives
 
@@ -118,7 +131,9 @@ export default () =>
     )
     .rule('[LR]+Å (middle)', (r) => r.regexp(/([rl])å/, ['o$1o']))
     .rule('[LR]+Ě (start)', (r) => r.regexp(/(?<=(^|\s|bez|ne)[rl])ě/, ['i']))
-    .rule('[LR]+Ě (middle)', (r) => r.regexp(/([rl])ě/, ['e$1e', 'o$1o']))
+    .rule('[LR]+Ě (middle)', (r) =>
+      r.regexp(/([rl])ě/, ['$1i', 'e$1e', 'o$1o']),
+    )
     .rule('(dental/alveolar)+Ę', (r) => r.regexp(/([tdsznlr])ę/, ['$1ьa']))
     .rule('(soft/hissing)+Ę', (r) => r.regexp(/([čđšžćcj])ę/, ['$1a']))
     .rule('Ę (other cases)', (r) => r.regexp(/ę/, ["'ja"]))
@@ -126,10 +141,17 @@ export default () =>
       r.regexp(/ŕ(?=[bcćčdđeghklmnpsśštťvzžň])/, ['er']),
     )
     .rule('Syllabic -or-', (r) =>
-      r.regexp(/([bdghkmpstv])r([bčdḓđfgkmnsštťvz])/, ['$1or$2']),
+      r.regexp(/([bdghkmpstv])r([bčdḓđfgkmnsštťvz])/, ['$1or$2', '$1ro$2']),
+    )
+    .rule('Syllabic -l-', (r) => r.regexp(/(?<=ȯ)l(?=[pk])/, ['ł']))
+    .rule('-pȯlk- exception', (r) => r.regexp(/pȯłk/, ['pȯlk']))
+    .rule(
+      '-pijan-',
+      (r) => r.regexp(/pıjan/, ['pjan']),
+      (p) => p.genesis('?S'),
     )
     .rule('Ê - E/I', (r) => r.regexp(/ê/, ['e', 'i']))
-    .rule('Ô - O/I', (r) => r.regexp(/ô/, ['o', 'i']))
+    .rule('Ô - O/U/I', (r) => r.regexp(/ô/, ['o', 'i', 'u']))
     .rule('I - Y/İ', (r) => r.regexp(/ı/, ['y', 'i']))
     .rule('Đ - Ž/ĎŽ', (r) => r.regexp(/đ/, ['dž', 'ž']))
     .rule('je-', (r) => r.regexp(/(?<=(^|\s))e/, ['je', 'e']))
@@ -138,10 +160,11 @@ export default () =>
       (r) => r.regexp(/krac/, ['krat']),
       (p) => p.genesis('I'),
     )
+    .rule('-by[tv]-', (r) => r.regexp(/by(?=[łtv])/, ['by', 'bu']))
     //#endregion
 
     //#region Phonetics
-    .rule('-[mvp](j)en-', (r) => r.regexp(/(?<=[mvp])je/, ['le']))
+    .rule('-[mvp](j)en-', (r) => r.regexp(/(?<=[młvp])je/, ['le']))
     .rule('-[ln](j)en-', (r) => r.regexp(/(?<=[ln])jen/, ['en']))
     .rule('-r', (r) => r.regexp(/ŕ(?=\s|$)/, ['r']))
     .rule('šč', (r) => r.regexp(/čt/, ['šč']))
@@ -187,8 +210,12 @@ export default () =>
         ś: 'sь',
         ť: 'tь',
         ų: 'u',
+        ł: 'v',
         ź: 'zь',
       }),
+    )
+    .rule('Apostrophe', (r) =>
+      r.regexp(/(?<=([bpvmfz]|[aouyier]\S))(j[aeui])/, ['$2', "'$2"]),
     )
     .rule('Cyrl-Ukr', (r) =>
       r.map({

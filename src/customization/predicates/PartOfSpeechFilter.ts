@@ -37,6 +37,6 @@ export class PartOfSpeechFilter
     const pos = context.partOfSpeech;
     return this.values.length > 0 && pos
       ? this.values.some((v) => isMatch(pos, v) !== this.negated)
-      : true;
+      : false;
   }
 }

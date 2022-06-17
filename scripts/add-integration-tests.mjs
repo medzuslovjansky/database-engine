@@ -1,7 +1,7 @@
 import 'zx/globals';
 import vm from 'node:vm';
 import { LANGS } from "./utils/constants.mjs";
-import parseCSV from './utils/parseCSV.mjs';
+import * as csv from './utils/csv.mjs';
 import razumlivost from '../dist/index.js';
 import findMatchingBracket from 'find-matching-bracket';
 
@@ -12,8 +12,7 @@ const TEST_CASES_MARKER = '.each([';
 await main();
 
 async function main(targetLang) {
-  const buffer = await fs.readFile(`__fixtures__/words.csv`);
-  const words = await parseCSV(buffer);
+  const words = await csv.parseFile(`__fixtures__/words.csv`);
 
   for (const lang of (targetLang ? [targetLang] : LANGS)) {
     const testFilePath = `src/__tests__/direct-matches-${lang}.ts`;
@@ -24,7 +23,8 @@ async function main(targetLang) {
     const hashStorage = new Set();
     const hashIt = (testCase) => {
       const size = hashStorage.size;
-      hashStorage.add(testCase[1].trim().toLowerCase() + '\t' + testCase[3].trim().toLowerCase());
+      const isvForm = testCase[1].trim().toLowerCase();
+      hashStorage.add(isvForm + '\t' + testCase[3].trim().toLowerCase());
       return hashStorage.size === size;
     }
 

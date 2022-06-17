@@ -1,8 +1,12 @@
-import { FlavorizationIntermediate } from '../../customization';
+import {
+  LemmaIntermediate,
+  FlavorizationIntermediate,
+} from '../../customization';
+
 import { FlavorizationDistance } from './FlavorizationDistance';
 
 export type FlavorizationMatch = {
   source: FlavorizationIntermediate;
-  target: FlavorizationIntermediate;
+  target: LemmaIntermediate;
   distance: FlavorizationDistance;
 };
