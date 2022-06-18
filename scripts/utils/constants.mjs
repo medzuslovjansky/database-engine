@@ -15,7 +15,7 @@ const LANG_GIDs = {
 export const GIDs = {
   ...LANG_GIDs,
 
-  words: 230688186,
+  words: 1550049438,
 };
 
 export const LANGS = Object.keys(LANG_GIDs);
