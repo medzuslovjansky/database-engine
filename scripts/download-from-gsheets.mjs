@@ -2,7 +2,7 @@ import "zx/globals";
 import { SHEET_URLS, GIDs, LANGS } from "./utils/constants.mjs";
 
 async function downloadSheet(outFile, baseUrl, gid) {
-  await $`curl -L -o ${outFile} ${`${baseUrl}&single=true&gid=${gid}`}`
+  process.stdout.write(`curl -L -o ${outFile} ${`${baseUrl}&single=true&gid=${gid}`}\n`);
 }
 
 await fs.mkdirp('__fixtures__/analysis');

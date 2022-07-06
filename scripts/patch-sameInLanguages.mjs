@@ -1,70 +1,41 @@
 import 'zx/globals';
-import { LANGS } from "./utils/constants.mjs";
+import _ from 'lodash';
 import * as csv from './utils/csv.mjs';
-import { parse } from "@interslavic/steen-utils";
+import { core, parse } from "@interslavic/steen-utils";
+import { loadDictionary } from "./utils/hunspell.mjs";
+import razumlivost from "../dist/index.js";
 
-const NOT_EMPTY = /^[!#]*\p{Letter}/u;
+const { flavorizers } = razumlivost;
 
 async function main() {
   const WORDS_PATH = `__fixtures__/words.csv`;
 
   const rawWords = await csv.parseFile(WORDS_PATH);
   const newWords = [];
+  const hunspell = await loadDictionary('pl');
+  let n = rawWords.length;
   for (const w of rawWords) {
-    const pos = parse.partOfSpeech(w.partOfSpeech)
-    const isv = parse.synset(w.isv, { isPhrase: pos.name === 'phrase' });
-    const dbIndex = [...isv.lemmas()].map(v => existingWords.indexOf(v.value)).find(i => i !== -1);
-    if (dbIndex >= 0) {
-      w.isv = DB[dbIndex][0];
-      w.pl = DB[dbIndex][1];
-    } else {
-      w.pl = `!${w.pl}`;
+    console.error(n--);
+    if (existingWords.includes(w.isv)) {
+      continue;
     }
 
-    newWords.push({
-      id: w.id,
-      isv: w.isv,
-      pl: w.pl,
-      addition: w.addition,
-      partOfSpeech: w.partOfSpeech,
-      type: w.type,
-      en: w.en,
-      genesis: w.genesis,
-    })
+    const pos = parse.partOfSpeech(w.partOfSpeech);
+    const isv = parse.synset(w.isv, { isPhrase: pos.name === 'phrase' });
+    const out = new core.Synset();
+    const group = new core.LemmaGroup();
+    out.groups.push(group);
+    for (const lemma of isv.lemmas()) {
+      const variants = flavorizers.pl.flavorize(lemma.toString(), w.partOfSpeech, w.genesis);
+      const niceOnes = variants.filter(v => hunspell.spellSync(v));
+      const worseOnes = (niceOnes.length ? null : hunspell.suggestSync(variants[0])) || [];
+      group.lemmas.push(...[...niceOnes, ...worseOnes].map(value => new core.Lemma({ value })));
+    }
+    console.log('OK\t' + w.id + '\t' + out);
   }
 
-  await csv.writeFile(`__fixtures__/words.pl.csv`, newWords);
+  // await csv.writeFile(`__fixtures__/words.pl.csv`, newWords);
 }
-
-function formatShorthandReport(lang, { translationMatch, helperWords, falseFriends }) {
-  const hasTranslation = NOT_EMPTY.test(translationMatch);
-  const hasHelpers = NOT_EMPTY.test(helperWords);
-  const hasFalseFriends = NOT_EMPTY.test(falseFriends);
-
-  if (!hasTranslation && !hasHelpers && !hasFalseFriends) {
-    return '';
-  }
-
-  const isAutomatic = (hasFalseFriends && falseFriends.startsWith('!')) || (
-    hasTranslation
-      ? translationMatch.startsWith('!')
-      : hasHelpers && helperWords.startsWith('!')
-  );
-
-  const suffix = isAutomatic ? '!' : '';
-  const prefix = hasFalseFriends
-    ? (hasTranslation ? '~' : hasHelpers ? '?' : '#')
-    : (hasTranslation ? '' : '~')
-
-  // - nerazumlivo -bg
-  // # falsivy prijatelj #mk
-  // % (premy preklad ABO pomocne slovo) I falsivy prijatelj %
-  // ~ (pomocne slovo) ~ru
-  // + (dobro razumlivo) +uk
-
-  return prefix + lang + suffix;
-}
-
 
 const DB = [
   ['-kråtno', '-krotnie', 'suffix', ''],

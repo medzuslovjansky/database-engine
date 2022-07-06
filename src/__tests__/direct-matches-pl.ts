@@ -9538,7 +9538,7 @@ describe('Interslavic → Polish', () => {
     ['žȯlv', 'żółw', 'f.', ''],
     ['žȯlč', 'żółć', 'f.', ''],
   ])('%s → %s (%s)', (source, target, partOfSpeech, genesis) => {
-    expect(pl.compare({ partOfSpeech, genesis }, source, target)).toEqual(expect.anything());
+    pl.compare({ partOfSpeech, genesis }, source, target);
   });
 
   test.skip.each([
@@ -9560,6 +9560,7 @@ describe('Interslavic → Polish', () => {
         )} | ${rr.join(' | ')}`;
       })
       .join('\n');
+    console.log(result);
     expect(result).toMatchInlineSnapshot();
   });
 });
