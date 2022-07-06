@@ -1,21 +1,23 @@
 import 'zx/globals';
 import vm from 'node:vm';
+import _ from 'lodash';
 import { LANGS } from "./utils/constants.mjs";
 import * as csv from './utils/csv.mjs';
 import razumlivost from '../dist/index.js';
 import findMatchingBracket from 'find-matching-bracket';
+import { parse } from "@interslavic/steen-utils";
 
-const flavorizers = razumlivost.flavorizers;
+const fingerprints = razumlivost.fingerprints;
 
 const TEST_CASES_MARKER = '.each([';
 
-await main();
+await main('pl');
 
 async function main(targetLang) {
   const words = await csv.parseFile(`__fixtures__/words.csv`);
 
   for (const lang of (targetLang ? [targetLang] : LANGS)) {
-    const testFilePath = `src/__tests__/direct-matches-${lang}.ts`;
+    const testFilePath = `src/__tests__/fingerprints-${lang}.ts`;
     console.log(`Replenishing test cases in: ${chalk.yellow(testFilePath)}`);
     const testContents = await fs.readFile(testFilePath, 'utf8');
 
@@ -34,12 +36,28 @@ async function main(targetLang) {
 
     const skippedTestCases = [];
 
-    const flavorizer = flavorizers[lang];
+    const flavorizerISV = fingerprints[lang].isv();
+    const flavorizerLang = fingerprints[lang][lang]();
 
     for (const word of words) {
-      const absoluteMatches = flavorizer
-        .compareDebug(word, word.isv, word[lang])
-        .filter(m => m.distance.percent <= 20);
+      const langFingerprint = flavorizerLang.flavorize(word[lang], word.partOfSpeech, word.genesis);
+      const isvFingerprint = flavorizerISV.flavorize(word.isv, word.partOfSpeech, word.genesis);
+
+      const absoluteMatches1 = flavorizerISV
+        .compareDebug(word, word.isv, langFingerprint.join(', '))
+        .filter(m => m.distance.absolute === 0);
+
+      const absoluteMatches2 = flavorizerLang
+        .compareDebug(word, word[lang], isvFingerprint.join(', '))
+        .filter(m => m.distance.absolute === 0);
+
+      const absoluteMatches = absoluteMatches1.length === 1 && absoluteMatches2.length === 1
+        ? [{
+          source: absoluteMatches1[0].source,
+          target: absoluteMatches2[0].source,
+          distance: absoluteMatches2[0].distance
+        }]
+        : [];
 
       for (const match of absoluteMatches) {
         const testCase = [
@@ -50,13 +68,7 @@ async function main(targetLang) {
           word.genesis
         ];
 
-        if (!hashIt(testCase)) {
-          if (match.distance.absolute === 0) {
-            testCases.push(testCase);
-          } else {
-            skippedTestCases.push(testCase);
-          }
-        }
+        testCases.push(testCase);
       }
     }
 
@@ -64,9 +76,9 @@ async function main(targetLang) {
     skippedTestCases.sort(compareTestCases);
 
     const update1 = testCasesSlice.replace(testCases.map(linearizeTestCase).join(''));
-    const skippedTestCasesSlice = cutCodeBlock(update1, TEST_CASES_MARKER, testCasesSlice.start + 1);
-    const update2 = skippedTestCasesSlice.replace(skippedTestCases.map(linearizeTestCase).join(''));
-    await fs.writeFile(testFilePath, update2);
+    // const skippedTestCasesSlice = cutCodeBlock(update1, TEST_CASES_MARKER, testCasesSlice.start + 1);
+    // const update2 = skippedTestCasesSlice.replace(skippedTestCases.map(linearizeTestCase).join(''));
+    await fs.writeFile(testFilePath, update1);
   }
 }
 

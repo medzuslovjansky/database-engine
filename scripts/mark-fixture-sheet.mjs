@@ -41,16 +41,23 @@ async function main(targetLang) {
     const hunspell = await loadDictionary(lang);
     for (const word of words) {
       const results = flavorizers[lang].compareDebug(word, word.isv, word[lang]);
-      const translations = new Set([...word[lang].lemmas()].map(l => l.value));
       const good = results.filter(match => match.distance.percent <= 13).map(match => match.target.context);
       const mediocre = results.filter(match => match.distance.percent > 13 && match.distance.percent < 35).map(match => match.target.context);
       /** @type {string[]} */
-      const potentialSearch = flavorizers[lang].flavorize(word.raw.isv, word.partOfSpeech, word.genesis);
-      const maybeHelperWords = hunspell && good.length === 0 ? _.sortedUniq(
-        potentialSearch
-          .filter(w => !translations.has(w) && hunspell.spellSync(w))
-          .sort(byLatinAlphabet)
-      ) : [];
+      const potentialSearch = hunspell && good.length === 0
+        ? word.raw.isv.split(/[^\p{Letter}]+/u)
+          .map(w => flavorizers[lang].flavorize(w, word.partOfSpeech, word.genesis))
+          .map(v => v.filter(f => hunspell.spellSync(f)))
+        : [];
+
+      let maybeHelperWords = [];
+      if (potentialSearch.every(g => g.length > 0)) {
+        const theTranslation = word.raw[lang].split(/[^\p{Letter}]+/u);
+        maybeHelperWords = !potentialSearch.every((v, i) => v.some(w => w === theTranslation[i]))
+          ? (potentialSearch.length === 1 ? potentialSearch[0] : [potentialSearch.map(g => g.join('/')).join(' ')])
+          : [];
+      }
+
 
       const newRecord = {
         id: +word.id,

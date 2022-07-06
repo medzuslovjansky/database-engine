@@ -4,47 +4,33 @@ export default () =>
   multireplacer
     .named('Interslavic → Ukrainian')
     .rule('Ignore case', (r) => r.lowerCase())
-    .rule('De-Janizator', (r) =>
-      r.map({ '’': '', ù: 'v', ḓ: '', è: 'ė', ı: '', ė: 'ě', ò: 'ȯ', ṙ: 'r' }),
-    )
+    .rule('De-Janizator', (r) => r.deJanizator())
 
     //#region Closed syllables
-    .section('Closed syllables')
-    .rule('-ê-', (r) => r.regexp(/(?<=\S)e(?=\S)/, ['ê']))
-    .rule('-ô-', (r) => r.regexp(/(?<=\S)o(?=\S)/, ['ô']))
-    .rule('-ı-', (r) => r.regexp(/(?<=\S)i(?=\S)/, ['ı']))
+    .rule('Closed E', (r) => r.regexp(/e(?=\S)/, ['ê']))
+    .rule('Closed O', (r) => r.regexp(/o(?=\S)/, ['ô']))
     //#endregion
 
     //#region Prefixes
     .section('Prefixes')
-    .rule('bez-', (r) => r.regexp(/bêz/, ['bez']))
-    .rule('ne-', (r) => r.regexp(/nê/, ['ne']))
-    .rule('vy-, iz-, z-', (r) =>
-      r.regexp(/(?<=(^|\s|bez|ne))iz/, ['vy', 'z', 'iz']),
-    )
-    .rule('sȯ-', (r) => r.regexp(/(?<=s)ȯ/, ['ȯ', 'u', 'i', '']))
-    .rule('s-', (r) => r.regexp(/(?<=(^|\s|ne))s/, ['s', 'z']))
-    .rule('vid-, od-', (r) => r.regexp(/(?<=(^|\s|ne))od/, ['vid', 'od']))
-    .rule('pry-', (r) => r.regexp(/prı/, ['pry']))
-    .rule('pere-, pre-', (r) =>
-      r.regexp(/(?<=(^|\s|bez|ne))prě/, ['pere', 'pre']),
-    )
-    .rule('roz-', (r) => r.regexp(/(?<=(^|\s|bez|ne))råz/, ['roz']))
+    .rule('iz-, z-, vy-', (r) => r.regexp(/iz/, ['iz', 'z', 'vy']))
+    .rule('sȯ-', (r) => r.regexp(/(?<=s)ȯ/, ['ô', '']))
+    .rule('s-', (r) => r.regexp(/(?<=(^|\s|nê))s/, ['s', 'z']))
+    .rule('o-', (r) => r.regexp(/(?<=(^|\s|nê))ô/, ['vô', 'ô']))
+    .rule('u-', (r) => r.regexp(/(?<=(^|\s|nê))u/, ['u', 'v']))
+    .rule('pry-', (r) => r.regexp(/pri/, ['pry']))
     //#endregion
 
     //#region Suffixes
     .rule(
       'yva[tn]-uva[tn]',
-      (r) => r.regexp(/y(?=va[tn])/, ['y', 'u']),
+      (r) => r.regexp(/y(?=va[tn])/, ['ô']),
       (p) => p.partOfSpeech('v., adj., adv.'),
     )
-    .rule('CЬk', (r) => r.regexp(/čs(?=k[ayeio]?(\s|$))/, ['cь']))
-    .rule(
-      'SЬk',
-      (r) => r.regexp(/s(?=k[ayeio]?(\s|$))/, ['sь']),
-      (p) => p.partOfSpeech('adj.,m.,n.'),
+    .rule('čsk → ck, čn', (r) =>
+      r.regexp(/čsk(?=[ayeio]?(\s|$))/, ['ck', 'čn']),
     )
-    .rule('ZЬk', (r) => r.regexp(/z(?=k[ayeio]?(\s|$))/, ['z', 'zь']))
+    .rule('[sz]Ьk', (r) => r.regexp(/([sz])(?=k[ayeio]?(\s|$))/, ['$1ь', '$1']))
     //#endregion
 
     //#region Adverbs
@@ -74,17 +60,24 @@ export default () =>
       (p) => p.partOfSpeech('f.'),
     )
     .rule(
-      'neuter',
+      '-stje ending ',
+      (r) => r.regexp(/s[tť]je(?=\s|$)/, ['stьa']),
+      (p) => p.partOfSpeech('n.'),
+    )
+    .rule(
+      'soft -je ending ',
+      (r) => r.regexp(/([čďĺńťžź])je(?=\s|$)/, ['$1$1ьa']),
+      (p) => p.partOfSpeech('n.'),
+    )
+    .rule(
+      'soft -je ending (finalizer)',
       (r) =>
         r.map({
-          ĺje: 'llьa',
-          ńje: 'nnьa',
-          ťje: 'ttьa',
-          ďje: 'ddьa',
-          žje: 'zzьa',
-          śje: 'ssьa',
-          stje: 'stьa',
-          sťje: 'stьa',
+          ďďь: 'ddь',
+          ĺĺь: 'llь',
+          ťťь: 'ttь',
+          źźь: 'zzь',
+          ńńь: 'nnь',
         }),
       (p) => p.partOfSpeech('n.'),
     )
@@ -113,6 +106,11 @@ export default () =>
 
     //#region Verbs
     .rule(
+      '-juvati',
+      (r) => r.regexp(/jati(?=\s|$)/, ['jati', 'juvati']),
+      (p) => p.partOfSpeech('v. ipf.'),
+    )
+    .rule(
       '-ti',
       (r) => r.regexp(/ti(?=\s|$)/, ['ty']),
       (p) => p.partOfSpeech('v.'),
@@ -126,33 +124,34 @@ export default () =>
 
     //#region Roots
     .section('Roots')
-    .rule('[LR]+Å (start)', (r) =>
-      r.regexp(/(?<=(^|\s|bez|ne|roz)[rl])å/, ['o']),
+    .rule('-glųb-', (r) => r.regexp(/glųb/, ['glyb']))
+    .rule('-želųd-', (r) => r.regexp(/žêlųd/, ['žolųd']))
+    .rule('-sedm-', (r) => r.regexp(/sêdm/, ['sêdm', 'sêm']))
+    .rule('-osm-', (r) => r.regexp(/[oô]sm/, ['ôsêm', 'osm']))
+    .rule('no -povk-', (r) => r.regexp(/pȯlk/, ['polk']))
+    .rule(
+      '-pijan-',
+      (r) => r.regexp(/pijan/, ['pjan']),
+      (p) => p.genesis('?S'),
     )
-    .rule('[LR]+Å (middle)', (r) => r.regexp(/([rl])å/, ['o$1o']))
-    .rule('[LR]+Ě (start)', (r) => r.regexp(/(?<=(^|\s|bez|ne)[rl])ě/, ['i']))
-    .rule('[LR]+Ě (middle)', (r) =>
-      r.regexp(/([rl])ě/, ['$1i', 'e$1e', 'o$1o']),
+    .rule('-oro-, -olo-', (r) => r.regexp(/(?<=\S)([rl])å/, ['o$1o', '$1å']))
+    .rule('-ere-, -ele, -olo-, -i, -e', (r) =>
+      r.regexp(/([rl])ě/, ['$1ě', 'e$1e', 'o$1o']),
     )
-    .rule('(dental/alveolar)+Ę', (r) => r.regexp(/([tdsznlr])ę/, ['$1ьa']))
-    .rule('(soft/hissing)+Ę', (r) => r.regexp(/([čđšžćcj])ę/, ['$1a']))
-    .rule('Ę (other cases)', (r) => r.regexp(/ę/, ["'ja"]))
     .rule('Syllabic -er-', (r) =>
       r.regexp(/ŕ(?=[bcćčdđeghklmnpsśštťvzžň])/, ['er']),
     )
     .rule('Syllabic -or-', (r) =>
       r.regexp(/([bdghkmpstv])r([bčdḓđfgkmnsštťvz])/, ['$1or$2', '$1ro$2']),
     )
-    .rule('Syllabic -l-', (r) => r.regexp(/(?<=ȯ)l(?=[pk])/, ['ł']))
-    .rule('-pȯlk- exception', (r) => r.regexp(/pȯłk/, ['pȯlk']))
-    .rule(
-      '-pijan-',
-      (r) => r.regexp(/pıjan/, ['pjan']),
-      (p) => p.genesis('?S'),
-    )
+    .rule('Syllabic l→ł', (r) => r.regexp(/(?<=ȯ)l(?=[pkn])/, ['ł']))
+    .rule('Ę before dental/alveolar', (r) => r.regexp(/([tdsznlr])ę/, ['$1ьa']))
+    .rule('Ę before soft/hissing', (r) => r.regexp(/([čđšžćcj])ę/, ['$1a']))
+    .rule('Ę (other cases)', (r) => r.regexp(/ę/, ['ja']))
     .rule('Ê - E/I', (r) => r.regexp(/ê/, ['e', 'i']))
+    .rule('Ě - I/Y/E', (r) => r.regexp(/ě/, ['i', 'y', 'e']))
     .rule('Ô - O/U/I', (r) => r.regexp(/ô/, ['o', 'i', 'u']))
-    .rule('I - Y/İ', (r) => r.regexp(/ı/, ['y', 'i']))
+    .rule('I - Y/İ', (r) => r.regexp(/i/, ['y', 'i']))
     .rule('Đ - Ž/ĎŽ', (r) => r.regexp(/đ/, ['dž', 'ž']))
     .rule('je-', (r) => r.regexp(/(?<=(^|\s))e/, ['je', 'e']))
     .rule(
@@ -193,7 +192,6 @@ export default () =>
       (r) => r.regexp(/lm/, ['lьm']),
       (p) => p.genesis('?S'),
     )
-    .rule('cьк', (r) => r.regexp(/ck/, ['cьk']))
     .rule('Standardize', (r) =>
       r.map({
         å: 'o',
@@ -214,9 +212,8 @@ export default () =>
         ź: 'zь',
       }),
     )
-    .rule('Apostrophe', (r) =>
-      r.regexp(/(?<=([bpvmfz]|[aouyier]\S))(j[aeui])/, ['$2', "'$2"]),
-    )
+    .rule('-cьk-', (r) => r.regexp(/ck/, ['cьk']))
+    .rule('-dcьatь-', (r) => r.regexp(/dsьatь/, ['dcьatь']))
     .rule('Cyrl-Ukr', (r) =>
       r.map({
         a: 'а',
@@ -256,6 +253,9 @@ export default () =>
         ьi: 'і',
         ьu: 'ю',
       }),
+    )
+    .rule('Apostrophe', (r) =>
+      r.regexp(/(?<=([бпвмфз]|[аоуіеяюєїр]\S))([яєюї])/, ['$2', "'$2"]),
     )
     .rule('Restore case', (r) => r.restoreCase())
     .build();

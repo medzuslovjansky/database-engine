@@ -1,5 +1,10 @@
 import { core, parse, types } from '@interslavic/steen-utils';
-import { Intermediate, Multireplacer, Odometer } from '@interslavic/odometer';
+import {
+  Intermediate,
+  Multireplacer,
+  Odometer,
+  Rule,
+} from '@interslavic/odometer';
 import {
   FlavorizationContext,
   FlavorizationIntermediate,
@@ -36,12 +41,14 @@ export interface IMultireplacerWrapper {
     context: RawFlavorizationContext,
     source: string,
     target: string,
-  ): string | null;
+  ): string[] | null;
   compare(
     context: RawFlavorizationContext,
     source: core.Synset,
     target: core.Synset,
-  ): string | null;
+  ): string[] | null;
+
+  readonly stats: RuleEfficiencyReport[];
 }
 
 export class MultireplacerWrapper implements IMultireplacerWrapper {
@@ -54,6 +61,20 @@ export class MultireplacerWrapper implements IMultireplacerWrapper {
     public readonly name: string,
     protected readonly multireplacer: Multireplacer<FlavorizationContext>,
   ) {}
+
+  protected readonly _stats: RuleEfficiencyReport[] = [
+    ...this.multireplacer.rules,
+  ].map((r) => ({
+    rule: r.name,
+    replacements: r.replacements.map((rp) => ({
+      value: rp.value,
+      hits: 0,
+    })),
+  }));
+
+  protected readonly _ruleIndices: Map<Rule<unknown>, number> = new Map(
+    [...this.multireplacer.rules].map((rule, index) => [rule, index]),
+  );
 
   flavorize(
     arg1: string | RawFlavorizationContext,
@@ -129,13 +150,29 @@ export class MultireplacerWrapper implements IMultireplacerWrapper {
     context: RawFlavorizationContext,
     source: string | core.Synset,
     target: string | core.Synset,
-  ): string | null {
+  ): string[] | null {
     const results = this.compareDebug(context, source, target);
     if (results[0].distance.absolute === 0) {
+      this._reportIntermediate(results[0].source);
       return null;
     }
 
-    return results[0].source.value;
+    return results.map((r) => {
+      return [...r.source.chain()].map((r) => r.value).join(' ← ');
+    });
+  }
+
+  get stats(): RuleEfficiencyReport[] {
+    return this._stats;
+  }
+
+  _reportIntermediate(intermediate: FlavorizationIntermediate) {
+    for (const it of intermediate.chain()) {
+      if (!it.via) continue;
+      const idx = this._ruleIndices.get(it.via.owner);
+      if (idx === undefined) continue;
+      this._stats[idx].replacements[it.via.index].hits++;
+    }
   }
 
   private static _packFlavorizationContext(
@@ -179,6 +216,14 @@ export class MultireplacerWrapper implements IMultireplacerWrapper {
 
 type RawFlavorizationContext = {
   [p in keyof FlavorizationContext]?: FlavorizationContext[p] | string;
+};
+
+type RuleEfficiencyReport = {
+  rule: string;
+  replacements: {
+    value: unknown;
+    hits: number;
+  }[];
 };
 
 function toValues(s: core.Synset): string[] {
