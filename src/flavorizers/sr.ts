@@ -4,74 +4,37 @@ export default () =>
   multireplacer
     .named('Interslavic → Serbian')
     .rule('Ignore case', (r) => r.lowerCase())
-    //#region Prefixes
-    .section('Prefixes')
-    .rule('Alteration (vòz-)', (r) =>
-      r.regexp(/vòz(?=$|\S)/, ['vòz', 'pod', 'vz']),
-    )
-    .rule('Alteration (pod-)', (r) => r.regexp(/pod(?=$|\S)/, ['pod', 'po']))
-    .rule('Alteration (v-)', (r) => r.regexp(/(?=^|\s)v/, ['v', 'u']))
-    .rule('Unvoicing (-d-)', (r) =>
-      r.regexp(/(po|na)d(?![bdg])/, ['$1d', '$1t']),
-    )
-    .rule('Unvoicing (-z-)', (r) =>
-      r.regexp(/(i|rå|u|vò)z(?![bdg])/, ['$1z', '$1s']),
-    )
-    //#endregion
     //#region Suffixes
     .section('Suffixes')
     .rule('Alteration (-ova-)', (r) =>
-      r.regexp(/(?!^|\s)ova(?!$|\s)/, ['ova', 'ira', 'iva', 'a']),
+      r.regexp(/(?!^|\s)ova(?!$|\s)/, ['ova', 'ira']),
     )
     //#endregion
     //#region Roots
     .section('Roots')
-    .rule('Transposition (kto-tko)', (r) =>
-      r.regexp(/kt(?=[aeiouy])/, ['kt', 'tk']),
-    )
+    .rule('Transposition (kto-tko)', (r) => r.regexp(/kto/, ['kto', 'tko']))
     .rule('Transposition (vse-sve)', (r) =>
       r.regexp(/v[sś](?=[aeěiuųy])/, ['vs', 'sv']),
     )
-    .rule('Alteration (-gda-)', (r) => r.regexp(/gd/, ['gd', 'd']))
+    .rule('Silencing (-gda-)', (r) => r.regexp(/gd/, ['d']))
     //#endregion
     //#region Nouns
     .section('Nouns')
     .rule(
-      'Feminization',
-      (r) => r.regexp(/([^aåeěėęijoȯuųy])(?=$|\s)/, ['$1', '$1a']),
-      (p) => p.partOfSpeech('m.'),
-    )
-    .rule(
-      'Alteration (-telj)',
-      (r) => r.regexp(/telj(?=$|\s)/, ['telj', 'č']),
-      (p) => p.partOfSpeech('m.'),
-    )
-    .rule(
-      'Alteration (-nik)',
-      (r) => r.regexp(/ik(?=$|\s)/, ['ik', 'ar', 'čar', 'ičar']),
-      (p) => p.partOfSpeech('m.'),
-    )
-    .rule(
       'Reduction (-ec)',
-      (r) => r.regexp(/[eè]c(?=$|\s)/, ['ac']),
+      (r) => r.regexp(/[eė]c(?=$|\s)/, ['ac']),
       (p) => p.partOfSpeech('m.'),
     )
     .rule(
-      'Expansion (-tòr)',
-      (r) => r.regexp(/tr(?=$|\s)/, ['tòr']),
+      'Expansion (-tȯr)',
+      (r) => r.regexp(/tr(?=$|\s)/, ['tȯr']),
       (p) => p.partOfSpeech('m.'),
-    )
-    .rule(
-      'Masculinization',
-      (r) => r.regexp(/([aåeěėęijoȯuųy])(?=$|\s)/, ['$1', '']),
-      (p) => p.partOfSpeech('f.,n.'),
     )
     .rule(
       'Alteration (-nja)',
       (r) => r.regexp(/nja(?=$|\s)/, ['nja', 'nica']),
       (p) => p.partOfSpeech('f.'),
     )
-    .rule('Alteration (-enıje)', (r) => r.regexp(/enı/, ['enı', 'anı']))
     //#endregion
     //#region Adjectives
     .section('Adjectives')
@@ -96,14 +59,6 @@ export default () =>
       (p) => p.partOfSpeech('adj.'),
     )
     //#endregion
-    //#region Adverbs
-    .section('Adverbs')
-    .rule(
-      'Zero ending',
-      (r) => r.regexp(/a(?=$|\s)/, ['a', '']),
-      (p) => p.partOfSpeech('adv.'),
-    )
-    //#endregion
     //#region Verbs
     .section('Verbs')
     .rule(
@@ -119,41 +74,32 @@ export default () =>
     //#endregion
     //#region Phonetical changes
     .section('Phonetical changes')
-    .rule('-l → -o', (r) => r.regexp(/l(?=$|\s)/, ['l', 'o']))
-    .rule('-l(j) → -o (other cases)', (r) =>
-      r.regexp(/lj?([mvn]|\b)/, ['l$1', 'o$1']),
-    )
     .rule('collapse to ć', (r) => r.regexp(/(dt|kt|šn)/, ['$1', 'ć']))
-    .rule('-zdn-', (r) => r.regexp(/zdn/, ['zdn', 'zn']))
-    .rule('T-D', (r) => r.regexp(/ť/, ['t', 'd']))
+    .rule('Muffled (-j-)', (r) => r.regexp(/([bpvmf])j/, ['$1j', '$1lj']))
+    .rule('ŠČ-ŠT', (r) => r.regexp(/šč/, ['št']))
+    .rule('DJ', (r) => r.regexp(/dj/, ['dj', 'đ']))
+    .rule('DŽ', (r) => r.regexp(/dž/, ['dž', 'đ']))
+    .rule('-zdn-', (r) => r.regexp(/zdn/, ['zn']))
     .rule('Unused etymology', (r) =>
       r.map({
         å: 'a',
         d́: 'd',
         ę: 'e',
-        ė: 'ě',
+        ě: 'e',
+        ė: 'a',
         ĺ: 'l',
         ľ: 'l',
         ń: 'n',
         ŕ: 'r',
         ś: 's',
+        ť: 't',
+        ȯ: 'a',
         ź: 'z',
         ı: '',
-        ù: 'u',
+        ų: 'u',
         '’': '',
       }),
     )
-    .rule('Big Yus', (r) => r.regexp(/ų/, ['u', 'a']))
-    .rule('Muffled (-j-)', (r) => r.regexp(/([bpvmf])j/, ['$1j', '$1lj']))
-    .rule('ŠČ-ŠT', (r) => r.regexp(/šč/, ['št']))
-    .rule('DJ', (r) => r.regexp(/dj/, ['dj', 'đ']))
-    .rule('Soft Jer', (r) => r.regexp(/è/, ['e', 'a']))
-    .rule('H (silent)', (r) => r.regexp(/h/, ['h', '']))
-    .rule('Syllabic L', (r) => r.regexp(/ŀ/, ['l', 'u']))
-    .rule('Hard Jer', (r) => r.regexp(/[òȯ]/, ['o', 'a']))
-    .rule('K-H', (r) => r.regexp(/k/, ['k', 'h']))
-    .rule('DŽ', (r) => r.regexp(/dž/, ['dž', 'đ']))
-    .rule('Yat', (r) => r.regexp(/[ěė]/, ['ě', 'i']))
     //#endregion
     //#region Alphabet
     .section('Alphabet')
@@ -167,7 +113,6 @@ export default () =>
         d: 'д',
         đ: 'ђ',
         e: 'е',
-        ě: 'е',
         f: 'ф',
         g: 'г',
         h: 'х',
@@ -180,8 +125,6 @@ export default () =>
         n: 'н',
         nj: 'њ',
         o: 'о',
-        ò: 'а',
-        ȯ: 'а',
         p: 'п',
         r: 'р',
         s: 'с',

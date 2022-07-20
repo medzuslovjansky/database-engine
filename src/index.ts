@@ -1,5 +1,6 @@
 import flavorizers from './flavorizers';
 import * as fingerprints from './fingerprints';
+import * as misc from './misc';
 import * as quickFlavorizers from './quickFlavorizers';
 import * as dsl from './dsl';
 import {
@@ -9,6 +10,7 @@ import {
 
 export {
   dsl,
+  misc,
   flavorizers,
   fingerprints,
   quickFlavorizers,

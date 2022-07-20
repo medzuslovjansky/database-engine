@@ -2,7 +2,7 @@
 
 import { pl as _pl, isv as _isv } from '../fingerprints/pl';
 
-describe('Interslavic × Polish', () => {
+describe.skip('Interslavic × Polish', () => {
   const pl = _pl();
   const isv = _isv();
 

@@ -4,6 +4,11 @@ export default () =>
   multireplacer
     .named('Interslavic → Macedonian')
     .rule('Ignore case', (r) => r.lowerCase())
+    .rule(
+      'Infinitive -> 3rd',
+      (r) => r.regexp(/ti\b/, ['']),
+      (p) => p.partOfSpeech('v.'),
+    )
     .rule('Cyrl', (r) =>
       r.map({
         '’': '',

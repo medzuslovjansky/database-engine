@@ -1,15 +1,20 @@
-export const LANGS = [
+export const CYRL_LANGS = [
   'be',
   'bg',
-  'cs',
-  'hr',
   'mk',
-  'pl',
   'ru',
-  'sk',
-  'sl',
   'sr',
   'uk',
+];
+
+export const LANGS = [
+  ...CYRL_LANGS,
+
+  'cs',
+  'hr',
+  'pl',
+  'sk',
+  'sl',
 ];
 
 export const LANGUAGE_NAMES = {

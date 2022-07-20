@@ -3,11 +3,11 @@ import multireplacer from '../dsl/multireplacer';
 export const isv = () =>
   multireplacer
     .named('Fingerprint: Interslavic → Polish')
+    .rule('Ignore case', (r) => r.lowerCase())
     .rule('Remove non-letters', (r) => r.regexp(/[^\p{Letter}]/u, ['']))
     .rule('Remove digraphs', (r) =>
       r.map({ lj: 'ĺ', ĺj: 'ĺ', nj: 'ń', ńj: 'ń' }),
     )
-    .rule('Ignore case', (r) => r.lowerCase())
     //#region Prefixes
     .section('Prefixes')
     .rule('iz- → vy-', (r) => r.regexp(/iz/, ['iz', 'vy']))

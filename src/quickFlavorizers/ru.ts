@@ -78,9 +78,9 @@ export default () =>
     )
     .rule('Softening-LjNj', (r) =>
       r.map({
-        lj: 'ль',
-        nj: 'нь',
-        rj: 'рь',
+        lj: 'lь',
+        nj: 'nь',
+        rj: 'rь',
       }),
     )
     .rule('Letters', (r) =>
@@ -88,7 +88,7 @@ export default () =>
         ě: 'e',
         ė: 'e',
         ȯ: 'o',
-        ų: 'у',
+        ų: 'u',
       }),
     )
     //#endregion

@@ -68,7 +68,7 @@ export default () =>
     )
     .rule(
       'Alteration (-ati)',
-      (r) => r.regexp(/ati(?=$|\s)/, ['ati', 'avati']),
+      (r) => r.regexp(/(?!va)ati(?=$|\s)/, ['ati', 'avati']),
       (p) => p.partOfSpeech('v. ipf.'),
     )
     //#endregion

@@ -6,8 +6,6 @@ const nodehun = require('nodehun');
 const dictionaries = {};
 
 export async function loadDictionary(lang) {
-  if (lang === 'be') return null;
-
   if (!Reflect.has(dictionaries, lang)) {
     const data = await new Promise((resolve, reject) => {
       try {

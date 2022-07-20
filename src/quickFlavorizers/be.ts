@@ -4,27 +4,56 @@ export default () =>
   multireplacer
     .named('Interslavic → Belarusian')
     .rule('Ignore case', (r) => r.lowerCase())
-    .rule('Yat', (r) => r.regexp(/ě/, ['e']))
-    .rule('Little Yus', (r) => r.regexp(/ę/, ['a', 'ja']))
-    .rule('Bid Yus VU', (r) => r.regexp(/vų/, ['vu', 'u']))
-    .rule('ORO-OLO', (r) => r.regexp(/(\S)([rl])å/, ['$1o$2o']))
-    .rule('ER', (r) => r.regexp(/rė/, ['ero', 'oro', 're']))
-    .rule('EL', (r) => r.regexp(/lė/, ['ala', 'alo']))
-    .rule('Unstressed E', (r) => r.regexp(/e/, ['e', 'ja']))
-    .rule('Unstressed O', (r) => r.regexp(/o/, ['o', 'a']))
+    .rule(
+      'Инфинитив (ь-ти)',
+      (r) => r.regexp(/ti\b/, ['ť']),
+      (p) => p.partOfSpeech('v.'),
+    )
+    .rule(
+      'sę',
+      (r) => r.regexp(/ sę(?=$|\s)/, ['sę']),
+      (p) => p.partOfSpeech('v.'),
+    )
+    .rule('ARA-ALA', (r) => r.regexp(/(\S)([rl])å/, ['$1a$2a']))
+    .rule('ra[bz]', (r) => r.regexp(/rå(?=[bz])/, ['ra']))
+    .rule('Č-ŠČ', (r) => r.regexp(/ć/, ['č']))
+    .rule('ZŽ', (r) => r.regexp(/žđ/, ['zž']))
+    .rule('ŽD', (r) => r.regexp(/đ/, ['dž']))
+    .rule('Muffled Z', (r) => r.regexp(/z(?=[pftsšk])/, ['s']))
+    .rule('Little Yus (J)', (r) => r.regexp(/ję/, ['ja']))
+    .rule('Little Yus (Non-J)', (r) => r.regexp(/ę/, ['ьa']))
+    .rule('Lip', (r) => r.regexp(/([bpvmf])ja/, ['$1lja']))
+    .rule('Softening', (r) =>
+      r.map({
+        ď: 'dzь',
+        ĺ: 'lь',
+        ń: 'nь',
+        ŕ: 'rь',
+        ś: 'sь',
+        ť: 'cь',
+        ź: 'zь',
+      }),
+    )
+    .rule('Softening-LjNj', (r) =>
+      r.map({
+        lj: 'ль',
+        nj: 'нь',
+        rj: 'рь',
+      }),
+    )
     .rule('Standardize', (r) =>
       r.map({
         å: 'a',
         ć: 'č',
         đ: 'dž',
-        ď: 'dь',
         ė: 'e',
         è: 'e',
-        ę: 'e',
+        ę: 'ja',
+        ě: 'e',
         ı: '',
-        ľ: 'l',
+        ľ: 'lь',
         ŀ: 'l',
-        ń: 'n',
+        ń: 'nь',
         ò: 'o',
         ȯ: 'o',
         ŕ: 'r',
@@ -35,18 +64,25 @@ export default () =>
         ź: 'z',
       }),
     )
+    //#region Кириллизација
+    .section('Кириллизација')
+    .rule('Yot-Glas', (r) => r.regexp(/(?<=[aeiouy])j(?=[aeiouy])/, ['']))
+    .rule('Yot-Jo', (r) => r.regexp(/(?<=[^aeiouyь])j(?=[aeiouy])/, ['ъj']))
     .rule('Cyrl-Standard', (r) =>
       r.map({
         a: 'а',
         b: 'б',
-        c: 'ц',
-        č: 'ч',
+        v: 'в',
+        g: 'г',
         d: 'д',
         e: 'е',
-        f: 'ф',
-        g: 'г',
-        h: 'х',
-        i: 'и',
+        je: 'е',
+        jo: 'ё',
+        ьо: 'ё',
+        ž: 'ж',
+        z: 'з',
+        ji: 'и',
+        jy: 'и',
         j: 'й',
         k: 'к',
         l: 'л',
@@ -56,27 +92,23 @@ export default () =>
         p: 'п',
         r: 'р',
         s: 'с',
-        š: 'ш',
+        i: 'и',
         t: 'т',
         u: 'у',
-        v: 'в',
+        f: 'ф',
+        c: 'ц',
+        č: 'ч',
+        h: 'х',
+        š: 'ш',
+        sč: 'щ',
+        šč: 'щ',
         y: 'ы',
-        z: 'з',
-        ž: 'ж',
-      }),
-    )
-    .rule('Iotation', (r) =>
-      r.map({
-        ьа: 'я',
-        ьо: 'ё',
+        ju: 'ю',
         ьу: 'ю',
-        йа: 'я',
-        йя: 'я',
-        йо: 'ё',
-        йу: 'ю',
-        йю: 'ю',
-        йе: 'е',
+        ja: 'я',
+        ьa: 'я',
       }),
     )
+    //#endregion
     .rule('Restore case', (r) => r.restoreCase())
     .build();
