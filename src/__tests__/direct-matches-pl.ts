@@ -109,10 +109,10 @@ describe('Interslavic → Polish', () => {
     ['Ingušetija', 'Inguszetia', 'f.sg.', ''],
     ['Irak', 'Irak', 'm.sg.', ''],
     ['Iran', 'Iran', 'm.sg.', ''],
-    ['Irlandija', 'Irlandia', 'f.sg.', ''],
-    ['Islandija', 'Islandia', 'f.sg.', ''],
+    ['Irlandija', 'Irlandia', 'f.sg.', 'I'],
+    ['Islandija', 'Islandia', 'f.sg.', 'I'],
     ['Isus', 'Jezus', 'm.anim.', 'I'],
-    ['Izraelj', 'Izrael', 'm.sg.', ''],
+    ['Izraelj', 'Izrael', 'm.sg.', 'I'],
     ['Izvěstovańje', 'Zwiastowanie', 'n.sg.', ''],
     ['Jamajka', 'Jamajka', 'f.sg.', ''],
     ['Japonija', 'Japonia', 'f.sg.', ''],
@@ -9538,18 +9538,23 @@ describe('Interslavic → Polish', () => {
     ['žȯlv', 'żółw', 'f.', ''],
     ['žȯlč', 'żółć', 'f.', ''],
   ])('%s → %s (%s)', (source, target, partOfSpeech, genesis) => {
-    pl.compare({ partOfSpeech, genesis }, source, target);
+    expect(
+      pl.compareDebug({ partOfSpeech, genesis }, source, target)[0].distance
+        .percent,
+    ).toBeLessThan(50);
   });
 
   test.skip.each([
-    ///
+    //
   ])('NEW: %s → %s (%s; %s)', (source, target, partOfSpeech, genesis) => {
-    expect(pl.compare({ partOfSpeech, genesis }, source, target)).not.toBe(
-      null,
-    );
+    expect(pl.compare({ partOfSpeech, genesis }, source, target)).toBe(null);
   });
 
-  test('aftermath', () => {
+  test.skip('aftermath', () => {
+    expect(analyseStats()).toMatchInlineSnapshot();
+  });
+
+  function analyseStats() {
     const maxLen = Math.max(...pl.stats.map((r) => r.rule.length));
     const result = pl.stats
       .map((s, i) => {
@@ -9560,7 +9565,6 @@ describe('Interslavic → Polish', () => {
         )} | ${rr.join(' | ')}`;
       })
       .join('\n');
-    console.log(result);
-    expect(result).toMatchInlineSnapshot();
-  });
+    return result;
+  }
 });

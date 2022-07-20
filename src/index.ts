@@ -1,5 +1,6 @@
 import flavorizers from './flavorizers';
 import * as fingerprints from './fingerprints';
+import * as quickFlavorizers from './quickFlavorizers';
 import * as dsl from './dsl';
 import {
   IMultireplacerWrapper as MultireplacerWrapper,
@@ -10,6 +11,7 @@ export {
   dsl,
   flavorizers,
   fingerprints,
+  quickFlavorizers,
   MultireplacerWrapper,
   MultireplacerBuilder,
 };
