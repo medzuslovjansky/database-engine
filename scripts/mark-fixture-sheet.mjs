@@ -1,14 +1,16 @@
 import 'zx/globals';
+
 import _ from "lodash";
-import { CYRL_LANGS, LANGS } from "./utils/constants.mjs";
-import * as csv from './utils/csv.mjs';
-import { loadDictionary } from "./utils/hunspell.mjs";
-import razumlivost from '../dist/index.js';
 import { core, parse } from "@interslavic/steen-utils";
 
-const flavorizers = razumlivost.flavorizers;
-const quickFlavorizers = razumlivost.quickFlavorizers.default;
-const cyrillizer = razumlivost.misc.default.cyrillizer;
+import razumlivost from '../dist/index.js';
+
+import { LANGS } from "./utils/constants.mjs";
+import * as csv from './utils/csv.mjs';
+import { loadDictionary } from "./utils/hunspell.mjs";
+
+const flavorizers = razumlivost.flavorizers.slow;
+const quickFlavorizers = razumlivost.flavorizers.quick;
 
 await main(process.argv[3]);
 

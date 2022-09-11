@@ -1,0 +1,70 @@
+import multireplacer from '../../dsl/multireplacer';
+
+export default () =>
+  multireplacer
+    .named('Interslavic → Macedonian')
+    .rule('Ignore case', (r) => r.lowerCase())
+    .rule(
+      'Infinitive -> 3rd',
+      (r) => r.regexp(/ti\b/, ['']),
+      (p) => p.partOfSpeech('v.'),
+    )
+    .rule('Cyrl', (r) =>
+      r.map({
+        '’': '',
+        a: 'а',
+        b: 'б',
+        c: 'ц',
+        d: 'д',
+        e: 'е',
+        f: 'ф',
+        g: 'г',
+        h: 'х',
+        i: 'и',
+        j: 'ј',
+        k: 'к',
+        l: 'л',
+        lj: 'љ',
+        m: 'м',
+        n: 'н',
+        nj: 'њ',
+        o: 'о',
+        p: 'п',
+        r: 'р',
+        s: 'с',
+        t: 'т',
+        u: 'у',
+        v: 'в',
+        y: 'и',
+        z: 'з',
+        å: 'а',
+        è: 'е',
+        ò: 'а',
+        ù: 'в',
+        ć: 'ќ',
+        č: 'ч',
+        čt: 'шт',
+        ď: '',
+        đ: 'џ',
+        ė: 'е',
+        ę: 'е',
+        ě: 'е',
+        ı: '',
+        ĺj: 'љ',
+        ľ: 'л',
+        ń: 'н',
+        ńj: 'њ',
+        ŕ: 'р',
+        ś: 'с',
+        š: 'ш',
+        ť: 'т',
+        ų: 'а',
+        ź: 'з',
+        ž: 'ж',
+        ȯ: 'а',
+        ḓ: '',
+        ṙ: 'р',
+      }),
+    )
+    .rule('Restore case', (r) => r.restoreCase())
+    .build();

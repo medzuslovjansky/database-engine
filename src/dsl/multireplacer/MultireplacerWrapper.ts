@@ -23,8 +23,12 @@ export interface IMultireplacerWrapper {
     synset: core.Synset,
   ): FlavorizationIntermediate[];
 
-  flavorize(source: string, partOfSpeech?: string, genesis?: string): string[];
-  flavorize(context: RawFlavorizationContext, synset: core.Synset): string[];
+  flavorize(
+    source: string,
+    partOfSpeech?: string,
+    genesis?: string,
+  ): core.Synset;
+  flavorize(context: RawFlavorizationContext, synset: core.Synset): core.Synset;
 
   compareDebug(
     context: RawFlavorizationContext,
@@ -80,8 +84,10 @@ export class MultireplacerWrapper implements IMultireplacerWrapper {
     arg1: string | RawFlavorizationContext,
     arg2: core.Synset | string | undefined,
     arg3?: string,
-  ): string[] {
-    return this.flavorizeDebug(arg1, arg2, arg3).map(getValue);
+  ): core.Synset {
+    return new core.Synset().add(
+      this.flavorizeDebug(arg1, arg2, arg3).map(getValue),
+    );
   }
 
   flavorizeDebug(

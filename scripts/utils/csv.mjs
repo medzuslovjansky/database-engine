@@ -2,7 +2,12 @@ import fs from 'fs';
 
 import * as csv from 'csv';
 
-export async function parseFile(filePath, delimiter = ',') {
+export async function parseFile(filePath, options = {}) {
+  const { delimiter = ',', silent = false } = options;
+  if (silent && !fs.existsSync(filePath)) {
+    return [];
+  }
+
   const data = await new Promise((resolve, reject) => {
     const records = [];
     const parser = csv.parse({

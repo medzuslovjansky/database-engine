@@ -34,11 +34,11 @@ export const LANGUAGE_NAMES = {
 
 export const SHEET_URLS = {
   new_interslavic_words_list:
-    'https://docs.google.com/spreadsheets/d/1MLNRRfQHFnCeaqZO04tw0I2JCcz-zeAsk6QLNll4Up8/export?format=csv',
+    'https://docs.google.com/spreadsheets/d/1N79e_yVHDo-d026HljueuKJlAAdeELAiPzdFzdBuKbY/export',
   rules:
-    'https://docs.google.com/spreadsheets/d/e/2PACX-1vTB2DAu_uRJoHlPx5x_5O7YlsUrbZ89fsHWT7d8bRinQnAWMaYc3rQTwJ_Tt8mLQBXu4pBaKXFIrPdn/pub?output=csv',
+    'https://docs.google.com/spreadsheets/d/e/2PACX-1vTB2DAu_uRJoHlPx5x_5O7YlsUrbZ89fsHWT7d8bRinQnAWMaYc3rQTwJ_Tt8mLQBXu4pBaKXFIrPdn/pub',
   analysis:
-    'https://docs.google.com/spreadsheets/d/e/2PACX-1vRTuM4wm1tZX7_ZLheTGPyvnMoGYGRbIqNHLfr34lFGoAwhq7wh21hhnr27krjNUMLACtaYLGEC7F0i/pub?output=csv',
+    'https://docs.google.com/spreadsheets/d/e/2PACX-1vRTuM4wm1tZX7_ZLheTGPyvnMoGYGRbIqNHLfr34lFGoAwhq7wh21hhnr27krjNUMLACtaYLGEC7F0i/pub',
 };
 
 export const GIDs = {
@@ -62,16 +62,16 @@ export const GIDs = {
   },
 
   analysis: {
-    be: 1289058313,
-    bg: 1862882922,
-    cs: 1605993183,
-    hr: 892674272,
-    mk: 290266011,
+    be: 1255283172,
+    bg: 842167821,
+    cs: 2049157610,
+    hr: 1994073164,
+    mk: 1446524003,
     pl: 392567566,
-    ru: 554192232,
-    sk: 38247542,
-    sl: 1618253687,
-    sr: 797342275,
-    uk: 263712639,
+    ru: 178587423,
+    sk: 2125328901,
+    sl: 1412251584,
+    sr: 459290131,
+    uk: 2098204280,
   },
 };
