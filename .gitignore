@@ -110,3 +110,6 @@ dist
 .DS_Store
 
 /__fixtures__
+
+# Secrets
+*.secret.*
