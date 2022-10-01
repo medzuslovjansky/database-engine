@@ -1,5 +1,5 @@
-import fingeprint from './fingerprint';
+import fingerprint from './fingerprint';
 import quick from './quick';
 import slow from './slow';
 
-export { fingeprint, slow, quick };
+export { fingerprint, slow, quick };

@@ -1,15 +1,22 @@
-import { IAssert, test } from 'zora';
+const { test } = require('zora');
 
-import { pl as _pl, isv as _isv } from '../flavorizers/fingerprint/pl';
+const { pl, isv2pl } = require('../..').flavorizers.fingerprint;
 
-const pl = _pl();
-const isv = _isv();
-
-function run(this: IAssert, source: string, target: string, partOfSpeech: string, genesis: string) {
+/**
+ * @this {import('zora').IAssert}
+ * @param {string} source
+ * @param {string} target
+ * @param {string} partOfSpeech
+ * @param {string} genesis
+ */
+function run(source, target, partOfSpeech, genesis) {
   const plFingerprint = pl.flavorize(target, partOfSpeech, genesis);
-  const isvFingerprint = isv.flavorize(source, partOfSpeech, genesis);
+  const isvFingerprint = isv2pl.flavorize(source, partOfSpeech, genesis);
 
-  this.falsy(plFingerprint.intersection(isvFingerprint).empty, `${source} vs ${target} (${isvFingerprint} vs ${plFingerprint})`);
+  this.falsy(
+    plFingerprint.intersection(isvFingerprint).empty,
+    `${source} vs ${target} (${isvFingerprint} vs ${plFingerprint})`
+  );
 }
 
 test('fingerprint: Interslavic vs Polish', function (t) {
