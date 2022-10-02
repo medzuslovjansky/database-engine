@@ -9,7 +9,7 @@
     "build": "tsc",
     "docs": "typedoc",
     "lint": "eslint src/**/*.ts scripts/**/*.mjs",
-    "test": "jest",
+    "test": "bash scripts/test.sh",
     "cli": "ts-node src/demo/cli.ts",
     "prepare": "husky install; npm run clean && npm run build",
     "precommit": "lint-staged && git add src",

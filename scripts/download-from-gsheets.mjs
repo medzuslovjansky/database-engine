@@ -1,5 +1,6 @@
 import "zx/globals";
 import { SHEET_URLS, GIDs, LANGS } from "./utils/constants.mjs";
+import { downloadSheet } from "./utils/gsheets.mjs";
 
 await fs.mkdirp('__fixtures__/analysis');
 

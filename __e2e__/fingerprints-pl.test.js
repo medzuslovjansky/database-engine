@@ -1,6 +1,6 @@
 const { test } = require('zora');
 
-const { pl, isv2pl } = require('../..').flavorizers.fingerprint;
+const { pl, isv2pl } = require('..').flavorizers.fingerprint;
 
 /**
  * @this {import('zora').IAssert}
