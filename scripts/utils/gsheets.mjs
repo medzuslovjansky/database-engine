@@ -1,7 +1,7 @@
 import 'zx/globals';
 
 export async function downloadSheet(outFile, baseUrl, gid) {
-  const url = `${baseUrl}?output=csv&single=true&gid=${gid}`;
+  const url = `${baseUrl}?output=csv&format=csv&single=true&gid=${gid}`;
   await $`curl -L -o ${outFile} ${url}`;
 }
 

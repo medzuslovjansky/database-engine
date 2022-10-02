@@ -74,6 +74,8 @@ export default () =>
     .rule('Yat-R', (r) => r.regexp(/(\S)rě/, ['$1re', '$1ere', '$1ri', '$1er']))
     .rule('Yat', (r) => r.regexp(/ě/, ['e']))
     .rule('Iz-', (r) => r.regexp(/^(ne|bez)?iz/, ['$1vy', '$1iz', '$1s']))
+    .rule('Od-', (r) => r.regexp(/od/, ['od', 'ot']))
+    .rule('Naj-', (r) => r.regexp(/naj/, ['naj', 'nai']))
     .rule('Muffled Z', (r) => r.regexp(/z([pftsšk])/, ['s$1', 'z$1']))
     .rule('Prefix Separator', (r) => r.regexp(/’/, ['']))
     //#endregion
@@ -137,7 +139,7 @@ export default () =>
     .rule(
       'Твердые прилагательные',
       (r) => r.regexp(/y\b/, ['yj', 'ij', 'oj']),
-      (p) => p.partOfSpeech('adj.,m.'),
+      (p) => p.partOfSpeech('adj.,m.,num.ord.'),
     )
     //#endregion
     //#region Кириллизација
