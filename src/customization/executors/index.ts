@@ -2,7 +2,7 @@ import identity from 'lodash/identity';
 import upperFirst from 'lodash/upperFirst';
 import toLower from 'lodash/toLower';
 import toUpper from 'lodash/toUpper';
-import { FunctionExecutor, Rule } from '@interslavic/odometer';
+import { FunctionExecutor, Rule } from '../../multireplacer';
 import { FlavorizationContext } from '../FlavorizationContext';
 import { FlavorizationIntermediate } from '../FlavorizationIntermediate';
 

@@ -1,3 +1,3 @@
-import { Executor, Rule } from '@interslavic/odometer';
+import { Executor, Rule } from '../../multireplacer';
 
 export type ExecutorCallback = (rule: Rule<any>) => Executor<any>;

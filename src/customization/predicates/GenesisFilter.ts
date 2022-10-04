@@ -2,7 +2,7 @@ import {
   parse as steenparse,
   types as steentypes,
 } from '@interslavic/steen-utils';
-import { ObjectPredicate } from '@interslavic/odometer';
+import { ObjectPredicate } from '../../multireplacer';
 import { FlavorizationIntermediate } from '../FlavorizationIntermediate';
 import { FlavorizationContext } from '../FlavorizationContext';
 

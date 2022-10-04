@@ -1,5 +1,5 @@
-import { MapExecutor, RegExpExecutor } from '@interslavic/odometer';
 import { customExecutors } from '../../customization';
+import { MapExecutor, RegExpExecutor } from '../../multireplacer';
 import { ExecutorCallback } from './ExecutorCallback';
 
 export class MultireplacerRuleBuilder {

@@ -1,16 +1,9 @@
 import { core, parse, types } from '@interslavic/steen-utils';
-import {
-  Intermediate,
-  Multireplacer,
-  Odometer,
-  Rule,
-} from '@interslavic/odometer';
+import { Multireplacer, Rule } from '../../multireplacer';
 import {
   FlavorizationContext,
   FlavorizationIntermediate,
-  LemmaIntermediate,
 } from '../../customization';
-import { FlavorizationMatch } from '../intelligibility/FlavorizationMatch';
 
 export interface IMultireplacerWrapper {
   flavorizeDebug(
@@ -30,37 +23,10 @@ export interface IMultireplacerWrapper {
   ): core.Synset;
   flavorize(context: RawFlavorizationContext, synset: core.Synset): core.Synset;
 
-  compareDebug(
-    context: RawFlavorizationContext,
-    source: string,
-    target: string,
-  ): FlavorizationMatch[];
-  compareDebug(
-    context: RawFlavorizationContext,
-    source: core.Synset,
-    target: core.Synset,
-  ): FlavorizationMatch[];
-
-  compare(
-    context: RawFlavorizationContext,
-    source: string,
-    target: string,
-  ): string[] | null;
-  compare(
-    context: RawFlavorizationContext,
-    source: core.Synset,
-    target: core.Synset,
-  ): string[] | null;
-
   readonly stats: RuleEfficiencyReport[];
 }
 
 export class MultireplacerWrapper implements IMultireplacerWrapper {
-  protected readonly odometer = new Odometer<unknown>({
-    ignoreCase: true,
-    ignoreNonLetters: true,
-  });
-
   constructor(
     public readonly name: string,
     protected readonly multireplacer: Multireplacer<FlavorizationContext>,
@@ -110,75 +76,8 @@ export class MultireplacerWrapper implements IMultireplacerWrapper {
     return this.multireplacer.process(toValues(synset), context);
   }
 
-  compareDebug(
-    rawContext: RawFlavorizationContext,
-    rawSource: string | core.Synset,
-    rawTarget: string | core.Synset,
-  ): FlavorizationMatch[] {
-    const context: FlavorizationContext =
-      MultireplacerWrapper._hydrateFlavorizationContext(rawContext);
-
-    const isPhrase = context.partOfSpeech?.name === 'phrase';
-    const source =
-      typeof rawSource !== 'string'
-        ? rawSource
-        : parse.synset(rawSource, { isPhrase });
-    const target =
-      typeof rawTarget !== 'string'
-        ? rawTarget
-        : parse.synset(rawTarget, { isPhrase });
-
-    const flavorizedIntermediates = this.flavorizeDebug(context, source);
-
-    const targetIntermediates = [...target.lemmas()].map(toLemmaIntermediate);
-
-    const sorted = this.odometer.sortByRelevance(
-      flavorizedIntermediates,
-      targetIntermediates,
-    );
-
-    return sorted.map((s) => {
-      const avgLength = 0.5 * (s.query.value.length + s.result.value.length);
-
-      // TODO: make Odomoter more generic, i.e. <T> -> <T1, T2>
-      return {
-        source: s.query as FlavorizationIntermediate,
-        target: s.result as LemmaIntermediate,
-        distance: {
-          absolute: s.editingDistance,
-          percent: Math.round(100 * (s.editingDistance / avgLength)),
-        },
-      };
-    });
-  }
-
-  compare(
-    context: RawFlavorizationContext,
-    source: string | core.Synset,
-    target: string | core.Synset,
-  ): string[] | null {
-    const results = this.compareDebug(context, source, target);
-    if (results[0].distance.absolute === 0) {
-      this._reportIntermediate(results[0].source);
-      return null;
-    }
-
-    return results.map((r) => {
-      return [...r.source.chain()].map((r) => r.value).join(' ← ');
-    });
-  }
-
   get stats(): RuleEfficiencyReport[] {
     return this._stats;
-  }
-
-  _reportIntermediate(intermediate: FlavorizationIntermediate) {
-    for (const it of intermediate.chain()) {
-      if (!it.via) continue;
-      const idx = this._ruleIndices.get(it.via.owner);
-      if (idx === undefined) continue;
-      this._stats[idx].replacements[it.via.index].hits++;
-    }
   }
 
   private static _packFlavorizationContext(
@@ -234,10 +133,6 @@ type RuleEfficiencyReport = {
 
 function toValues(s: core.Synset): string[] {
   return [...s.lemmas()].map(getValue);
-}
-
-function toLemmaIntermediate(l: core.Lemma): Intermediate<core.Lemma> {
-  return new Intermediate(l.value, l);
 }
 
 function getValue(s: { value: string }): string {

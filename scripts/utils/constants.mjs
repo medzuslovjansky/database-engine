@@ -1,21 +1,6 @@
-export const CYRL_LANGS = [
-  'be',
-  'bg',
-  'mk',
-  'ru',
-  'sr',
-  'uk',
-];
+export const CYRL_LANGS = ['be', 'bg', 'mk', 'ru', 'sr', 'uk'];
 
-export const LANGS = [
-  ...CYRL_LANGS,
-
-  'cs',
-  'hr',
-  'pl',
-  'sk',
-  'sl',
-];
+export const LANGS = [...CYRL_LANGS, 'cs', 'hr', 'pl', 'sk', 'sl'];
 
 export const LANGUAGE_NAMES = {
   isv: 'Interslavic',

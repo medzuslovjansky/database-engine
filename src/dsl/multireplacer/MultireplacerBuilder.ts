@@ -4,7 +4,7 @@ import {
   Predicate,
   PredicateGroup,
   Rule,
-} from '@interslavic/odometer';
+} from '../../multireplacer';
 import { MultireplacerConfig } from './MultireplacerConfig';
 import { MultireplacerRuleBuilder } from './MultireplacerRuleBuilder';
 import { MultireplacerPredicateBuilder } from './MultireplacerPredicateBuilder';
