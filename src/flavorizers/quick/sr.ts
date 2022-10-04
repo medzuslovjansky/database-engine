@@ -84,6 +84,7 @@ export default () =>
       r.map({
         å: 'a',
         d́: 'd',
+        ď: 'd',
         ę: 'e',
         ě: 'e',
         ė: 'a',

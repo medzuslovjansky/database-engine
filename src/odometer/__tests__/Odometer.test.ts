@@ -17,6 +17,7 @@ describe('Odometer', () => {
       query: q2,
       result: r2,
       editingDistance: 1,
+      editingDistancePercent: 25,
     });
   });
 
@@ -41,6 +42,7 @@ describe('Odometer', () => {
       query: q2,
       result: R[0],
       editingDistance: 1,
+      editingDistancePercent: 11,
     });
   });
 });

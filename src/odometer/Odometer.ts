@@ -12,6 +12,7 @@ export type OdometerComparison<T> = {
   query: T;
   result: T;
   editingDistance: number;
+  editingDistancePercent: number;
 };
 
 export class Odometer<T> {
@@ -36,10 +37,13 @@ export class Odometer<T> {
     let minimalDistance = Number.POSITIVE_INFINITY;
     let closestMatch: OdometerComparison<T> | null = null;
 
-    for (const result of searchResults) {
+    const R = [...searchResults];
+    const Q = [...searchQueries];
+
+    for (const result of R) {
       const resultValue = this.normalize(result);
 
-      for (const query of searchQueries) {
+      for (const query of Q) {
         const queryValue = this.normalize(query);
         const distance = getEditingDistance(
           queryValue,
@@ -53,6 +57,10 @@ export class Odometer<T> {
             query,
             result,
             editingDistance: minimalDistance,
+            editingDistancePercent: Math.round(
+              (200 * minimalDistance) /
+                (queryValue.length + resultValue.length),
+            ),
           };
         }
       }
