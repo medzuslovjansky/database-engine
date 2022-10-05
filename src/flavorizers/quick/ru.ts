@@ -68,6 +68,7 @@ export default () =>
     .rule('Softening', (r) =>
       r.map({
         ď: 'dь',
+        ľ: 'lь',
         ĺ: 'lь',
         ń: 'nь',
         ŕ: 'rь',

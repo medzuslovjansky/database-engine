@@ -7,13 +7,13 @@ export default () =>
     //#region Этимологическая русификация
     .section('Этимологическая русификация')
     .rule('ORO-OLO', (r) => r.regexp(/(\S)([lr])å/, ['$1$2a', '$1o$2o']))
-    .rule('Å-O', (r) => r.regexp(/å/, ['å', 'o']))
+    .rule('Å-O', (r) => r.regexp(/å/, ['a', 'o']))
     .rule('Č-ŠČ', (r) => r.regexp(/ć/, ['č', 'šč']))
     .rule('ZŽ', (r) => r.regexp(/žđ/, ['zž']))
     .rule('ŽD', (r) => r.regexp(/đ/, ['žd', 'dž', 'ž']))
     .rule('Western D', (r) => r.regexp(/ḓ/, ['']))
     .rule('Little Yus (J)', (r) => r.regexp(/ję/, ['ja']))
-    .rule('Little Yus (Non-J)', (r) => r.regexp(/ę/, ['ьa', 'е']))
+    .rule('Little Yus (Non-J)', (r) => r.regexp(/ę/, ['ьa', 'e']))
     .rule('G/H/?', (r) => r.regexp(/h([aeiouy])/, ['h$1', 'g$1', '$1']))
     .rule('Big Yus VU', (r) => r.regexp(/vų/, ['u']))
     .rule('Big Yus JU', (r) => r.regexp(/jų/, ['ju']))
@@ -54,6 +54,7 @@ export default () =>
       r.map({
         ď: 'dь',
         ľ: 'lь',
+        ĺ: 'lь',
         ń: 'nь',
         ŕ: 'rь',
         ś: 'sь',
@@ -108,7 +109,7 @@ export default () =>
     )
     .rule(
       'Инфинитив (ся)',
-      (r) => r.regexp(/(se|sьa)\b/, ['$1']),
+      (r) => r.regexp(/ (sьa)\b/, ['$1']),
       (p) => p.partOfSpeech('v.'),
     )
     .rule(
