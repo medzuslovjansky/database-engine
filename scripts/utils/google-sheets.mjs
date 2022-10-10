@@ -42,13 +42,33 @@ async function testReading(sheets) {
   });
 }
 
-async function main() {
+/**
+ * @param {google.sheets.Sheets} sheets
+ */
+async function doUpdateSameInLanguages(sheets, values) {
+  const res = await sheets.spreadsheets.values.update({
+    spreadsheetId: '1N79e_yVHDo-d026HljueuKJlAAdeELAiPzdFzdBuKbY',
+    range: 'Y2:Y',
+    includeValuesInResponse: false,
+    valueInputOption: 'RAW',
+    requestBody: {
+      majorDimension: 'COLUMNS',
+      values: [values],
+    },
+  });
+
+  console.log(`Update status: ${res.statusText}`);
+}
+
+/**
+ * @param {string[]} values
+ * @returns {Promise<void>}
+ */
+export async function updateSameInLanguages(values) {
   const sheets = google.sheets({
     version: 'v4',
     auth: await authorize()
   });
 
-  await testReading(sheets);
+  await doUpdateSameInLanguages(sheets, values);
 }
-
-main().catch(console.error);
