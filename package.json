@@ -81,6 +81,7 @@
     "dictionary-sl": "^2.1.0",
     "dictionary-sr": "^3.1.0",
     "dictionary-uk": "^3.1.0",
+    "follow-redirects": "^1.15.2",
     "lodash": "^4.17.21",
     "nodehun": "^3.0.2",
     "tslib": "^2.4.0"
