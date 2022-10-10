@@ -1,6 +1,8 @@
 import 'zx/globals';
-import https from 'https';
+import fd from 'follow-redirects';
 import fs from 'fs';
+
+const https = fd.https;
 
 export async function downloadSheet(outFile, baseUrl, gid) {
   const url = `${baseUrl}?output=csv&format=csv&single=true&gid=${gid}`;
