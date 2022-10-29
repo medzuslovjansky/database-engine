@@ -1,9 +1,9 @@
 import 'zx/globals';
 import vm from 'node:vm';
 import _ from 'lodash';
-import { LANGS } from "./utils/constants.mjs";
-import * as csv from './utils/csv.mjs';
-import razumlivost from '../dist/index.js';
+import { LANGS } from "../../utils/constants.ts";
+import * as csv from '../../utils/csv.ts';
+import razumlivost from '../../../dist';
 import findMatchingBracket from 'find-matching-bracket';
 import { parse } from "@interslavic/steen-utils";
 

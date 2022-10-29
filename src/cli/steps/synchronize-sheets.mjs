@@ -16,11 +16,11 @@ import 'zx/globals';
 import _ from "lodash";
 import { core, parse } from "@interslavic/steen-utils";
 
-import { GIDs, LANGS, SHEET_URLS } from "./utils/constants.mjs";
-import * as csv from './utils/csv.mjs';
-import { redownloadSheet } from './utils/gsheets.mjs';
-import { loadDictionary } from "./utils/hunspell.mjs";
-import { flavorizers } from "../dist/index.js";
+import { GIDs, LANGS, SHEET_URLS } from "../../utils/constants.ts";
+import * as csv from '../../utils/csv.ts';
+import { redownloadSheet } from '../../utils/gsheets.ts';
+import { loadDictionary } from "../../utils/hunspell.ts";
+import { flavorizers } from "../../../dist";
 
 if (!argv.offline) {
   await downloadWordsList();

@@ -3,12 +3,12 @@ import 'zx/globals';
 import _ from "lodash";
 import { core, parse, types } from "@interslavic/steen-utils";
 
-import razumlivost from '../dist/index.js';
+import razumlivost from '../../../dist';
 
-import { LANGS } from "./utils/constants.mjs";
-import * as csv from './utils/csv.mjs';
-import { updateSameInLanguages } from './utils/google-sheets.mjs';
-import { loadDictionary } from "./utils/hunspell.mjs";
+import { LANGS } from "../../utils/constants.ts";
+import * as csv from '../../utils/csv.ts';
+import { updateSameInLanguages } from '../../utils/google-sheets.ts';
+import { loadDictionary } from "../../utils/hunspell.ts";
 
 const odometer = new razumlivost.Odometer({
   ignoreCase: true,

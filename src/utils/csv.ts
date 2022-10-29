@@ -1,15 +1,26 @@
 import fs from 'fs';
 
 import * as csv from 'csv';
+import type { Parser } from 'csv-parse';
 
-export async function parseFile(filePath, options = {}) {
+type ParseFileOptions = {
+  delimiter?: string;
+  silent?: boolean;
+};
+
+export type Table = Record<string, unknown>[];
+
+export async function parseFile(
+  filePath: string,
+  options: ParseFileOptions = {},
+): Promise<any[]> {
   const { delimiter = ',', silent = false } = options;
   if (silent && !fs.existsSync(filePath)) {
     return [];
   }
 
-  const data = await new Promise((resolve, reject) => {
-    const records = [];
+  const data = await new Promise<Table>((resolve, reject) => {
+    const records: Record<string, unknown>[] = [];
     const parser = csv.parse({
       columns: true,
       delimiter,
@@ -28,7 +39,10 @@ export async function parseFile(filePath, options = {}) {
   return data;
 }
 
-export function writeFile(filePath, records) {
+export function writeFile(
+  filePath: string,
+  records: Record<string, unknown>[],
+) {
   return new Promise((resolve, reject) => {
     const filestream = fs.createWriteStream(filePath);
     filestream.on('error', reject);
@@ -41,7 +55,7 @@ export function writeFile(filePath, records) {
   });
 }
 
-function _readRecords(records) {
+function _readRecords(this: Parser, records: Record<string, unknown>[]) {
   let record;
   while ((record = this.read()) !== null) {
     records.push(record);
