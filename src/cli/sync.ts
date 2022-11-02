@@ -42,6 +42,22 @@ export const handler = async (argv: SyncOptions) => {
       ...flavorize(translations, flavorizations, argv.flavorize),
     ];
 
+    for (const lang of argv.flavorize) {
+      const map = new Map<string, string>();
+
+      for (const f of flavorizations) {
+        if (!f[lang].startsWith('!')) {
+          map.set(`${f.isv}:${f.partOfSpeech}`, f[lang]);
+        }
+      }
+
+      for (const f of flavorizations) {
+        if (f[lang].startsWith('!')) {
+          f[lang] = map.get(`${f.isv}:${f.partOfSpeech}`) || f[lang];
+        }
+      }
+    }
+
     await writeFile('.cache/flavorizations.csv', flavorizations);
   }
 
