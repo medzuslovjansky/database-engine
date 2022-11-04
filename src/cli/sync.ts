@@ -33,13 +33,21 @@ export const handler = async (argv: SyncOptions) => {
   const translations: Raw<TranslationRecord>[] = await parseFile(
     '.cache/translations.csv',
   );
+
+  for (const t of translations) {
+    t.frequency = `${t.frequency}`.replace(',', '.');
+  }
+
   let flavorizations: Raw<FlavorizationRecord>[] = await parseFile(
     '.cache/flavorizations.csv',
   );
 
   if (argv.flavorize.length > 0) {
     flavorizations = [
-      ...flavorize(translations, flavorizations, argv.flavorize),
+      ...flavorize(translations, flavorizations, {
+        langs: argv.flavorize,
+        forceUpdate: true,
+      }),
     ];
 
     await writeFile('.cache/flavorizations.csv', flavorizations);

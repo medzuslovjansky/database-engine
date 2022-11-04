@@ -74,6 +74,7 @@
     "zx": "^7.0.0"
   },
   "dependencies": {
+    "@google-cloud/local-auth": "^2.1.1",
     "@interslavic/steen-utils": "^1.6.0",
     "dictionary-be": "^1.0.0",
     "dictionary-bg": "^1.4.0",

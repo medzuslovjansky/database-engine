@@ -21,6 +21,11 @@ export const LANGUAGE_NAMES = {
   ...NATURAL_LANGUAGES,
 };
 
+export const SHEET_IDs = {
+  new_interslavic_words_list: '1N79e_yVHDo-d026HljueuKJlAAdeELAiPzdFzdBuKbY',
+  interslavic_intelligibility: '1wXjUu15x6hSpDzDUbLVUwLgDua2DyXs-xjpxGJvFCno',
+};
+
 export const SHEET_URLS = {
   new_interslavic_words_list:
     'https://docs.google.com/spreadsheets/d/1N79e_yVHDo-d026HljueuKJlAAdeELAiPzdFzdBuKbY/export',

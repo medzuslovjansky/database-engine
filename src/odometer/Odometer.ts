@@ -1,10 +1,11 @@
 import { getEditingDistance } from './utils/getEditingDistance';
 
-export type OdometerOptions<T> = {
+export type OdometerOptions<T, L> = {
   ignoreCase: boolean;
   ignoreNonLetters: boolean;
   ignoreDiacritics: boolean;
-  extractValue: (item: T) => string;
+  extractItems: (item: T) => Iterable<L>;
+  extractValue: (item: L) => string;
   compareCharacters: (a: string, b: string) => number;
 };
 
@@ -15,14 +16,15 @@ export type OdometerComparison<T> = {
   editingDistancePercent: number;
 };
 
-export class Odometer<T> {
-  public readonly options: OdometerOptions<T>;
+export class Odometer<T, L> {
+  public readonly options: OdometerOptions<T, L>;
 
-  constructor(options?: Partial<OdometerOptions<T>>) {
+  constructor(options?: Partial<OdometerOptions<T, L>>) {
     this.options = {
       ignoreCase: false,
       ignoreNonLetters: false,
       ignoreDiacritics: false,
+      extractItems: (x) => x as any,
       extractValue: (x) => `${x}`,
       compareCharacters: (a, b) => (a === b ? 0 : 1),
 
@@ -30,15 +32,12 @@ export class Odometer<T> {
     };
   }
 
-  public compare(
-    searchQueries: Iterable<T>,
-    searchResults: Iterable<T>,
-  ): OdometerComparison<T> {
+  public compare(searchQueries: T, searchResults: T): OdometerComparison<L> {
     let minimalDistance = Number.POSITIVE_INFINITY;
-    let closestMatch: OdometerComparison<T> | null = null;
+    let closestMatch: OdometerComparison<L> | null = null;
 
-    const R = [...searchResults];
-    const Q = [...searchQueries];
+    const R = [...this.options.extractItems(searchResults)];
+    const Q = [...this.options.extractItems(searchQueries)];
 
     for (const result of R) {
       const resultValue = this.normalize(result);
@@ -73,7 +72,7 @@ export class Odometer<T> {
     return closestMatch;
   }
 
-  protected normalize(item: T): string {
+  protected normalize(item: L): string {
     let value = this.options.extractValue(item);
 
     if (this.options.ignoreNonLetters) {

@@ -5,13 +5,18 @@ export default () =>
     .named('Interslavic → Belarusian')
     .rule('Ignore case', (r) => r.lowerCase())
     .rule('Yat', (r) => r.regexp(/ě/, ['e']))
-    .rule('Little Yus', (r) => r.regexp(/ę/, ['a', 'ja']))
+    .rule('Little Yus', (r) => r.regexp(/ę/, ['a', 'ьa']))
     .rule('Bid Yus VU', (r) => r.regexp(/vų/, ['vu', 'u']))
     .rule('ORO-OLO', (r) => r.regexp(/(\S)([rl])å/, ['$1o$2o']))
-    .rule('ER', (r) => r.regexp(/rė/, ['ero', 'oro', 're']))
-    .rule('EL', (r) => r.regexp(/lė/, ['ala', 'alo']))
+    .rule('ER', (r) => r.regexp(/rě/, ['ero', 'oro', 're']))
+    .rule('EL', (r) => r.regexp(/lě/, ['ola', 'olo']))
     .rule('Unstressed E', (r) => r.regexp(/e/, ['e', 'ja']))
-    .rule('Unstressed O', (r) => r.regexp(/o/, ['o', 'a']))
+    .rule('Unstressed O', (r) => r.regexp(/o/, ['o']))
+    .rule(
+      '-ti',
+      (r) => r.regexp(/ti\b/, ['ť']),
+      (p) => p.partOfSpeech('v.'),
+    )
     .rule('Standardize', (r) =>
       r.map({
         å: 'a',
@@ -22,17 +27,17 @@ export default () =>
         è: 'e',
         ę: 'e',
         ı: '',
-        ľ: 'l',
+        ľ: 'lь',
         ŀ: 'l',
-        ń: 'n',
+        ń: 'nь',
         ò: 'o',
         ȯ: 'o',
         ŕ: 'r',
         ṙ: 'r',
-        ś: 's',
-        ť: 't',
+        ś: 'sь',
+        ť: 'cь',
         ų: 'u',
-        ź: 'z',
+        ź: 'zь',
       }),
     )
     .rule('Cyrl-Standard', (r) =>
