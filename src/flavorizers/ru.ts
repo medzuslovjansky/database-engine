@@ -144,7 +144,7 @@ export default () =>
     //#region Кириллизација
     .section('Кириллизација')
     .rule('Yot-Glas', (r) => r.regexp(/([aeiouy])j([ei])/, ['$1$2']))
-    .rule('Yot-Ja', (r) => r.regexp(/([^aåeėioȯuųy])ja/, ['$1я', '$1ъя']))
+    .rule('Yot-Ja', (r) => r.regexp(/([^aåeėioȯuųyь])ja/, ['$1я', '$1ъя']))
     .rule('Yot-Ije', (r) => r.regexp(/ьje/, ['ье', 'ие']))
     .rule('Yot-Je', (r) =>
       r.regexp(/([^aåeėioȯuųyь])je/, ['$1ье', '$1ъе', '$1е']),
