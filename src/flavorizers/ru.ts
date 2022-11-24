@@ -1,3 +1,4 @@
+RU_RULES = """
 import multireplacer from '../dsl/multireplacer';
 
 export default () =>
@@ -17,7 +18,8 @@ export default () =>
     .rule('G/H/?', (r) => r.regexp(/h([aeiouy])/, ['h$1', 'g$1', '$1']))
     .rule('Big Yus VU', (r) => r.regexp(/vų/, ['u']))
     .rule('Big Yus JU', (r) => r.regexp(/jų/, ['ju']))
-    .rule('Big Yus', (r) => r.regexp(/ų/, ['u', 'o']))
+    .rule('Big Yus at the end', (r) => r.regexp(/ų\b/, ['u']))
+    .rule('Big Yus anywhere', (r) => r.regexp(/ų/, ['u', 'o']))
     .rule('U/W', (r) => r.regexp(/ù/, ['v', 'u']))
     .rule('Fleeting E', (r) => r.regexp(/[ėè]/, ['e', '']))
     .rule('Fleeting O', (r) => r.regexp(/[òȯ]/, ['o', '']))
@@ -146,11 +148,11 @@ export default () =>
     .rule('Yot-Ja', (r) => r.regexp(/([^aåeėioȯuųy])ja/, ['$1я', '$1ъя']))
     .rule('Yot-Ije', (r) => r.regexp(/ьje/, ['ье', 'ие']))
     .rule('Yot-Je', (r) =>
-      r.regexp(/([^aåeėioȯuųyь])je/, ['$1ье', '$1ъе', '$1е']),
+      r.regexp(/([^aåeėioȯuųyь ])je/, ['$1ье', '$1ъе', '$1е']),
     )
     .rule(
       'Yot-JiEnd',
-      (r) => r.regexp(/([^aåeėioȯuųyь])ji\b/, ['$1ий']),
+      (r) => r.regexp(/([^aåeėioȯuųyь ])ji\b/, ['$1ий']),
       (p) => p.partOfSpeech('adj.'),
     )
     .rule('Yot-Ji', (r) => r.regexp(/([^aåeėioȯuųyь])ji/, ['$1ьи', '$1и']))
@@ -209,3 +211,5 @@ export default () =>
     //#endregion
     .rule('Restore case', (r) => r.restoreCase())
     .build();
+
+"""
