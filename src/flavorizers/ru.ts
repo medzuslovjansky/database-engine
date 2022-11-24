@@ -1,4 +1,3 @@
-RU_RULES = """
 import multireplacer from '../dsl/multireplacer';
 
 export default () =>
@@ -148,11 +147,11 @@ export default () =>
     .rule('Yot-Ja', (r) => r.regexp(/([^aåeėioȯuųy])ja/, ['$1я', '$1ъя']))
     .rule('Yot-Ije', (r) => r.regexp(/ьje/, ['ье', 'ие']))
     .rule('Yot-Je', (r) =>
-      r.regexp(/([^aåeėioȯuųyь ])je/, ['$1ье', '$1ъе', '$1е']),
+      r.regexp(/([^aåeėioȯuųyь])je/, ['$1ье', '$1ъе', '$1е']),
     )
     .rule(
       'Yot-JiEnd',
-      (r) => r.regexp(/([^aåeėioȯuųyь ])ji\b/, ['$1ий']),
+      (r) => r.regexp(/([^aåeėioȯuųyь])ji\b/, ['$1ий']),
       (p) => p.partOfSpeech('adj.'),
     )
     .rule('Yot-Ji', (r) => r.regexp(/([^aåeėioȯuųyь])ji/, ['$1ьи', '$1и']))
@@ -211,5 +210,3 @@ export default () =>
     //#endregion
     .rule('Restore case', (r) => r.restoreCase())
     .build();
-
-"""
