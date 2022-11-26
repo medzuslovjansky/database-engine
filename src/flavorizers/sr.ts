@@ -129,7 +129,7 @@ export default () =>
     .rule('Unused etymology', (r) =>
       r.map({
         å: 'a',
-        d́: 'd',
+        ď: 'd',
         ę: 'e',
         ė: 'ě',
         ĺ: 'l',
