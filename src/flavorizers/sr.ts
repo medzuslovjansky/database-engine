@@ -10,7 +10,6 @@ export default () =>
       r.regexp(/vòz(?=$|\S)/, ['vòz', 'pod', 'vz']),
     )
     .rule('Alteration (pod-)', (r) => r.regexp(/pod(?=$|\S)/, ['pod', 'po']))
-    .rule('Alteration (v-)', (r) => r.regexp(/(?=^|\s)v/, ['v', 'u']))
     .rule('Unvoicing (-d-)', (r) =>
       r.regexp(/(po|na)d(?![bdg])/, ['$1d', '$1t']),
     )
@@ -32,15 +31,10 @@ export default () =>
     .rule('Transposition (vse-sve)', (r) =>
       r.regexp(/v[sś](?=[aeěiuųy])/, ['vs', 'sv']),
     )
-    .rule('Alteration (-gda-)', (r) => r.regexp(/gd/, ['gd', 'd']))
+    .rule('Alteration (-gda-)', (r) => r.regexp(/gd/, ['d']))
     //#endregion
     //#region Nouns
     .section('Nouns')
-    .rule(
-      'Feminization',
-      (r) => r.regexp(/([^aåeěėęijoȯuųy])(?=$|\s)/, ['$1', '$1a']),
-      (p) => p.partOfSpeech('m.'),
-    )
     .rule(
       'Alteration (-telj)',
       (r) => r.regexp(/telj(?=$|\s)/, ['telj', 'č']),
@@ -60,11 +54,6 @@ export default () =>
       'Expansion (-tòr)',
       (r) => r.regexp(/tr(?=$|\s)/, ['tòr']),
       (p) => p.partOfSpeech('m.'),
-    )
-    .rule(
-      'Masculinization',
-      (r) => r.regexp(/([aåeěėęijoȯuųy])(?=$|\s)/, ['$1', '']),
-      (p) => p.partOfSpeech('f.,n.'),
     )
     .rule(
       'Alteration (-nja)',
@@ -147,13 +136,11 @@ export default () =>
     .rule('Muffled (-j-)', (r) => r.regexp(/([bpvmf])j/, ['$1j', '$1lj']))
     .rule('ŠČ-ŠT', (r) => r.regexp(/šč/, ['št']))
     .rule('DJ', (r) => r.regexp(/dj/, ['dj', 'đ']))
-    .rule('Soft Jer', (r) => r.regexp(/è/, ['e', 'a']))
+    .rule('Soft Jer', (r) => r.regexp(/ė/, ['e', 'a']))
     .rule('H (silent)', (r) => r.regexp(/h/, ['h', '']))
     .rule('Syllabic L', (r) => r.regexp(/ŀ/, ['l', 'u']))
-    .rule('Hard Jer', (r) => r.regexp(/[òȯ]/, ['o', 'a']))
-    .rule('K-H', (r) => r.regexp(/k/, ['k', 'h']))
+    .rule('Hard Jer', (r) => r.regexp(/[òȯ]/, ['a']))
     .rule('DŽ', (r) => r.regexp(/dž/, ['dž', 'đ']))
-    .rule('Yat', (r) => r.regexp(/[ěė]/, ['ě', 'i']))
     //#endregion
     //#region Alphabet
     .section('Alphabet')

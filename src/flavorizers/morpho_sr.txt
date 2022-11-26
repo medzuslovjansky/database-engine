@@ -1,4 +1,5 @@
 {
+    "PREP": {"": {"v": "u"}},
     "VERB":
     {
     },
@@ -23,5 +24,10 @@
         "loct+plur": (-2, "im"),
         "ablt+plur": (-3, "im"),
     },
-    "SPECIAL_CASES": {},
+    "SPECIAL_CASES": {
+         "kromě": "osim",
+         "ktory": "koji",
+         "ktora": "koja",
+         "ktoro": "koje",
+    },
 }
