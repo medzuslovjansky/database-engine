@@ -1,0 +1,38 @@
+{
+    "VERB":
+    {
+        "infn": (-1, 'ь'),
+        "3per+sing": (None, 't'),
+    },
+    "NOUN":
+    {
+        "loct+sing+masc": (-1, "ě"),
+    },
+    "ADJF":
+    {
+        "nomn+sing+femn": (None, "ja"),
+        "nomn+sing+neut": (None, "ě"),
+        "nomn+sing+masc": (None, "j"),
+
+        "accs+sing+femn": (None, "ju"),
+        "accs+sing+neut": (None, "ě"),
+        "accs+sing+masc+anim": (None, ""),
+        "accs+sing+masc+inan": (None, "j"),
+
+        # "accs+plur": (None, "iě"),
+        "nomn+plur": (-1, "ые"),
+        "accs+plur+neut": (-1, "ые"),
+        # "accs+plur+femn+anim": (-1, "ых"),
+        # "accs+plur+femn+inan": (-1, "ые"),
+        # "accs+plur+masc+anim": (-1, "ых"),
+        # "accs+plur+masc+inan": (-1, "ые"),
+    },
+    "SPECIAL_CASES": 
+    {
+        "jesm": "являюсь",
+        "jesmo": "являемся",
+        "jesi": "являешься",
+        "jest": "является",
+        "jestli": "если"
+    }
+}

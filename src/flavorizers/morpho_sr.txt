@@ -1,0 +1,27 @@
+{
+    "VERB":
+    {
+    },
+    "NOUN":
+    {
+        "nomn+plur+masc": (-1, "ovi"),
+        "gent+plur+masc": (None, "a"),
+        # TODO: https://fastlanguagemastery.com/learn-foreign-languages/serbian-language/serbian-cases-of-nouns/
+    },
+    "ADJF":
+    {
+
+        "nomn+sing+masc": {"ny": "an"},
+        "gent+sing+masc": (-1, ""),
+        "accs+sing+masc+anim": (-1, ""),
+        "datv+sing+masc": (-1, ""),
+        "loct+sing+masc": (-1, ""),
+
+        "gent+sing+femn": (-2, "e"),
+        "ablt+sing+femn": (-2, "om"),
+
+        "loct+plur": (-2, "im"),
+        "ablt+plur": (-3, "im"),
+    },
+    "SPECIAL_CASES": {},
+}

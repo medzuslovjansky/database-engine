@@ -1,0 +1,32 @@
+{
+    "VERB":
+    {
+        "1per+sing": (-1, 'ę'),
+        "3per+plur": (-2, 'ą'),
+    },
+    "NOUN":
+    {
+        "loct+sing+masc": (-1, "ě"),
+        "accs+sing+femn": (-1, "ę"),
+    },
+    "ADVB": {"ADVB": (-1, 'e')},
+    "ADJF":
+    {
+        "nomn+plur+femn": (-1, "ie"),
+        "accs+plur+femn": (-1, "ie"),
+        "nomn+plur+neut": (-1, "ie"),
+        "accs+plur+neut": (-1, "ie"),
+
+        "accs+sing+femn": (-1, "ą"),
+        "ablt+sing+femn": (-1, "ą"),
+
+        "loct+sing+femn": (-2, "ej"),
+        "datv+sing+femn": (-2, "ej"),
+        "gent+sing+femn": (-2, "ej"),
+
+        "accs+plur+masc": (-2, "ych"),
+        "loct+plur": (-2, "ych"),
+        "datv+plur": (-2, "ych"),
+    },
+    "SPECIAL_CASES": {}
+}
