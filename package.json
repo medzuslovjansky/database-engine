@@ -17,10 +17,10 @@
     "prepare": "husky install; npm run clean && npm run build",
     "precommit": "lint-staged && git add src",
     "prepush": "bash scripts/prepush.sh",
-    "chore:add-integration-tests": "tsc && zx src/cli/steps/add-integration-tests.mjs",
-    "chore:download-from-gsheets": "tsc && zx src/cli/steps/download-from-gsheets.mjs",
+    "chore:add-integration-tests": "tsc && zx src/cli/add-tests.mjs",
+    "chore:download-from-gsheets": "tsc && zx src/sync/download-from-gsheets.mjs",
     "chore:generate-from-fixtures": "tsc && zx scripts/generate-from-fixtures.mjs",
-    "chore:mark-fixture-sheet": "zx src/cli/steps/mark-fixture-sheet.mjs",
+    "chore:mark-fixture-sheet": "zx src/sync/mark-fixture-sheet.mjs",
     "chore:patch-sameInLanguages": "zx scripts/patch-sameInLanguages.mjs"
   },
   "repository": {
@@ -90,6 +90,7 @@
     "follow-redirects": "^1.15.2",
     "lodash": "^4.17.21",
     "nodehun": "^3.0.2",
-    "tslib": "^2.4.0"
+    "tslib": "^2.4.0",
+    "yaml": "^2.1.3"
   }
 }

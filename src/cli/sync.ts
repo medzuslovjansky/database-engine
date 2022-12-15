@@ -1,73 +1,30 @@
-import fs from 'fs-extra';
 import { CommandBuilder } from 'yargs';
-
-import { flavorize } from './steps/flavorize';
-import { analyze } from './steps/analyze';
 import { GIDs, LANGS, NATURAL_LANGUAGES } from '../utils/constants';
-import { downloadSheet } from '../utils/gsheets';
-import { parseFile, writeFile } from '../utils/csv';
-import { Raw, FlavorizationRecord, TranslationRecord } from '../types/tables';
-
-type SyncOptions = {
-  readonly download: Array<keyof typeof GIDs>;
-  readonly flavorize: Array<keyof typeof NATURAL_LANGUAGES>;
-  readonly analyze: Array<keyof typeof NATURAL_LANGUAGES>;
-  readonly upload: Array<keyof typeof GIDs>;
-};
+import {
+  GoogleSheetsAPI,
+  SheetsCache,
+  SyncOptions,
+  SyncRoutine,
+} from '../sync';
+import { GoogleAuthService } from '../utils/gsheets';
 
 export const command = 'sync [options]';
 
 export const describe = 'Syncs the database';
 
 export const handler = async (argv: SyncOptions) => {
-  if (argv.download.length > 0) {
-    await fs.mkdirp('.cache');
+  const authService = new GoogleAuthService();
+  const authClient = await authService.authorize();
 
-    for (const sheet of argv.download) {
-      const isLangCode = sheet.length <= 3;
-      const outFile = `.cache/${isLangCode ? `analysis-${sheet}` : sheet}.csv`;
-      await downloadSheet(outFile, sheet);
-    }
-  }
-
-  const translations: Raw<TranslationRecord>[] = await parseFile(
-    '.cache/translations.csv',
+  const sync = new SyncRoutine(
+    {
+      googleSheets: new GoogleSheetsAPI(authClient),
+      sheetsCache: new SheetsCache('.cache'),
+    },
+    argv,
   );
 
-  for (const t of translations) {
-    t.frequency = `${t.frequency}`.replace(',', '.');
-  }
-
-  let flavorizations: Raw<FlavorizationRecord>[] = await parseFile(
-    '.cache/flavorizations.csv',
-  );
-
-  if (argv.flavorize.length > 0) {
-    flavorizations = [
-      ...flavorize(translations, flavorizations, {
-        langs: argv.flavorize,
-        forceUpdate: true,
-      }),
-    ];
-
-    await writeFile('.cache/flavorizations.csv', flavorizations);
-  }
-
-  if (argv.analyze.length > 0) {
-    for (const lang of argv.analyze) {
-      let analysises = await parseFile(`.cache/analysis-${lang}.csv`);
-      analysises = [...analyze(translations, flavorizations, analysises, lang)];
-      await writeFile('.cache/analysis-${lang}.csv', analysises);
-    }
-  }
-
-  if (argv.upload.includes('translations')) {
-    console.log('TODO: upload translations');
-  }
-
-  if (argv.upload.includes('flavorizations')) {
-    console.log('TODO: upload flavorizations');
-  }
+  await sync.run();
 };
 
 const ALL_SHEETS = Object.keys(GIDs) as Array<keyof typeof GIDs>;
@@ -104,5 +61,12 @@ export const builder: CommandBuilder<SyncOptions, any> = {
     default: 'none',
     coerce: (value: string) =>
       value === 'none' ? [] : value === 'all' ? ALL_SHEETS : value.split(','),
+  },
+  setPermissions: {
+    alias: 'p',
+    description:
+      'Set permissions on the sheets: invite users, protect ranges, etc.',
+    default: false,
+    boolean: true,
   },
 };

@@ -1,30 +1,32 @@
+import { core, parse } from '@interslavic/steen-utils';
+
 import { Odometer } from '../Odometer';
 import { Intermediate } from '../../multireplacer';
 
 describe('Odometer', () => {
   test('integration (simple)', () => {
-    const odometer = new Odometer<Intermediate>({
+    const odometer = new Odometer<core.Synset, core.Lemma>({
+      extractItems: (synset) => synset.lemmas(),
       extractValue: (i) => i.value,
     });
 
-    const [q1, q2, r1, r2] = ['morje', 'måre', 'miare', 'mare'].map(
-      (s) => new Intermediate(s, null),
-    );
-
-    const result = odometer.compare([q1, q2], [r1, r2]);
+    const q = parse.synset('morje, måre', { isPhrase: false });
+    const r = parse.synset('miare, mare', { isPhrase: false });
+    const result = odometer.compare(q, r);
 
     expect(result).toEqual({
-      query: q2,
-      result: r2,
+      query: expect.objectContaining({ value: 'måre' }),
+      result: expect.objectContaining({ value: 'mare' }),
       editingDistance: 1,
       editingDistancePercent: 25,
     });
   });
 
   test('integration (dedupe)', () => {
-    const odometer = new Odometer<Intermediate>({
+    const odometer = new Odometer<Intermediate[], Intermediate>({
       ignoreCase: true,
       ignoreNonLetters: true,
+      extractItems: (i) => i,
       extractValue: (i) => i.value,
     });
 

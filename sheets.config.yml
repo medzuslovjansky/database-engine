@@ -1,0 +1,19 @@
+---
+users:
+  admin:
+    email: 'interslavic.oss@gmail.com'
+    role: 'editor'
+    invite: false
+  john_smith:
+    email: 'john.smith@example.com'
+    role: 'editor'
+ranges:
+  - name: 'Headers'
+    range: 'Sheet1!1:1'
+    warn: true
+    editors:
+      - admin
+  - name: 'My Named Range'
+    range: 'Sheet1!A1:B2'
+    editors:
+      - john_smith
