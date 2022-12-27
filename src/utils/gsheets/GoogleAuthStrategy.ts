@@ -1,4 +1,4 @@
-import {Auth} from "googleapis";
+import { Auth } from 'googleapis';
 
 export interface GoogleAuthStrategy {
   authorize(): Promise<Auth.AuthClient>;

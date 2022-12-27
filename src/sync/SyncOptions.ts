@@ -6,4 +6,7 @@ export type SyncOptions = {
   readonly flavorize: Array<keyof typeof NATURAL_LANGUAGES>;
   readonly analyze: Array<keyof typeof NATURAL_LANGUAGES>;
   readonly upload: Array<keyof typeof GIDs>;
+
+  readonly force: Array<'analyze' | 'flavorize'>;
+  readonly overwriteCache: Array<keyof typeof GIDs>;
 };

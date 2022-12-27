@@ -29,38 +29,47 @@ export const handler = async (argv: SyncOptions) => {
 
 const ALL_SHEETS = Object.keys(GIDs) as Array<keyof typeof GIDs>;
 
+const coerceSheets = (value: string) =>
+  value === 'none' ? [] : value === 'all' ? ALL_SHEETS : value.split(',');
+
+const coerceLangs = (value: string) =>
+  value === 'none' ? [] : value === 'all' ? LANGS : value.split(',');
+
+const coerceOperations = (value: string) =>
+  value === 'none'
+    ? []
+    : value === 'all'
+    ? ['flavorize', 'analyze']
+    : value.split(',');
+
 export const builder: CommandBuilder<SyncOptions, any> = {
   download: {
     alias: 'd',
     choices: ['none', 'all', ...ALL_SHEETS],
     description: 'Sheets to download (comma-separated)',
     default: 'none',
-    coerce: (value: string) =>
-      value === 'none' ? [] : value === 'all' ? ALL_SHEETS : value.split(','),
+    coerce: coerceSheets,
   },
   flavorize: {
     alias: 'f',
     choices: ['none', 'all', ...Object.keys(NATURAL_LANGUAGES).sort()],
     description: 'Languages to flavorize (comma-separated)',
     default: 'none',
-    coerce: (value: string) =>
-      value === 'none' ? [] : value === 'all' ? LANGS : value.split(','),
+    coerce: coerceLangs,
   },
   analyze: {
     alias: 'a',
     choices: ['none', 'all', ...Object.keys(NATURAL_LANGUAGES).sort()],
     description: 'Languages to analyse (comma-separated)',
     default: 'none',
-    coerce: (value: string) =>
-      value === 'none' ? [] : value === 'all' ? LANGS : value.split(','),
+    coerce: coerceLangs,
   },
   upload: {
     alias: 'u',
     choices: ['none', 'all', ...ALL_SHEETS],
     description: 'Sheets to upload (comma-separated)',
     default: 'none',
-    coerce: (value: string) =>
-      value === 'none' ? [] : value === 'all' ? ALL_SHEETS : value.split(','),
+    coerce: coerceSheets,
   },
   setPermissions: {
     alias: 'p',
@@ -68,5 +77,20 @@ export const builder: CommandBuilder<SyncOptions, any> = {
       'Set permissions on the sheets: invite users, protect ranges, etc.',
     default: false,
     boolean: true,
+  },
+  force: {
+    description:
+      'Specify which operations should overwrite the verified results',
+    choices: ['none', 'all', 'flavorize', 'analyze'],
+    default: 'none',
+    coerce: coerceOperations,
+  },
+  overwriteCache: {
+    alias: 'o',
+    description:
+      'Specify which sheets should be overwritten with the intermediate results',
+    choices: ['none', 'all', ...ALL_SHEETS],
+    default: 'none',
+    coerce: coerceSheets,
   },
 };

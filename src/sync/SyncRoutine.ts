@@ -1,12 +1,22 @@
 import type { SyncRoutineConfig } from './SyncRoutineConfig';
 import type { SyncOptions } from './SyncOptions';
-import { FlavorizationRecord, Raw, TranslationRecord } from '../types/tables';
+import {
+  AnalysisRecord,
+  FlavorizationRecord,
+  Raw,
+  TranslationRecord,
+} from '../types/tables';
 import { flavorize } from './utils/flavorize';
 import { analyze } from './utils/analyze';
+import { NATURAL_LANGUAGES } from '../utils/constants';
 
 export class SyncRoutine {
   private flavorizations: Raw<FlavorizationRecord>[] = [];
   private translations: Raw<TranslationRecord>[] = [];
+  private analysis: Record<
+    keyof typeof NATURAL_LANGUAGES,
+    Raw<AnalysisRecord>[]
+  > = {} as any;
 
   constructor(
     private readonly config: SyncRoutineConfig,
@@ -44,11 +54,13 @@ export class SyncRoutine {
     this.flavorizations = [
       ...flavorize(this.translations, this.flavorizations, {
         langs: this.options.flavorize,
-        forceUpdate: true,
+        forceUpdate: this.options.force.includes('flavorize'),
       }),
     ];
 
-    await sheetsCache.writeSheet('flavorizations', this.flavorizations);
+    if (this.options.overwriteCache.includes('flavorizations')) {
+      await sheetsCache.writeSheet('flavorizations', this.flavorizations);
+    }
   }
 
   private async _analyze() {
@@ -61,10 +73,13 @@ export class SyncRoutine {
 
     for (const lang of langs) {
       const analysis = await sheetsCache.getAnalysis(lang);
-
-      await sheetsCache.writeSheet(lang, [
+      const newAnalysis = (this.analysis[lang] = [
         ...analyze(this.translations, this.flavorizations, analysis, lang),
       ]);
+
+      if (this.options.overwriteCache.includes(lang)) {
+        await sheetsCache.writeSheet(lang, newAnalysis);
+      }
     }
   }
 

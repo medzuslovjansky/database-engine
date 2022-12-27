@@ -2,13 +2,13 @@ const _ = require('lodash');
 const fs = require('fs').promises;
 const path = require('path');
 const process = require('process');
-const {authenticate} = require('@google-cloud/local-auth');
-const {google} = require('googleapis');
+const { authenticate } = require('@google-cloud/local-auth');
+const { google } = require('googleapis');
 
 // If modifying these scopes, delete token.json.
 const SCOPES = [
   'https://www.googleapis.com/auth/drive',
-  'https://www.googleapis.com/auth/spreadsheets'
+  'https://www.googleapis.com/auth/spreadsheets',
 ];
 // The file token.json stores the user's access and refresh tokens, and is
 // created automatically when the authorization flow completes for the first
@@ -69,14 +69,34 @@ async function authorize() {
   return client;
 }
 
-const LANGS_ORDER = ["CS", "CZ", "SK", "PL", "CSB", "HSB", "DSB", "BE", "RU", "UA", "UK", "RUE", "SL", "HR", "SR", "MK", "BG", "PMK", "POM"];
+const LANGS_ORDER = [
+  'CS',
+  'CZ',
+  'SK',
+  'PL',
+  'CSB',
+  'HSB',
+  'DSB',
+  'BE',
+  'RU',
+  'UA',
+  'UK',
+  'RUE',
+  'SL',
+  'HR',
+  'SR',
+  'MK',
+  'BG',
+  'PMK',
+  'POM',
+];
 
 function parseLang(rawLang) {
   if (!rawLang) return;
 
   const lang = rawLang.trim().toUpperCase();
-  const valid = LANGS_ORDER.find(l => l === lang);
-  const semivalid = LANGS_ORDER.find(l => lang.includes(l));
+  const valid = LANGS_ORDER.find((l) => l === lang);
+  const semivalid = LANGS_ORDER.find((l) => lang.includes(l));
   const result = valid || semivalid;
   if (!result) return;
 
@@ -101,22 +121,22 @@ function parseVerdict(value) {
 
 function getDefaultAnswers(value) {
   return {
-    "CS": [],
-    "SK": [],
-    "PL": [],
-    "CSB": [],
-    "HSB": [],
-    "DSB": [],
-    "BE": [],
-    "RU": [],
-    "UK": [],
-    "RUE": [],
-    "SL": [],
-    "HR": [],
-    "SR": [],
-    "MK": [],
-    "BG": [],
-    "POMAK": [],
+    CS: [],
+    SK: [],
+    PL: [],
+    CSB: [],
+    HSB: [],
+    DSB: [],
+    BE: [],
+    RU: [],
+    UK: [],
+    RUE: [],
+    SL: [],
+    HR: [],
+    SR: [],
+    MK: [],
+    BG: [],
+    POMAK: [],
     ...value,
   };
 }
@@ -127,26 +147,40 @@ function getDefaultAnswers(value) {
  * @param {google.auth.OAuth2} auth The authenticated Google OAuth client.
  */
 async function listMajors(auth) {
-  const drive = google.drive({version: 'v3', auth});
+  const drive = google.drive({ version: 'v3', auth });
 
   const folderId = '1i37Fs4FbAyFgjiUgzDoQhUpYY0okybZQ';
   const folder = await drive.files.list({ q: `'${folderId}' in parents` });
-  const aktivny = folder.data.files.find(f => f.name === 'aktivny');
+  const aktivny = folder.data.files.find((f) => f.name === 'aktivny');
   const folder2 = await drive.files.list({ q: `'${aktivny.id}' in parents` });
-  const folderSheets = folder2.data.files.filter(f => f.mimeType === 'application/vnd.google-apps.spreadsheet');
+  const folderSheets = folder2.data.files.filter(
+    (f) => f.mimeType === 'application/vnd.google-apps.spreadsheet',
+  );
 
-  const sheets = google.sheets({version: 'v4', auth});
+  const sheets = google.sheets({ version: 'v4', auth });
   for (const sheetFile of folderSheets) {
     console.log(sheetFile.name);
     const response = await sheets.spreadsheets.values.get({
       spreadsheetId: sheetFile.id,
       range: 'A:D',
     });
-    const records = response.data.values.slice(1).map(([time, email, lang, verdict]) => ({
-      time, email, lang: parseLang(lang), verdict: parseVerdict(verdict),
-    })).filter(e => e.lang);
+    const records = response.data.values
+      .slice(1)
+      .map(([time, email, lang, verdict]) => ({
+        time,
+        email,
+        lang: parseLang(lang),
+        verdict: parseVerdict(verdict),
+      }))
+      .filter((e) => e.lang);
 
-    console.log(_.chain(records).groupBy('lang').thru(getDefaultAnswers).mapValues(v => v.map(i => i.verdict).sort()).value());
+    console.log(
+      _.chain(records)
+        .groupBy('lang')
+        .thru(getDefaultAnswers)
+        .mapValues((v) => v.map((i) => i.verdict).sort())
+        .value(),
+    );
   }
 }
 

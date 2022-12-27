@@ -1,4 +1,5 @@
 import fs from 'fs';
+import path from 'path';
 
 import { google } from 'googleapis';
 
@@ -11,20 +12,20 @@ export class GoogleServiceAccountAuthStrategy implements GoogleAuthStrategy {
     private readonly env: NodeJS.ProcessEnv = process.env,
   ) {}
 
-  private readonly jwtTokenPath = `${this.cwd}/${JWT_TOKEN_FILENAME}`;
+  private readonly jwtTokenPath = path.join(this.cwd, JWT_TOKEN_FILENAME);
 
   jwtToken: string | null = null;
 
   async authorize() {
-    this.jwtToken = this.jwtToken ?? (await this._readJWTToken());
+    this.jwtToken ??= await this._readJWTToken();
     if (!this.jwtToken) {
       throw new Error('JWT_TOKEN is not set');
     }
 
-    const credentials = JSON.parse(this.jwtToken);
+    const { client_email, private_key } = JSON.parse(this.jwtToken);
     const client = new google.auth.JWT({
-      email: credentials.client_email,
-      key: credentials.private_key,
+      email: client_email,
+      key: private_key,
     }).createScoped(SCOPES);
 
     await client.authorize();
@@ -38,7 +39,7 @@ export class GoogleServiceAccountAuthStrategy implements GoogleAuthStrategy {
 
     const tokenPath = this.jwtTokenPath;
     if (fs.existsSync(tokenPath)) {
-      return await fs.promises.readFile(this.jwtTokenPath, 'utf8');
+      return await fs.promises.readFile(tokenPath, 'utf8');
     }
 
     return null;
