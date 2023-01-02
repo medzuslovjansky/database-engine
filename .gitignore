@@ -113,3 +113,5 @@ dist
 
 # Secrets
 *.secret.*
+.*encrypt*
+credentials.json
