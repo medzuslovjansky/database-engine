@@ -1,7 +1,8 @@
 import crypto from 'crypto';
 import fs from 'fs';
 
-import {CommandBuilder} from 'yargs';
+import _ from 'lodash';
+import { CommandBuilder } from 'yargs';
 import yaml from 'yaml';
 
 export const command = 'config [options]';
@@ -9,10 +10,6 @@ export const command = 'config [options]';
 export const describe = 'Edit the configuration file';
 
 export const handler = async (argv: ConfigOptions) => {
-  const rawConfig = await fs.promises.readFile(argv.configFile, 'utf8');
-  const config = yaml.parse(rawConfig) as SheetsConfig;
-  config.users ??= {};
-
   const encryptionKey =
     argv.encryptionKey ??
     process.env.ISV_ENCRYPTION_KEY ??
@@ -20,25 +17,32 @@ export const handler = async (argv: ConfigOptions) => {
 
   const decryptionKey = argv.decryptionKey ?? encryptionKey;
 
-  Object.values(config.users).forEach((user) => {
-    if (user.email) {
-      user.email = decrypt(user.email, decryptionKey);
-    }
-  });
+  const rawConfig = await fs.promises.readFile(argv.configFile, 'utf8');
+  const encryptedConfig = yaml.parse(rawConfig) as SheetsConfig;
+  encryptedConfig.users ??= {};
 
-  addUser(config.users, argv.user);
+  const config = {
+    ...encryptedConfig,
+    users: _.mapValues(encryptedConfig.users, (user) => ({
+      ...user,
+      email: decrypt(user.email, decryptionKey),
+    })),
+  };
+
+  if (argv.user) {
+    if (addUser(config.users, argv.user)) {
+      addUser(encryptedConfig.users, {
+        ...argv.user,
+        email: encrypt(argv.user.email, encryptionKey),
+      });
+    }
+  }
 
   if (argv.print) {
     console.log(config);
   }
 
-  Object.values(config.users).forEach((user) => {
-    if (user.email) {
-      user.email = encrypt(user.email, encryptionKey);
-    }
-  });
-
-  await fs.promises.writeFile(argv.configFile, yaml.stringify(config));
+  await fs.promises.writeFile(argv.configFile, yaml.stringify(encryptedConfig));
 };
 
 function addUser(
@@ -54,9 +58,13 @@ function addUser(
   } else {
     users[user.id] = { email: user.email, role: 'editor' };
   }
+
+  return true;
 }
 
 function encrypt(plaintext: string, key: string) {
+  if (!plaintext) return plaintext;
+
   const initVector = crypto.randomBytes(16);
   const cipher = crypto.createCipheriv(
     'aes-256-ctr',
@@ -69,6 +77,8 @@ function encrypt(plaintext: string, key: string) {
 }
 
 function decrypt(encryption: string, key: string) {
+  if (!encryption) return encryption;
+
   const [iv, encrypted] = encryption.split('.');
   const decipher = crypto.createDecipheriv(
     'aes-256-ctr',

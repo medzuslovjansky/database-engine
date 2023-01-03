@@ -1,8 +1,7 @@
-import { plus_v1, drive_v3, sheets_v4 } from 'googleapis';
+import { drive_v3, sheets_v4 } from 'googleapis';
 import { SHEET_IDs } from '../utils/constants';
 import Sheets = sheets_v4.Sheets;
 import Drive = drive_v3.Drive;
-import Plus = plus_v1.Plus;
 
 export default class GoogleSheetsAPI {
   constructor(private readonly authClient: any) {}
@@ -12,10 +11,6 @@ export default class GoogleSheetsAPI {
   });
 
   private readonly sheets = new Sheets({
-    auth: this.authClient,
-  });
-
-  private readonly plus = new Plus({
     auth: this.authClient,
   });
 
@@ -51,14 +46,13 @@ export default class GoogleSheetsAPI {
   async getEditors() {
     const res = await this.drive.permissions.list({
       fileId: SHEET_IDs.interslavic_intelligibility,
+      fields: '*',
     });
 
     const editors =
-      res.data.permissions?.filter(
-        (p) => p.role === 'writer' && p.id && p.id !== 'anyoneWithLink',
-      ) ?? [];
+      res.data.permissions?.filter((p) => p.id && p.id !== 'anyoneWithLink');
 
-    return editors.map((e) => ({ id: e.id }));
+    return editors ?? [];
   }
 
   async updateSameInLanguages(values: string[]) {
