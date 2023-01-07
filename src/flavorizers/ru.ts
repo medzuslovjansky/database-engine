@@ -14,14 +14,14 @@ export default () =>
     .rule('Western D', (r) => r.regexp(/ḓ/, ['']))
     .rule('Little Yus (J)', (r) => r.regexp(/ję/, ['ja']))
     .rule('Little Yus (Non-J)', (r) => r.regexp(/ę/, ['ьa', 'е']))
-    .rule('G/H/?', (r) => r.regexp(/h([aeiouy])/, ['h$1', 'g$1', '$1']))
+    .rule('G/H/?', (r) => r.regexp(/h([aeiouy])/, ['h$1', 'g$1', '$1']), (p) => p.genesis('I'))
     .rule('Big Yus VU', (r) => r.regexp(/vų/, ['u']))
     .rule('Big Yus JU', (r) => r.regexp(/jų/, ['ju']))
     .rule('Big Yus at the end', (r) => r.regexp(/ų\b/, ['u']))
     .rule('Big Yus anywhere', (r) => r.regexp(/ų/, ['u', 'o']))
     .rule('U/W', (r) => r.regexp(/ù/, ['v', 'u']))
-    .rule('Fleeting E', (r) => r.regexp(/[ėè]/, ['e', '']))
-    .rule('Fleeting O', (r) => r.regexp(/[òȯ]/, ['o', '']))
+    .rule('Fleeting E', (r) => r.regexp(/[èė]/, ['e']))
+    .rule('Fleeting O', (r) => r.regexp(/[òȯ]/, ['o']))
     .rule('Syllabic Soft R', (r) =>
       r.regexp(/([^aåeěėęijoȯuųy])ŕ([^aåeěėęijoȯuųy])/, [
         '$1jer$2',
@@ -30,7 +30,7 @@ export default () =>
       ]),
     )
     .rule('Syllabic Hard R', (r) =>
-      r.regexp(/([^aåeěėęijoȯuųy])[rṙ]([^aåeěėęijoȯuųy])/, [
+      r.regexp(/([^aåeěėęijoȯuųy])[ṙ]([^aåeěėęijoȯuųy])/, [
         '$1or$2',
         '$1ro$2',
         '$1er$2',
@@ -38,7 +38,7 @@ export default () =>
       ]),
     )
     .rule('Syllabic L', (r) =>
-      r.regexp(/([^aåeěėęijoȯuųy])[ŀl]([^aåeěėęijoȯuųy])/, [
+      r.regexp(/([^aåeěėęijoȯuųy])[ŀ]([^aåeěėęijoȯuųy])/, [
         '$1oŀ$2',
         '$1joŀ$2',
         '$1ŀo$2',
@@ -74,7 +74,8 @@ export default () =>
     .rule('Yat-L', (r) => r.regexp(/(\S)lě/, ['$1le', '$1ele', '$1olo']))
     .rule('Yat-R', (r) => r.regexp(/(\S)rě/, ['$1re', '$1ere', '$1ri', '$1er']))
     .rule('Yat', (r) => r.regexp(/ě/, ['e']))
-    .rule('Iz-', (r) => r.regexp(/^(ne|bez)?iz/, ['$1vy', '$1iz', '$1s']))
+    .rule('Iz-', (r) => r.regexp(/^(ne|bez)?iz(.+)/, ['$1vy$2', '$1iz$2', '$1s$2']))
+    .rule('Second Labialization', (r) => r.regexp(/^je/, ['je', 'o']))
     .rule('Muffled Z', (r) => r.regexp(/z([pftsšk])/, ['s$1', 'z$1']))
     .rule('Prefix Separator', (r) => r.regexp(/’/, ['']))
     //#endregion
@@ -135,11 +136,11 @@ export default () =>
       (r) => r.regexp(/ji\b/, ['ij']),
       (p) => p.partOfSpeech('adj.,m.'),
     )
-    .rule(
-      'Твердые прилагательные',
-      (r) => r.regexp(/y\b/, ['yj', 'ij', 'oj']),
-      (p) => p.partOfSpeech('adj.,m.'),
-    )
+    //#.rule(
+    //#  'Твердые прилагательные',
+    //#  (r) => r.regexp(/y\b/, ['yj', 'ij', 'oj']),
+    //#  (p) => p.partOfSpeech('adj.,m.'),
+    //#)
     //#endregion
     //#region Кириллизација
     .section('Кириллизација')
@@ -206,7 +207,10 @@ export default () =>
     //#endregion
     //#region Эвристики
     .section('Эвристики')
-    .rule('Обезёкивание', (r) => r.regexp(/ё/, ['е']))
+    .rule('Орфография: чя щя', (r) => r.regexp(/([чшжщ])я/, ['$1а']))
+    .rule('Орфография: кый', (r) => r.regexp(/кы([йехм]|ми)\b/, ['ки$1']))
+    .rule('Орфография: ный', (r) => r.regexp(/ны([йехм]|ми)\b/, ['ни$1', 'ны$1']))
+    //#.rule('Обезёкивание', (r) => r.regexp(/ё/, ['е']))
     //#endregion
     .rule('Restore case', (r) => r.restoreCase())
     .build();

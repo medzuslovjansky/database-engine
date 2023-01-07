@@ -1,0 +1,55 @@
+{
+    "VERB":
+    {
+        "infn": (-2, 't'),
+        # "1per+sing": (-1, 'u'),
+        "2per+sing": {'aješ': 'áš', 'iš': 'íš'},
+        "3per+sing": {'aje': 'á', 'i': 'í'},
+        "1per+plur": {'ajemo': 'áme', 'imo': 'íme'},
+        "2per+plur": {'ajete': 'áte', 'ite': 'íte'},
+        "3per+plur": {'jųt': 'jí', 'ųt': 'ou', 'ęt': "í"},
+    },
+    "NOUN":
+    {
+        "gent+sing+masc": (-1, "e"),
+        "accs+sing+masc": (-1, "e"),
+        "gent+plur+masc": (-2, "ů"),
+        "datv+plur+masc": (-2, "ům"),
+        "accs+plur+masc": (-2, "e"),
+        "loct+plur+masc": (-2, "ech"),
+        "ablt+sing+femn": (-3, "ou"),
+        "datv+plur+femn": (-2, "ám"),
+        "ablt+sing+neut": (-2, "em"),
+        "datv+plur+neut": (-2, "ům"),
+        "loct+plur+neut": (-2, "ech")
+    },
+    "ADVB": {"ADVB": (-1, 'ě')},
+    "ADJF":
+    {
+        "nomn+plur+femn": (-1, "é"),
+        "accs+plur+femn": (-1, "é"),
+        "nomn+sing+neut": (-1, "é"),
+        "accs+sing+neut": (-1, "é"),
+        "nomn+plur+neut": (-1, "á"),
+        "accs+plur+neut": (-1, "á"),
+
+        "accs+sing+femn": (-1, "ou"),
+        "ablt+sing+femn": (-1, "ou"),
+        "loct+sing+masc": (-2, "ém"),
+        "loct+sing+neut": (-2, "ém"),
+        "loct+sing+femn": (-2, "é"),
+        "datv+sing+femn": (-2, "é"),
+        "gent+sing+femn": (-2, "é"),
+
+        "accs+plur+masc": (-2, "é"),
+        "loct+plur": (-2, "ých"),
+        "datv+plur": (-2, "ých"),
+        "ablt+plur": (-3, "ými"),
+    },
+    "SPECIAL_CASES": {},
+    "INFLECTIONS": {
+        "verb-ju": False,
+        "short-pronouns": True,
+    },
+
+}

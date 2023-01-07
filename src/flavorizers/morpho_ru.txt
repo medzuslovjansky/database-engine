@@ -11,11 +11,12 @@
     "ADJF":
     {
         "nomn+sing+femn": (None, "ja"),
-        "nomn+sing+neut": (None, "ě"),
+        # problematic without morphological disambiguation
+        # "nomn+sing+neut": (None, "je"),
         "nomn+sing+masc": (None, "j"),
 
-        "accs+sing+femn": (None, "ju"),
-        "accs+sing+neut": (None, "ě"),
+        "accs+sing+femn": {'ų': "uju"},
+        "accs+sing+neut": (None, "je"),
         "accs+sing+masc+anim": (None, ""),
         "accs+sing+masc+inan": (None, "j"),
 
@@ -27,12 +28,19 @@
         # "accs+plur+masc+anim": (-1, "ых"),
         # "accs+plur+masc+inan": (-1, "ые"),
     },
-    "SPECIAL_CASES": 
-    {
+    "INFLECTIONS": {
+        "verb-ju": True,
+        "short-pronouns": False,
+    },
+    "SPECIAL_CASES": {
+        "byh": "я бы",
         "jesm": "являюсь",
         "jesmo": "являемся",
         "jesi": "являешься",
         "jest": "является",
+        "je": "есть",
+        "jeste": "являетесь",
+        "sųt": "являются",
         "jestli": "если"
     }
 }
