@@ -1,7 +1,20 @@
+// noinspection SpellCheckingInspection
+
 const { test } = require('zora');
 
-const { synset } = require('@interslavic/steen-utils').parse;
-const { ru } = require('..').flavorizers.slow;
+const { parse } = require('@interslavic/steen-utils');
+
+const { Odometer, flavorizers } = require('..');
+
+const { ru } = flavorizers.slow;
+
+const odometer = new Odometer({
+  ignoreNonLetters: true,
+  ignoreCase: true,
+  ignoreDiacritics: true,
+  extractItems: (synset) => synset.lemmas(),
+  extractValue: (lemma) => lemma.value,
+});
 
 /**
  * @this {import('zora').IAssert}
@@ -11,12 +24,16 @@ const { ru } = require('..').flavorizers.slow;
  * @param {string} genesis
  */
 function run(source, target, partOfSpeech, genesis) {
+  const targetSynset = parse.synset(target, { isPhrase: false });
   const flavorized = ru.flavorize(source, partOfSpeech, genesis);
-  const intersection = flavorized.intersection(synset(target, { isPhrase: false }));
+  const result = odometer.compare(flavorized, targetSynset);
 
-  this.falsy(
-    intersection.empty,
-    `${source} vs ${target}${intersection.empty ? ' (' + flavorized + ')' : ''}`,
+  this.eq(
+    result.editingDistance,
+    0,
+    `${source} vs ${target}${
+      result.editingDistance > 0 ? ' (' + flavorized + ')' : ''
+    }`,
   );
 }
 

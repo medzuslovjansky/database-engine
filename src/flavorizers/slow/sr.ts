@@ -7,7 +7,7 @@ export default () =>
     //#region Suffixes
     .section('Suffixes')
     .rule('Alteration (-ova-)', (r) =>
-      r.regexp(/(?!^|\s)ova(?!$|\s)/, ['ova', 'ira']),
+      r.regexp(/(?!^|\s)ova(?!$|\s)/, ['ova', 'ira', 'a']),
     )
     //#endregion
     //#region Roots
@@ -26,6 +26,11 @@ export default () =>
       (p) => p.partOfSpeech('m.'),
     )
     .rule(
+      'Alteration (-elj)',
+      (r) => r.regexp(/((?:at)?elj)(?=$|\s)/, ['elj', 'ač']),
+      (p) => p.partOfSpeech('m.'),
+    )
+    .rule(
       'Expansion (-tȯr)',
       (r) => r.regexp(/tr(?=$|\s)/, ['tȯr']),
       (p) => p.partOfSpeech('m.'),
@@ -34,6 +39,11 @@ export default () =>
       'Alteration (-nja)',
       (r) => r.regexp(/nja(?=$|\s)/, ['nja', 'nica']),
       (p) => p.partOfSpeech('f.'),
+    )
+    .rule(
+      'Masculine (-a)',
+      (r) => r.regexp(/([^a])(?=$|\s)/, ['$1a', '$1']),
+      (p) => p.partOfSpeech('m.'),
     )
     //#endregion
     //#region Adjectives
@@ -76,10 +86,16 @@ export default () =>
     .section('Phonetical changes')
     .rule('collapse to ć', (r) => r.regexp(/(dt|kt|šn)/, ['$1', 'ć']))
     .rule('Muffled (-j-)', (r) => r.regexp(/([bpvmf])j/, ['$1j', '$1lj']))
+    .rule('Muffled Z', (r) => r.regexp(/z([pftčsšk])/, ['s$1', 'z$1']))
     .rule('ŠČ-ŠT', (r) => r.regexp(/šč/, ['št']))
     .rule('DJ', (r) => r.regexp(/dj/, ['dj', 'đ']))
     .rule('DŽ', (r) => r.regexp(/dž/, ['dž', 'đ']))
+    .rule('ŤB', (r) => r.regexp(/ťb/, ['db']))
+    .rule('Jat', (r) => r.regexp(/ě/, ['e', 'i']))
+    .rule('-L/O', (r) => r.regexp(/l(?=$|\s)/, ['l', 'o']))
+    .rule('-Ȯ/O', (r) => r.regexp(/ȯ/, ['o', 'a']))
     .rule('-zdn-', (r) => r.regexp(/zdn/, ['zn']))
+    .rule('v/u-', (r) => r.regexp(/\bv/, ['v', 'u']))
     .rule('Unused etymology', (r) =>
       r.map({
         å: 'a',
@@ -93,7 +109,6 @@ export default () =>
         ŕ: 'r',
         ś: 's',
         ť: 't',
-        ȯ: 'a',
         ź: 'z',
         ı: '',
         ų: 'u',
