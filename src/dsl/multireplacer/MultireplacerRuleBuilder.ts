@@ -1,8 +1,5 @@
-import {
-  MapExecutor,
-  RegExpExecutor,
-} from '@interslavic/odometer';
 import { customExecutors } from '../../customization';
+import { MapExecutor, RegExpExecutor } from '../../multireplacer';
 import { ExecutorCallback } from './ExecutorCallback';
 
 export class MultireplacerRuleBuilder {
@@ -27,6 +24,20 @@ export class MultireplacerRuleBuilder {
   lowerCase() {
     this.executor = customExecutors.lowerCase;
     return this;
+  }
+
+  deJanizator() {
+    return this.map({
+      '’': '',
+      ù: 'v',
+      ľ: 'ĺ',
+      ḓ: '',
+      è: 'ė',
+      ı: '',
+      ė: 'ě',
+      ò: 'ȯ',
+      ṙ: 'r',
+    });
   }
 
   restoreCase() {

@@ -1,0 +1,32 @@
+users:
+  admin:
+    email: noLFIuTuNuHtGNC5s7oXGg==.jZFW/R4Z6NPVAAYZlkxuVq52+iJVXKuYtA==
+    role: owner
+  lyer:
+    email: KIg8UNKxo+CTWTROmPWX0A==.m29TYQbVSVr0m2K/tz9Fs58NmcN2
+    role: editor
+  big_l:
+    email: tauFEHnFzAPUh/51I0H1vg==.xuHJMjRaDQSjuJLEQ/eH/dXY
+    role: editor
+  michal_swat:
+    email: 5p/HwdMFYKQ20Q+Fxq8WVQ==.E0+Cr+ZQOaTJS+gL+4i4Akt5KLWJ
+    role: editor
+  m_perelygina:
+    email: od+5UY18MlR0UU5JgZXeCg==.59KsLkbiQk4crfv9IeJUakClBYY7/coq
+    role: editor
+  k_rabkin:
+    email: j+1MBEW9Bk68YpZmhC7d6Q==./7YoPQsMMWcOgvmT4aEvWXU=
+    role: editor
+  noomorph:
+    email: POtzJBeWILeEUWI+y6uiyg==.1ZKER/vOxwRmWktigGkl7WYB
+    role: editor
+ranges:
+  - name: Headers
+    range: Sheet1!1:1
+    warn: true
+    editors:
+      - admin
+  - name: My Named Range
+    range: Sheet1!A1:B2
+    editors:
+      - john_smith

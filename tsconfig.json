@@ -27,6 +27,7 @@
     "forceConsistentCasingInFileNames": true,
   },
   "exclude": [
+    "__e2e__/**/*.ts",
     "dist/**/*.ts",
     "jest.config.ts"
   ],

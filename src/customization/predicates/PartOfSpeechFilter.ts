@@ -3,7 +3,7 @@ import isMatch from 'lodash/isMatch';
 import pickBy from 'lodash/pickBy';
 import { parse as steenparse } from '@interslavic/steen-utils';
 import { PartOfSpeech } from '@interslavic/steen-utils/types';
-import { ObjectPredicate } from '@interslavic/odometer';
+import { ObjectPredicate } from '../../multireplacer';
 import { FlavorizationContext } from '../FlavorizationContext';
 import { FlavorizationIntermediate } from '../FlavorizationIntermediate';
 

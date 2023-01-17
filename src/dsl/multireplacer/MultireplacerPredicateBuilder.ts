@@ -1,4 +1,4 @@
-import { Predicate } from '@interslavic/odometer';
+import { Predicate } from '../../multireplacer';
 import { GenesisFilter, PartOfSpeechFilter } from '../../customization';
 
 export class MultireplacerPredicateBuilder {

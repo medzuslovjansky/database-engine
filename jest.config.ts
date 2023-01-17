@@ -5,6 +5,7 @@ export default {
   },
   testPathIgnorePatterns: [
     '/node_modules/',
-    '/dist/'
+    '/dist/',
+    '/__e2e__/'
   ],
 };
