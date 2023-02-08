@@ -43,16 +43,17 @@ export default class GoogleSheetsAPI {
     );
   }
 
-  async getEditors() {
+  async getSharedAccounts() {
     const res = await this.drive.permissions.list({
       fileId: SHEET_IDs.interslavic_intelligibility,
       fields: '*',
     });
 
-    const editors =
-      res.data.permissions?.filter((p) => p.id && p.id !== 'anyoneWithLink');
+    const editors = (res.data.permissions ?? []).filter(
+      (p) => p.id && p.id !== 'anyoneWithLink',
+    );
 
-    return editors ?? [];
+    return editors;
   }
 
   async updateSameInLanguages(values: string[]) {

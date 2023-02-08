@@ -89,7 +89,7 @@ export class SyncRoutine {
     }
 
     // console.log(await this.config.googleSheets.getProtectedRanges());
-    console.log(await this.config.googleSheets.getEditors());
+    console.log(await this.config.googleSheets.getSharedAccounts());
   }
 
   private async _upload() {
