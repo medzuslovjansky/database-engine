@@ -14,7 +14,7 @@ export default () =>
     .rule('Western D', (r) => r.regexp(/ḓ/, ['']))
     .rule('Little Yus (J)', (r) => r.regexp(/ję/, ['ja']))
     .rule('Little Yus (Non-J)', (r) => r.regexp(/ę/, ['ьa', 'е']))
-    .rule('G/H/?', (r) => r.regexp(/h([aeiouy])/, ['h$1', 'g$1', '$1']), (p) => p.genesis('I'))
+    .rule('G/H/?', (r) => r.regexp(/^h([aeiouy])/, ['h$1', 'g$1', '$1']), (p) => p.genesis('I'))
     .rule('Big Yus VU', (r) => r.regexp(/vų/, ['u']))
     .rule('Big Yus JU', (r) => r.regexp(/jų/, ['ju']))
     .rule('Big Yus at the end', (r) => r.regexp(/ų\b/, ['u']))
@@ -75,10 +75,10 @@ export default () =>
     .rule('Yat-L', (r) => r.regexp(/(\S)lě/, ['$1le', '$1ele', '$1olo']))
     .rule('Yat-R', (r) => r.regexp(/(\S)rě/, ['$1re', '$1ere', '$1ri', '$1er']))
     .rule('Yat', (r) => r.regexp(/ě/, ['e']))
-    .rule('Iz-', (r) => r.regexp(/^(ne|bez)?iz(.+)/, ['$1vy$2', '$1iz$2', '$1s$2']))
+    .rule('Iz-', (r) => r.regexp(/^(ne|bez)?iz’(.+)/, ['$1vy’$2', '$1iz’$2', '$1s’$2']))
     .rule('Second Labialization', (r) => r.regexp(/^je/, ['je', 'o']))
-    .rule('Od-', (r) => r.regexp(/od/, ['od', 'ot']))
-    .rule('Naj-', (r) => r.regexp(/naj/, ['naj', 'nai']))
+    .rule('Od-', (r) => r.regexp(/od’/, ['od’', 'ot’']))
+    .rule('Naj-', (r) => r.regexp(/naj’/, ['naj’', 'nai’']))
     .rule('Muffled Z', (r) => r.regexp(/z([pftsšk])/, ['s$1', 'z$1']))
     .rule('Prefix Separator', (r) => r.regexp(/’/, ['']))
     //#endregion
@@ -86,43 +86,51 @@ export default () =>
     .section('По частям речи')
     .rule(
       'Гл: -овати',
-      (r) => r.regexp(/ovati\b/, ['ovati', 'irovati']),
-      (p) => p.partOfSpeech('v.'),
+      (r) => r.regexp(/፨ovati\b/, ['፨ovati', '፨irovati']),
+      (p) => p.partOfSpeech('v.').and(p.genesis('!S')),
     )
     .rule(
       'Прил. -ован-',
       (r) => r.regexp(/ovan/, ['ovan', 'irovan']),
-      (p) => p.partOfSpeech('adj.'),
+      (p) => p.morphologyTags('ADJF'),
     )
     .rule(
       'Сущ. -ован-',
-      (r) => r.regexp(/ovan/, ['ovan', 'irovan']),
-      (p) => p.partOfSpeech('noun'),
+      (r) => r.regexp(/ova(n|ń)/, ['ova$1', 'irova$1']),
+      (p) => p.morphologyTags('NOUN'),
+    )
+    .rule(
+      '3 лицо глагола (-т)',
+      (r) => r.regexp(/\b/, ['t']),
+      (p) => p.morphologyTags('3per+sing'),
     )
     .rule(
       'Инфинитив (чь)',
       (r) => r.regexp(/[kg]ti\b/, ['čь']),
-      (p) => p.partOfSpeech('v.'),
+      (p) => p.morphologyTags('infn'),
+      // (p) => p.partOfSpeech('v.'),
     )
     .rule(
       'Инфинитив (ь-ти)',
       (r) => r.regexp(/ti\b/, ['tь', 'ti']),
-      (p) => p.partOfSpeech('v.'),
+      (p) => p.morphologyTags('infn'),
+      // (p) => p.partOfSpeech('v.'),
     )
     .rule(
       'Инфинитив (ся)',
       (r) => r.regexp(/ (sьa)\b/, ['$1']),
-      (p) => p.partOfSpeech('v.'),
+      (p) => p.morphologyTags('infn'),
+      // (p) => p.partOfSpeech('v.'),
     )
     .rule(
       'Прил.: -ческий',
-      (r) => r.regexp(/čny\b/, ['českij', 'čnyj']),
-      (p) => p.partOfSpeech('adj.'),
+      (r) => r.regexp(/čn፨/, ['česk፨', 'čn፨']),
+      (p) => p.morphologyTags('ADJF'),
     )
     .rule(
       'Прил.: -цкий',
-      (r) => r.regexp(/čsky\b/, ['ckij']),
-      (p) => p.partOfSpeech('adj.'),
+      (r) => r.regexp(/čsk፨/, ['ck፨']),
+      (p) => p.morphologyTags('ADJF'),
     )
     .rule(
       'Прил.: -ая',
@@ -131,8 +139,13 @@ export default () =>
     )
     .rule(
       'Удвоение НН',
-      (r) => r.regexp(/([aeiouy])n([aeiyo])\b/, ['$1nn$2', '$1n$2']),
-      (p) => p.partOfSpeech('adj.,noun'),
+      (r) => r.regexp(/([aeiouy])n(ik|ot|os)፨/, ['$1nn$2፨', '$1n$2፨']),
+      (p) => p.partOfSpeech('noun'),
+    )
+    .rule(
+      'Удвоение НН',
+      (r) => r.regexp(/([aeiouy])n፨/, ['$1nn፨', '$1n፨']),
+      (p) => p.partOfSpeech('adj.'),
     )
     .rule(
       'Мягкие прилагательные',
@@ -140,13 +153,21 @@ export default () =>
       (p) => p.partOfSpeech('adj.,m.'),
     )
     .rule(
+      // TODO: other cases also
       'Твердые прилагательные',
-      (r) => r.regexp(/y\b/, ['yj', 'ij', 'oj']),
+      (r) => r.regexp(/፨y\b/, ['፨yj', '፨ij', '፨oj']),
       (p) => p.partOfSpeech('adj.,m.,num.ord.'),
     )
+    .rule(
+      'Локатив сущ.',
+      (r) => r.regexp(/u\b/, ['ě']),
+      (p) => p.morphologyTags("NOUN+loct+sing+masc"),
+    )
+
     //#endregion
     //#region Кириллизација
     .section('Кириллизација')
+    .rule('Remove Stem Separator', (r) => r.regexp(/[፨]/, ['']))
     .rule('Yot-Glas', (r) => r.regexp(/([aeiouy])j([ei])/, ['$1$2']))
     .rule('Yot-Ja', (r) => r.regexp(/([^aåeėioȯuųyь])ja/, ['$1я', '$1ъя']))
     .rule('Yot-Ije', (r) => r.regexp(/ьje/, ['ье', 'ие']))
@@ -212,8 +233,11 @@ export default () =>
     .section('Эвристики')
     .rule('Орфография: чя щя', (r) => r.regexp(/([чшжщ])я/, ['$1а']))
     .rule('Орфография: кый', (r) => r.regexp(/кы([йехм]|ми)\b/, ['ки$1']))
+    .rule('Орфография: гый', (r) => r.regexp(/гы([йехм]|ми)\b/, ['ги$1']))
     .rule('Орфография: ный', (r) => r.regexp(/ны([йехм]|ми)\b/, ['ни$1', 'ны$1']))
     //#.rule('Обезёкивание', (r) => r.regexp(/ё/, ['е']))
     //#endregion
     .rule('Restore case', (r) => r.restoreCase())
     .build();
+
+
