@@ -1,6 +1,7 @@
 import { CommandBuilder } from 'yargs';
 import { GIDs, LANGS, NATURAL_LANGUAGES } from '../utils/constants';
 import {
+  ConfigManagerFactory,
   GoogleSheetsAPI,
   SheetsCache,
   SyncOptions,
@@ -13,13 +14,21 @@ export const command = 'sync [options]';
 export const describe = 'Syncs the database';
 
 export const handler = async (argv: SyncOptions) => {
+  const configManager = await ConfigManagerFactory.createConfigManagerFromPath({
+    decryptionKey: argv.decryptionKey,
+    configFilePath: argv.configFile,
+  });
+
   const authService = new GoogleAuthService();
   const authClient = await authService.authorize();
+  const googleSheets = new GoogleSheetsAPI(authClient);
+  const sheetsCache = new SheetsCache('.cache');
 
   const sync = new SyncRoutine(
     {
-      googleSheets: new GoogleSheetsAPI(authClient),
-      sheetsCache: new SheetsCache('.cache'),
+      configManager,
+      googleSheets,
+      sheetsCache,
     },
     argv,
   );
@@ -44,6 +53,7 @@ const coerceOperations = (value: string) =>
 
 export const builder: CommandBuilder<SyncOptions, any> = {
   download: {
+    group: 'Basic options:',
     alias: 'd',
     choices: ['none', 'all', ...ALL_SHEETS],
     description: 'Sheets to download (comma-separated)',
@@ -51,6 +61,7 @@ export const builder: CommandBuilder<SyncOptions, any> = {
     coerce: coerceSheets,
   },
   flavorize: {
+    group: 'Basic options:',
     alias: 'f',
     choices: ['none', 'all', ...Object.keys(NATURAL_LANGUAGES).sort()],
     description: 'Languages to flavorize (comma-separated)',
@@ -58,6 +69,7 @@ export const builder: CommandBuilder<SyncOptions, any> = {
     coerce: coerceLangs,
   },
   analyze: {
+    group: 'Basic options:',
     alias: 'a',
     choices: ['none', 'all', ...Object.keys(NATURAL_LANGUAGES).sort()],
     description: 'Languages to analyse (comma-separated)',
@@ -65,6 +77,7 @@ export const builder: CommandBuilder<SyncOptions, any> = {
     coerce: coerceLangs,
   },
   upload: {
+    group: 'Basic options:',
     alias: 'u',
     choices: ['none', 'all', ...ALL_SHEETS],
     description: 'Sheets to upload (comma-separated)',
@@ -72,6 +85,7 @@ export const builder: CommandBuilder<SyncOptions, any> = {
     coerce: coerceSheets,
   },
   setPermissions: {
+    group: 'Basic options:',
     alias: 'p',
     description:
       'Set permissions on the sheets: invite users, protect ranges, etc.',
@@ -79,6 +93,7 @@ export const builder: CommandBuilder<SyncOptions, any> = {
     boolean: true,
   },
   force: {
+    group: 'Advanced options:',
     description:
       'Specify which operations should overwrite the verified results',
     choices: ['none', 'all', 'flavorize', 'analyze'],
@@ -86,11 +101,22 @@ export const builder: CommandBuilder<SyncOptions, any> = {
     coerce: coerceOperations,
   },
   overwriteCache: {
+    group: 'Advanced options:',
     alias: 'o',
     description:
       'Specify which sheets should be overwritten with the intermediate results',
     choices: ['none', 'all', ...ALL_SHEETS],
     default: 'none',
     coerce: coerceSheets,
+  },
+  configFile: {
+    group: 'Advanced options:',
+    alias: 'c',
+    description: 'Path to the config file',
+    default: 'sheets.config.yml',
+  },
+  decryptionKey: {
+    group: 'Advanced options:',
+    description: 'Key used to decrypt the config file',
   },
 };

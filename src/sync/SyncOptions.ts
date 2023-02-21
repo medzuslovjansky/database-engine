@@ -9,4 +9,6 @@ export type SyncOptions = {
 
   readonly force: Array<'analyze' | 'flavorize'>;
   readonly overwriteCache: Array<keyof typeof GIDs>;
+  readonly configFile?: string;
+  readonly decryptionKey?: string;
 };

@@ -1,7 +1,9 @@
 import type SheetsCache from './SheetsCache';
-import type GoogleSheetsAPI from './GoogleSheetsAPI';
+import type GoogleSheetsAPI from './sheets/GoogleSheetsAPI';
+import type { ConfigManager } from './config/ConfigManager';
 
 export type SyncRoutineConfig = {
+  readonly configManager: ConfigManager;
   readonly sheetsCache: SheetsCache;
   readonly googleSheets: GoogleSheetsAPI;
 };

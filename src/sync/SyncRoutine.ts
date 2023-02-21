@@ -1,3 +1,4 @@
+import { values, snakeCase } from 'lodash';
 import type { SyncRoutineConfig } from './SyncRoutineConfig';
 import type { SyncOptions } from './SyncOptions';
 import {
@@ -9,6 +10,9 @@ import {
 import { flavorize } from './utils/flavorize';
 import { analyze } from './utils/analyze';
 import { NATURAL_LANGUAGES } from '../utils/constants';
+import { genericSync } from '../utils/genericSync';
+import { drive_v3 } from 'googleapis';
+import { UserConfig } from './config/UserConfig';
 
 export class SyncRoutine {
   private flavorizations: Raw<FlavorizationRecord>[] = [];
@@ -25,12 +29,11 @@ export class SyncRoutine {
 
   async run() {
     await this._download();
-
-    this.translations = await this.config.sheetsCache.getTranslations();
-    this.flavorizations = await this.config.sheetsCache.getFlavorizations();
-
     await this._flavorize();
     await this._analyze();
+    if (Math.random() > 5) {
+      await this._readPermissions();
+    }
     await this._setPermissions();
     await this._upload();
   }
@@ -43,6 +46,9 @@ export class SyncRoutine {
     for (const sheet of sheetNames) {
       await sheetsCache.downloadSheet(sheet);
     }
+
+    this.translations = await sheetsCache.getTranslations();
+    this.flavorizations = await sheetsCache.getFlavorizations();
   }
 
   private async _flavorize() {
@@ -88,8 +94,87 @@ export class SyncRoutine {
       return;
     }
 
-    // console.log(await this.config.googleSheets.getProtectedRanges());
-    console.log(await this.config.googleSheets.getSharedAccounts());
+    const { configManager, googleSheets } = this.config;
+    await genericSync<drive_v3.Schema$Permission, UserConfig>({
+      async getAfter(): Promise<UserConfig[]> {
+        const config = await configManager.load();
+        return values(config.users);
+      },
+      async getBefore(): Promise<drive_v3.Schema$Permission[]> {
+        return googleSheets.getSharedAccounts();
+      },
+      async update(
+        before: drive_v3.Schema$Permission,
+        after: UserConfig,
+      ): Promise<void> {
+        if (before.role !== after.role) {
+          if (after.role !== 'editor' && after.role !== 'owner') {
+            return this.delete(before);
+          } else {
+            return this.insert(after);
+          }
+        }
+      },
+      async delete(r: drive_v3.Schema$Permission): Promise<void> {
+        await googleSheets.revokePermission(r.id!);
+      },
+      extractIdAfter(r: UserConfig): string {
+        return r.email;
+      },
+      extractIdBefore(r: drive_v3.Schema$Permission): string {
+        return r.emailAddress!;
+      },
+      async insert(r: UserConfig): Promise<void> {
+        await googleSheets.grantPermission(r.email);
+      },
+    });
+  }
+
+  private async _readPermissions() {
+    if (!this.options.setPermissions) {
+      return;
+    }
+
+    const { configManager, googleSheets } = this.config;
+    await genericSync<UserConfig, drive_v3.Schema$Permission>({
+      async getBefore(): Promise<UserConfig[]> {
+        const config = await configManager.load();
+        return values(config.users);
+      },
+      async getAfter(): Promise<drive_v3.Schema$Permission[]> {
+        return googleSheets.getSharedAccounts();
+      },
+      async update(
+        before: UserConfig,
+        after: drive_v3.Schema$Permission,
+      ): Promise<void> {
+        configManager.updateUserByEmail(before.email, {
+          email: after.emailAddress!,
+          role:
+            after.role === 'writer' || after.role === 'owner'
+              ? 'editor'
+              : 'reader',
+        });
+      },
+      async delete(r: UserConfig): Promise<void> {
+        configManager.removeUserByEmail(r.email);
+      },
+      extractIdBefore(r: UserConfig): string {
+        return r.email;
+      },
+      extractIdAfter(r: drive_v3.Schema$Permission): string {
+        return r.emailAddress!;
+      },
+      async insert(r: drive_v3.Schema$Permission): Promise<void> {
+        configManager.addUser(snakeCase(r.emailAddress!.split('@')[0]!), {
+          email: r.emailAddress!,
+          role: r.role === 'writer' || r.role === 'owner' ? 'editor' : 'reader',
+        });
+      },
+      async commit() {
+        await configManager.save();
+      },
+    });
   }
 
   private async _upload() {

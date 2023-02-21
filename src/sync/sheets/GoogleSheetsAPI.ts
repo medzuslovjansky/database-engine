@@ -1,5 +1,5 @@
 import { drive_v3, sheets_v4 } from 'googleapis';
-import { SHEET_IDs } from '../utils/constants';
+import { SHEET_IDs } from '../../utils/constants';
 import Sheets = sheets_v4.Sheets;
 import Drive = drive_v3.Drive;
 
@@ -26,7 +26,7 @@ export default class GoogleSheetsAPI {
 
   async getProtectedRanges() {
     const res = await this.sheets.spreadsheets.get({
-      spreadsheetId: SHEET_IDs.interslavic_intelligibility,
+      spreadsheetId: SHEET_IDs.test_sheet,
       ranges: [],
       includeGridData: false,
     });
@@ -43,17 +43,39 @@ export default class GoogleSheetsAPI {
     );
   }
 
-  async getSharedAccounts() {
+  async getSharedAccounts(): Promise<drive_v3.Schema$Permission[]> {
     const res = await this.drive.permissions.list({
-      fileId: SHEET_IDs.interslavic_intelligibility,
+      fileId: SHEET_IDs.test_sheet,
       fields: '*',
     });
 
     const editors = (res.data.permissions ?? []).filter(
       (p) => p.id && p.id !== 'anyoneWithLink',
     );
-
     return editors;
+  }
+
+  async revokePermission(permissionId: string) {
+    const res = await this.drive.permissions.delete({
+      fileId: SHEET_IDs.test_sheet,
+      permissionId,
+    });
+
+    return res.status;
+  }
+
+  async grantPermission(email: string) {
+    const res = await this.drive.permissions.create({
+      fileId: SHEET_IDs.test_sheet,
+      emailMessage: 'Od tutčas vy možete redagovati tablice. Dobrodošli!',
+      requestBody: {
+        type: 'user',
+        role: 'writer',
+        emailAddress: email,
+      },
+    });
+
+    return res.data;
   }
 
   async updateSameInLanguages(values: string[]) {
