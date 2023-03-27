@@ -1,4 +1,4 @@
-import type SheetsCache from './SheetsCache';
+import type SheetsCache from './cache/SheetsCache';
 import type GoogleSheetsAPI from './sheets/GoogleSheetsAPI';
 import type { ConfigManager } from './config/ConfigManager';
 

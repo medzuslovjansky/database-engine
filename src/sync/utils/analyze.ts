@@ -4,8 +4,8 @@ import {
   Raw,
   TranslationRecord,
 } from '../../types/tables';
-import { NATURAL_LANGUAGES } from '../../utils/constants';
-import { leftJoin } from '../../utils/sql';
+import { NATURAL_LANGUAGES } from '../constants';
+import { leftJoin } from './sql';
 
 export function* analyze(
   translations: Raw<TranslationRecord>[],

@@ -9,9 +9,9 @@ import type {
   FlavorizationRecord,
   Raw,
   TranslationRecord,
-} from '../types/tables';
-import { GIDs } from '../utils/constants';
-import { parseFile, writeFile } from '../utils/csv';
+} from '../../types/tables';
+import { GIDs } from '../constants';
+import { parseFile, writeFile } from './csv';
 
 export default class SheetsCache {
   constructor(private readonly rootDir: string) {}

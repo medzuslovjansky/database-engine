@@ -1,5 +1,5 @@
 import { CommandBuilder } from 'yargs';
-import { GIDs, LANGS, NATURAL_LANGUAGES } from '../utils/constants';
+import { GIDs, LANGS, NATURAL_LANGUAGES } from '../sync/constants';
 import {
   ConfigManagerFactory,
   GoogleSheetsAPI,
@@ -7,7 +7,7 @@ import {
   SyncOptions,
   SyncRoutine,
 } from '../sync';
-import { GoogleAuthService } from '../utils/gsheets';
+import { GoogleAuthService } from '../sync/google/auth';
 
 export const command = 'sync [options]';
 

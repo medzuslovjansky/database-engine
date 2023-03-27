@@ -9,8 +9,8 @@ import {
 } from '../types/tables';
 import { flavorize } from './utils/flavorize';
 import { analyze } from './utils/analyze';
-import { NATURAL_LANGUAGES } from '../utils/constants';
-import { genericSync } from '../utils/genericSync';
+import { NATURAL_LANGUAGES } from './constants';
+import { genericSync } from './utils/genericSync';
 import { drive_v3 } from 'googleapis';
 import { UserConfig } from './config/UserConfig';
 

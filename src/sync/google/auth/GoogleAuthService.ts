@@ -6,6 +6,7 @@ export class GoogleAuthService {
   private readonly authStrategy: GoogleAuthStrategy;
 
   constructor(env: NodeJS.ProcessEnv = process.env) {
+    // TODO: make it less hardcoded
     if (env.NODE_ENV === 'production') {
       this.authStrategy = new GoogleServiceAccountAuthStrategy();
     } else {

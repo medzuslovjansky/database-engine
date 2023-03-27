@@ -3,8 +3,8 @@ import {
   Raw,
   TranslationRecord,
 } from '../../types/tables';
-import { NATURAL_LANGUAGES } from '../../utils/constants';
-import { leftJoin } from '../../utils/sql';
+import { NATURAL_LANGUAGES } from '../constants';
+import { leftJoin } from './sql';
 import { core, parse } from '@interslavic/steen-utils';
 import { flavorizers, Odometer } from '../../index';
 
