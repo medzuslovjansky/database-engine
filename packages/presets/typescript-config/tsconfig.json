@@ -1,8 +1,5 @@
 {
   "compilerOptions": {
-    "rootDir": "src",
-    "outDir": "dist",
-
     "target": "es2019",
     "module": "commonjs",
     "importHelpers": true,
@@ -24,16 +21,6 @@
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true,
-  },
-  "exclude": [
-    "__e2e__/**/*.ts",
-    "dist/**/*.ts",
-    "jest.config.ts"
-  ],
-  "typedocOptions": {
-    "entryPoints": ["src/index.ts"],
-    "out": "dist/docs",
-    "hideGenerator": true
+    "forceConsistentCasingInFileNames": true
   }
 }

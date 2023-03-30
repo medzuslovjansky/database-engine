@@ -1,0 +1,22 @@
+---
+id: 1wXjUu15x6hSpDzDUbLVUwLgDua2DyXs-xjpxGJvFCno
+permissions:
+  admin: owner
+  lyer: editor
+  big_l: editor
+  michal_swat: editor
+  m_perelygina: editor
+  k_rabkin: editor
+  noomorph: editor
+sheets:
+  - name: flavorizations
+  - name: be
+  - name: bg
+  - name: cs
+  - name: hr
+  - name: mk
+  - name: pl
+  - name: ru
+  - name: sk
+  - name: sl
+  - name: uk

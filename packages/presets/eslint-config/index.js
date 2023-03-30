@@ -1,8 +1,6 @@
-{
+module.exports = {
   "env": {
-    "browser": true,
     "node": true,
-    "jest": true
   },
   "extends": [
     "eslint:recommended",
@@ -27,6 +25,9 @@
   "overrides": [
     {
       "files": ["*.test.ts"],
+      "env": {
+        "jest": true
+      }
       "rules": {
         "@typescript-eslint/no-explicit-any": "off"
       }
@@ -37,4 +38,4 @@
     "dist",
     "jest.config.ts"
   ]
-}
+};
