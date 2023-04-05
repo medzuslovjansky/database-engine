@@ -1,0 +1,7 @@
+{
+  "extends": "@interslavic/typescript-config-razumlivost",
+  "compilerOptions": {
+    "rootDir": "src",
+    "outDir": "dist"
+  }
+}

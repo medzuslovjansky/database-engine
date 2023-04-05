@@ -24,6 +24,7 @@
     "zx": "^7.1.1"
   },
   "workspaces": [
-    "packages/*"
+    "packages/*",
+    "packages/presets/*"
   ]
 }
