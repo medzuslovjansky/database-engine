@@ -1,3 +1,3 @@
 export type SecretsConfig = {
-  encryptionKey?: string;
+  encryption_key?: string;
 };

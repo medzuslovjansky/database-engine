@@ -29,6 +29,7 @@ module.exports = {
       "newlines-between": "always"
     }],
     "unicorn/filename-case": "off",
+    "unicorn/prefer-module": "off",
   },
   "overrides": [
     {

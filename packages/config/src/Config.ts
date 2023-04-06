@@ -1,13 +1,13 @@
 import { DecryptionVisitor, EncryptionVisitor } from './encryption';
 import { ConfigLoader, SerializerVisitor } from './serialization';
-import { AggregatedConfigManager } from './managers/AggregatedConfigManager';
+import { AggregatedConfigManager } from './managers';
 import { AggregatedConfigStructure } from './utils';
 import type { AggregatedConfig } from './dto';
 
 export class Config {
-  protected manager: AggregatedConfigManager;
-  protected structure: AggregatedConfigStructure;
-  public config: AggregatedConfig;
+  protected manager!: AggregatedConfigManager;
+  protected structure!: AggregatedConfigStructure;
+  public config!: AggregatedConfig;
 
   constructor(protected readonly rootDirectory: string) {}
 
@@ -26,8 +26,11 @@ export class Config {
   async load() {
     const loader = new ConfigLoader(this.rootDirectory);
     this.config = await loader.load();
+    this.manager = new AggregatedConfigManager(this.config);
     this.structure = new AggregatedConfigStructure(this.config);
     this._decryptConfig();
+
+    return this;
   }
 
   async save() {
@@ -36,7 +39,7 @@ export class Config {
   }
 
   private get _encryptionKey(): string | undefined {
-    return this.config.secrets.encryptionKey;
+    return this.config.secrets.encryption_key;
   }
 
   private _decryptConfig() {

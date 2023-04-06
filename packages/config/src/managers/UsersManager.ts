@@ -1,9 +1,9 @@
 import findKey from 'lodash/findKey';
 import merge from 'lodash/merge';
 
-import { UserConfig, UsersConfig } from '../dto';
+import type { UserConfig, UsersConfig } from '../dto';
 
-import { AggregatedConfigManager } from './AggregatedConfigManager';
+import type { AggregatedConfigManager } from './AggregatedConfigManager';
 
 export class UsersManager {
   constructor(protected readonly manager: AggregatedConfigManager) {}
@@ -13,14 +13,14 @@ export class UsersManager {
   }
 
   public addUser(id: string, user: UserConfig): void {
-    this.config.users[id] = user;
+    this.config[id] = user;
   }
 
-  public updateUserById(id: string, user: UserConfig): void {
+  public updateUserById(id: string, user: Partial<UserConfig>): void {
     merge(this.config[id], user);
   }
 
-  public updateUserByEmail(email: string, user: UserConfig): void {
+  public updateUserByEmail(email: string, user: Partial<UserConfig>): void {
     const id = this._findIdByEmail(email);
     if (id) {
       this.updateUserById(id, user);

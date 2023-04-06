@@ -1,12 +1,12 @@
 import { createDecipheriv } from 'node:crypto';
 
-import type { UserConfig } from '../dto';
+import type { UserConfig, UserID } from '../dto';
 import type { ConfigVisitorSync } from '../types';
 
 export class DecryptionVisitor implements ConfigVisitorSync {
   constructor(private readonly _key: string) {}
 
-  visitUserConfig(user: UserConfig): void {
+  visitUserConfig(_id: UserID, user: UserConfig): void {
     user.email = this._decryptValue(this._key, user.email);
   }
 
@@ -23,6 +23,7 @@ export class DecryptionVisitor implements ConfigVisitorSync {
       decipher.update(Buffer.from(encrypted, 'base64')),
       decipher.final(),
     ]);
+
     return decrypted.toString();
   }
 }

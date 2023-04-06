@@ -8,6 +8,6 @@ export class SecretsManager {
   }
 
   updateEncryptionKey(newKey: string | undefined): void {
-    this.config.encryptionKey = newKey;
+    this.config.encryption_key = newKey;
   }
 }

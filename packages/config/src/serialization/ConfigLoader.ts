@@ -41,11 +41,7 @@ export class ConfigLoader {
       const spreadsheets = await Promise.all(
         spreadsheetsFiles.map(async (file) => {
           const spreadSheetId = path.basename(file, '.yml');
-          const spreadSheetConfigPath = path.join(
-            this.rootDirectory,
-            spreadsheetsDirectory,
-            file,
-          );
+          const spreadSheetConfigPath = path.join(spreadsheetsDirectory, file);
           const spreadSheetConfig = yaml.parse(
             await fs.readFile(spreadSheetConfigPath, 'utf8'),
           );

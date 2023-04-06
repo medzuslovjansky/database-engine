@@ -1,4 +1,4 @@
-import { UserID } from './UsersConfig';
+import type { UserID } from './UsersConfig';
 
 export type SpreadsheetsConfig = Record<SpreadsheetID, SpreadsheetConfig>;
 

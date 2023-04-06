@@ -9,9 +9,9 @@ import type {
   SpreadsheetConfig,
   UsersConfig,
 } from '../dto';
-import type { ConfigVisitor } from '../types';
+import type { ConfigVisitorAsync } from '../types';
 
-export class SerializerVisitor implements ConfigVisitor {
+export class SerializerVisitor implements ConfigVisitorAsync {
   constructor(protected readonly rootDirectory: string) {}
 
   async visitAggregatedConfig(config: AggregatedConfig): Promise<void> {
