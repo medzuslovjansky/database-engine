@@ -1,1 +1,1 @@
-import {  } from './managers'
+import {} from './managers';

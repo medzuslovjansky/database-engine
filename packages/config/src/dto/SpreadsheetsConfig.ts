@@ -1,4 +1,4 @@
-import {UserID} from "./UsersConfig";
+import { UserID } from './UsersConfig';
 
 export type SpreadsheetsConfig = Record<SpreadsheetID, SpreadsheetConfig>;
 
@@ -11,7 +11,7 @@ export type SpreadsheetConfig = {
   sheets: SheetConfig[];
 };
 
-export type UserRole = "owner" | "writer" | "reader";
+export type UserRole = 'owner' | 'writer' | 'reader';
 
 export type SheetConfig = {
   /**

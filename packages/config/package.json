@@ -8,6 +8,7 @@
   },
   "devDependencies": {
     "@interslavic/eslint-config-razumlivost": "^1.0.0",
+    "@interslavic/prettier-config-razumlivost": "^1.0.0",
     "@interslavic/typescript-config-razumlivost": "^1.0.0",
     "@types/jest": "^29.0.0",
     "@types/node": "^16.11.6",
@@ -21,5 +22,9 @@
     "lodash": "^4.17.21",
     "tslib": "^2.4.0"
   },
-  "license": "MIT"
+  "license": "MIT",
+  "prettier": "@interslavic/prettier-config-razumlivost",
+  "eslintConfig": {
+    "extends": "@interslavic/razumlivost"
+  }
 }

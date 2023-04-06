@@ -1,8 +1,9 @@
-import {createCipheriv, randomBytes} from "crypto";
-import type {UserConfig} from "../dto";
-import type {ConfigVisitor} from "../types";
+import { createCipheriv, randomBytes } from 'node:crypto';
 
-export class EncryptionVisitor implements ConfigVisitor {
+import type { UserConfig } from '../dto';
+import type { ConfigVisitorSync } from '../types';
+
+export class EncryptionVisitor implements ConfigVisitorSync {
   constructor(private readonly _key: string) {}
 
   visitUserConfig(user: UserConfig): void {

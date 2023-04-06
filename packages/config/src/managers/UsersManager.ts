@@ -1,10 +1,12 @@
 import findKey from 'lodash/findKey';
 import merge from 'lodash/merge';
-import {UserConfig, UsersConfig} from "../dto";
-import {ConfigManager} from "./ConfigManager";
+
+import { UserConfig, UsersConfig } from '../dto';
+
+import { AggregatedConfigManager } from './AggregatedConfigManager';
 
 export class UsersManager {
-  constructor(protected readonly manager: ConfigManager) {}
+  constructor(protected readonly manager: AggregatedConfigManager) {}
 
   get config(): UsersConfig {
     return this.manager.config.users;

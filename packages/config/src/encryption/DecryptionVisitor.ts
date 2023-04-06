@@ -1,9 +1,9 @@
-import {createDecipheriv} from "crypto";
+import { createDecipheriv } from 'node:crypto';
 
-import type {UserConfig} from "../dto";
-import type {ConfigVisitor} from "../types";
+import type { UserConfig } from '../dto';
+import type { ConfigVisitorSync } from '../types';
 
-export class DecryptionVisitor implements ConfigVisitor {
+export class DecryptionVisitor implements ConfigVisitorSync {
   constructor(private readonly _key: string) {}
 
   visitUserConfig(user: UserConfig): void {
