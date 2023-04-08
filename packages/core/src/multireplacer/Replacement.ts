@@ -1,4 +1,4 @@
-import { Rule } from './Rule';
+import type { Rule } from './Rule';
 
 export class Replacement<Value = unknown, Context = unknown> {
   constructor(

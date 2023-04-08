@@ -19,17 +19,17 @@ export default () =>
     .rule('Big Yus JU', (r) => r.regexp(/jų/, ['ju']))
     .rule('Big Yus', (r) => r.regexp(/ų/, ['u', 'o']))
     .rule('U/W', (r) => r.regexp(/ù/, ['v', 'u']))
-    .rule('Fleeting E', (r) => r.regexp(/[ėè]/, ['e', '']))
+    .rule('Fleeting E', (r) => r.regexp(/[èė]/, ['e', '']))
     .rule('Fleeting O', (r) => r.regexp(/[òȯ]/, ['o', '']))
     .rule('Syllabic Soft R', (r) =>
-      r.regexp(/([^aåeěėęijoȯuųy])ŕ([^aåeěėęijoȯuųy])/, [
+      r.regexp(/([^aeijouyåėęěųȯ])ŕ([^aeijouyåėęěųȯ])/, [
         '$1jer$2',
         '$1rje$2',
         '$1rjo$2',
       ]),
     )
     .rule('Syllabic Hard R', (r) =>
-      r.regexp(/([^aåeěėęijoȯuųy])[rṙ]([^aåeěėęijoȯuųy])/, [
+      r.regexp(/([^aeijouyåėęěųȯ])[rṙ]([^aeijouyåėęěųȯ])/, [
         '$1or$2',
         '$1ro$2',
         '$1er$2',
@@ -37,7 +37,7 @@ export default () =>
       ]),
     )
     .rule('Syllabic L', (r) =>
-      r.regexp(/([^aåeěėęijoȯuųy])[ŀl]([^aåeěėęijoȯuųy])/, [
+      r.regexp(/([^aeijouyåėęěųȯ])[lŀ]([^aeijouyåėęěųȯ])/, [
         '$1oŀ$2',
         '$1joŀ$2',
         '$1ŀo$2',
@@ -77,7 +77,7 @@ export default () =>
     .rule('Iz-', (r) => r.regexp(/^(ne|bez)?iz/, ['$1vy', '$1iz', '$1s']))
     .rule('Od-', (r) => r.regexp(/od/, ['od', 'ot']))
     .rule('Naj-', (r) => r.regexp(/naj/, ['naj', 'nai']))
-    .rule('Muffled Z', (r) => r.regexp(/z([pftsšk])/, ['s$1', 'z$1']))
+    .rule('Muffled Z', (r) => r.regexp(/z([fkpstš])/, ['s$1', 'z$1']))
     .rule('Prefix Separator', (r) => r.regexp(/’/, ['']))
     //#endregion
     //#region По частям речи
@@ -99,7 +99,7 @@ export default () =>
     )
     .rule(
       'Инфинитив (чь)',
-      (r) => r.regexp(/[kg]ti\b/, ['čь']),
+      (r) => r.regexp(/[gk]ti\b/, ['čь']),
       (p) => p.partOfSpeech('v.'),
     )
     .rule(
@@ -129,7 +129,7 @@ export default () =>
     )
     .rule(
       'Удвоение НН',
-      (r) => r.regexp(/([aeiouy])n([aeiyo])\b/, ['$1nn$2', '$1n$2']),
+      (r) => r.regexp(/([aeiouy])n([aeioy])\b/, ['$1nn$2', '$1n$2']),
       (p) => p.partOfSpeech('adj.,noun'),
     )
     .rule(
@@ -146,20 +146,20 @@ export default () =>
     //#region Кириллизација
     .section('Кириллизација')
     .rule('Yot-Glas', (r) => r.regexp(/([aeiouy])j([ei])/, ['$1$2']))
-    .rule('Yot-Ja', (r) => r.regexp(/([^aåeėioȯuųy])ja/, ['$1я', '$1ъя']))
+    .rule('Yot-Ja', (r) => r.regexp(/([^aeiouyåėųȯ])ja/, ['$1я', '$1ъя']))
     .rule('Yot-Ije', (r) => r.regexp(/ьje/, ['ье', 'ие']))
     .rule('Yot-Je', (r) =>
-      r.regexp(/([^aåeėioȯuųyь])je/, ['$1ье', '$1ъе', '$1е']),
+      r.regexp(/([^aeiouyåėųȯь])je/, ['$1ье', '$1ъе', '$1е']),
     )
     .rule(
       'Yot-JiEnd',
-      (r) => r.regexp(/([^aåeėioȯuųyь])ji\b/, ['$1ий']),
+      (r) => r.regexp(/([^aeiouyåėųȯь])ji\b/, ['$1ий']),
       (p) => p.partOfSpeech('adj.'),
     )
-    .rule('Yot-Ji', (r) => r.regexp(/([^aåeėioȯuųyь])ji/, ['$1ьи', '$1и']))
-    .rule('Yot-Jo', (r) => r.regexp(/([^aåeėioȯuųyь])jo/, ['$1ъё', '$1ьо']))
-    .rule('Yot-Ju', (r) => r.regexp(/([^aåeėioȯuųyь])ju/, ['$1ю', '$1ъю']))
-    .rule('Yot-Jy', (r) => r.regexp(/([^aåeėioȯuųyь])jy/, ['$1ы']))
+    .rule('Yot-Ji', (r) => r.regexp(/([^aeiouyåėųȯь])ji/, ['$1ьи', '$1и']))
+    .rule('Yot-Jo', (r) => r.regexp(/([^aeiouyåėųȯь])jo/, ['$1ъё', '$1ьо']))
+    .rule('Yot-Ju', (r) => r.regexp(/([^aeiouyåėųȯь])ju/, ['$1ю', '$1ъю']))
+    .rule('Yot-Jy', (r) => r.regexp(/([^aeiouyåėųȯь])jy/, ['$1ы']))
     .rule('Cyrl-Standard', (r) =>
       r.map({
         a: 'а',
@@ -190,7 +190,7 @@ export default () =>
         ž: 'ж',
       }),
     )
-    .rule('Губная', (r) => r.regexp(/([бпвмф])ъя/, ['$1ля', '$1ъя']))
+    .rule('Губная', (r) => r.regexp(/([бвмпф])ъя/, ['$1ля', '$1ъя']))
     .rule('Йотация', (r) =>
       r.map({
         ьа: 'я',

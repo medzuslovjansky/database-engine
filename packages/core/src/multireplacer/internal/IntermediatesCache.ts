@@ -1,4 +1,4 @@
-import { Intermediate } from '../Intermediate';
+import type { Intermediate } from '../Intermediate';
 
 export class IntermediatesCache<Context> {
   private readonly map = new Map<string, Intermediate<Context>>();

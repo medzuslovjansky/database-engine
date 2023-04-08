@@ -1,6 +1,7 @@
 import { customExecutors } from '../../customization';
 import { MapExecutor, RegExpExecutor } from '../../multireplacer';
-import { ExecutorCallback } from './ExecutorCallback';
+
+import type { ExecutorCallback } from './ExecutorCallback';
 
 export class MultireplacerRuleBuilder {
   executor: ExecutorCallback | null = null;

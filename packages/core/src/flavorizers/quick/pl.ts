@@ -59,7 +59,7 @@ export default () =>
     .section('Verbs')
     .rule(
       'Alteration (-kti)',
-      (r) => r.regexp(/[kg]ti(?=$|\s)/, ['c']),
+      (r) => r.regexp(/[gk]ti(?=$|\s)/, ['c']),
       (p) => p.partOfSpeech('v.'),
     )
     .rule(
@@ -75,7 +75,7 @@ export default () =>
     .rule('-žȯl-', (r) => r.regexp(/žȯl/, ['žól']))
     .rule('Syllabic L', (r) => r.regexp(/ȯl/, ['lu', 'el']))
     .rule('Syllabic R', (r) =>
-      r.regexp(/(?<=[bdghkmpstv])r(?=[bčdḓđfgkmnsštťvz])/, ['r', 'ar']),
+      r.regexp(/(?<=[bdghkmpstv])r(?=[bdfgkmnstvzčđšťḓ])/, ['r', 'ar']),
     )
     .rule('ńsk', (r) => r.regexp(/nsk(?=.?$|.?\s)/, ['ńsk']))
     .rule('ij? → i', (r) => r.regexp(/ij(?=.$|.\s)/, ['i']))
@@ -96,7 +96,7 @@ export default () =>
     .rule('Yat', (r) => r.regexp(/ě/, ['ie']))
     .rule(
       '[čšŕž] i→y',
-      (r) => r.regexp(/([čšŕž])i/, ['$1y']),
+      (r) => r.regexp(/([čŕšž])i/, ['$1y']),
       (p) => p.genesis('?S'),
     )
     .rule('Ų', (r) => r.regexp(/ų/, ['ą', 'ę']))

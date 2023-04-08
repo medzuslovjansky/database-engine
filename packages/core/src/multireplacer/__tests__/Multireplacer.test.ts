@@ -1,7 +1,7 @@
+import type { Predicate } from '..';
 import {
   Intermediate,
   Multireplacer,
-  Predicate,
   ObjectPredicateWrapper,
   Rule,
   RegExpExecutor,
@@ -62,7 +62,7 @@ describe('Multireplacer', () => {
   }
 
   test('regexpRule', () => {
-    const rule = regexpRule('1', /[aeiovuy]+/, [
+    const rule = regexpRule('1', /[aeiouvy]+/, [
       '',
       (match: string) => `${match}^${match.length}`,
     ]);

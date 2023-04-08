@@ -1,4 +1,5 @@
-import { core, parse } from '@interslavic/steen-utils';
+import type { core } from '@interslavic/steen-utils';
+import { parse } from '@interslavic/steen-utils';
 
 import { Odometer } from '../Odometer';
 import { Intermediate } from '../../multireplacer';

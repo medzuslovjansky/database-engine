@@ -1,5 +1,5 @@
-import { Intermediate } from '../Intermediate';
-import { Replacement } from '../Replacement';
+import type { Intermediate } from '../Intermediate';
+import type { Replacement } from '../Replacement';
 
 export interface Executor<Context> {
   execute(intermediate: Intermediate<Context>): Intermediate<Context>[];

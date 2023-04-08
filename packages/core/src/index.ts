@@ -1,15 +1,7 @@
-import * as dsl from './dsl';
-import * as flavorizers from './flavorizers';
-import { Odometer } from './odometer';
-import {
+export * as dsl from './dsl';
+export { Odometer } from './odometer';
+export * as flavorizers from './flavorizers';
+export {
   IMultireplacerWrapper as MultireplacerWrapper,
   MultireplacerBuilder,
 } from './dsl/multireplacer';
-
-export {
-  dsl,
-  flavorizers,
-  MultireplacerWrapper,
-  MultireplacerBuilder,
-  Odometer,
-};

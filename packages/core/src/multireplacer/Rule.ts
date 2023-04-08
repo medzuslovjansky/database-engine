@@ -1,7 +1,7 @@
 import { PredicateGroup } from './predicates';
-import { Intermediate } from './Intermediate';
-import { IntermediatesCache } from './internal/IntermediatesCache';
-import { Executor } from './executors/Executor';
+import type { Intermediate } from './Intermediate';
+import type { IntermediatesCache } from './internal/IntermediatesCache';
+import type { Executor } from './executors/Executor';
 import { Replacement } from './Replacement';
 
 export class Rule<Context> {
@@ -41,6 +41,11 @@ export class Rule<Context> {
     }
 
     return this.executor.indexOf(replacement);
+  }
+
+  public includes(replacement: Replacement<unknown, Context>): boolean {
+    // eslint-disable-next-line unicorn/prefer-includes
+    return this.indexOf(replacement) >= 0;
   }
 
   public apply(intermediate: Intermediate<Context>): Intermediate<Context>[] {

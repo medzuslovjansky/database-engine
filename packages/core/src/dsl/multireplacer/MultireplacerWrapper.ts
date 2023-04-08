@@ -1,6 +1,7 @@
 import { core, parse, types } from '@interslavic/steen-utils';
-import { Multireplacer, Rule } from '../../multireplacer';
-import {
+
+import type { Multireplacer, Rule } from '../../multireplacer';
+import type {
   FlavorizationContext,
   FlavorizationIntermediate,
 } from '../../customization';
@@ -67,11 +68,11 @@ export class MultireplacerWrapper implements IMultireplacerWrapper {
       arg3,
     );
     const synset =
-      typeof arg1 !== 'string'
-        ? (arg2 as core.Synset)
-        : parse.synset(arg1, {
+      typeof arg1 === 'string'
+        ? parse.synset(arg1, {
             isPhrase: context.partOfSpeech?.name === 'phrase',
-          });
+          })
+        : (arg2 as core.Synset);
 
     return this.multireplacer.process(toValues(synset), context);
   }
@@ -86,15 +87,15 @@ export class MultireplacerWrapper implements IMultireplacerWrapper {
     maybeGenesis?: string,
   ): FlavorizationContext {
     return this._hydrateFlavorizationContext(
-      typeof maybeSource !== 'string'
-        ? maybeSource
-        : {
+      typeof maybeSource === 'string'
+        ? {
             partOfSpeech:
               typeof maybePartOfSpeech === 'string'
                 ? maybePartOfSpeech
                 : undefined,
             genesis: maybeGenesis,
-          },
+          }
+        : maybeSource,
     );
   }
 
@@ -110,9 +111,9 @@ export class MultireplacerWrapper implements IMultireplacerWrapper {
     }
 
     if (raw.genesis && typeof raw.genesis === 'string') {
-      context.genesis = !Reflect.has(types.Genesis, raw.genesis)
-        ? parse.genesis(raw.genesis)
-        : (raw.genesis as keyof typeof types.Genesis);
+      context.genesis = Reflect.has(types.Genesis, raw.genesis)
+        ? (raw.genesis as keyof typeof types.Genesis)
+        : parse.genesis(raw.genesis);
     }
 
     return context;

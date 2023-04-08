@@ -32,7 +32,7 @@ export class RuleList<Context> {
 
     if (value instanceof Replacement) {
       for (const rule of this.rules) {
-        if (rule.indexOf(value) >= 0) {
+        if (rule.includes(value)) {
           return rule;
         }
       }

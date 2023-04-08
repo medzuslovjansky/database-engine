@@ -1,4 +1,4 @@
-import { Replacement } from './Replacement';
+import type { Replacement } from './Replacement';
 
 export class Intermediate<ContextClass = unknown> {
   public readonly value: string;
@@ -68,7 +68,7 @@ export class Intermediate<ContextClass = unknown> {
   }
 
   *chain(): IterableIterator<Intermediate<ContextClass>> {
-    // eslint-disable-next-line @typescript-eslint/no-this-alias
+    // eslint-disable-next-line @typescript-eslint/no-this-alias,unicorn/no-this-assignment
     let item: Intermediate<ContextClass> | null = this;
 
     while (item) {

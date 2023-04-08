@@ -1,7 +1,8 @@
 import sortedUniqBy from 'lodash/sortedUniqBy';
+
 import { IntermediatesCache, RuleList } from './internal';
 import { Intermediate } from './Intermediate';
-import { Rule } from './Rule';
+import type { Rule } from './Rule';
 
 export class Multireplacer<Context = unknown> {
   public readonly rules = new RuleList<Context>();

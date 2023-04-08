@@ -14,7 +14,7 @@ export default () =>
     .section('Roots')
     .rule('Transposition (kto-tko)', (r) => r.regexp(/kto/, ['kto', 'tko']))
     .rule('Transposition (vse-sve)', (r) =>
-      r.regexp(/v[sś](?=[aeěiuųy])/, ['vs', 'sv']),
+      r.regexp(/v[sś](?=[aeiuyěų])/, ['vs', 'sv']),
     )
     .rule('Silencing (-gda-)', (r) => r.regexp(/gd/, ['d']))
     //#endregion
@@ -45,12 +45,12 @@ export default () =>
     )
     .rule(
       'Alteration (-ky)',
-      (r) => r.regexp(/([^aåeěėęijoȯuųy])ky(?=$|\s)/, ['$1ky', '$1ak']),
+      (r) => r.regexp(/([^aeijouyåėęěųȯ])ky(?=$|\s)/, ['$1ky', '$1ak']),
       (p) => p.partOfSpeech('adj.'),
     )
     .rule(
       'Alteration (-ny)',
-      (r) => r.regexp(/([^aåeěėęijoȯuųy])ny(?=$|\s)/, ['$1ny', '$1an', '$1ky']),
+      (r) => r.regexp(/([^aeijouyåėęěųȯ])ny(?=$|\s)/, ['$1ny', '$1an', '$1ky']),
       (p) => p.partOfSpeech('adj.'),
     )
     .rule(
@@ -75,7 +75,7 @@ export default () =>
     //#region Phonetical changes
     .section('Phonetical changes')
     .rule('collapse to ć', (r) => r.regexp(/(dt|kt|šn)/, ['$1', 'ć']))
-    .rule('Muffled (-j-)', (r) => r.regexp(/([bpvmf])j/, ['$1j', '$1lj']))
+    .rule('Muffled (-j-)', (r) => r.regexp(/([bfmpv])j/, ['$1j', '$1lj']))
     .rule('ŠČ-ŠT', (r) => r.regexp(/šč/, ['št']))
     .rule('DJ', (r) => r.regexp(/dj/, ['dj', 'đ']))
     .rule('DŽ', (r) => r.regexp(/dž/, ['dž', 'đ']))

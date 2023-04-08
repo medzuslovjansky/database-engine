@@ -1,3 +1,1 @@
-import multireplacer from './multireplacer';
-
-export { multireplacer };
+export { default as multireplacer } from './multireplacer';

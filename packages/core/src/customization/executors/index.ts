@@ -2,9 +2,11 @@ import identity from 'lodash/identity';
 import upperFirst from 'lodash/upperFirst';
 import toLower from 'lodash/toLower';
 import toUpper from 'lodash/toUpper';
-import { FunctionExecutor, Rule } from '../../multireplacer';
-import { FlavorizationContext } from '../FlavorizationContext';
-import { FlavorizationIntermediate } from '../FlavorizationIntermediate';
+
+import type { Rule } from '../../multireplacer';
+import { FunctionExecutor } from '../../multireplacer';
+import type { FlavorizationContext } from '../FlavorizationContext';
+import type { FlavorizationIntermediate } from '../FlavorizationIntermediate';
 
 type StringTransformer = (s: string) => string;
 
@@ -35,34 +37,32 @@ export const restoreCase = (rule: Rule<FlavorizationContext>) =>
         head = head.parent;
       }
 
-      if (!restoreFns) {
-        return [r.value];
-      } else {
-        return [
-          r.value.replace(
-            BY_WORD,
-            _restoreCaseFromMemo.bind(restoreFns.slice()),
-          ),
-        ];
-      }
+      return restoreFns
+        ? [r.value.replace(BY_WORD, _restoreCaseFromMemo.bind([...restoreFns]))]
+        : [r.value];
     }),
   );
 
 function _toLowerCaseWithMemo(this: StringTransformer[], s: string): string {
   const lower = toLower(s);
 
-  if (s === lower) {
-    this.push(identity);
-    return lower;
-  } else if (s === upperFirst(lower)) {
-    this.push(upperFirst);
-    return lower;
-  } else if (s === toUpper(lower)) {
-    this.push(toUpper);
-    return lower;
-  } else {
-    this.push(identity);
-    return s;
+  switch (s) {
+    case lower: {
+      this.push(identity);
+      return lower;
+    }
+    case upperFirst(lower): {
+      this.push(upperFirst);
+      return lower;
+    }
+    case toUpper(lower): {
+      this.push(toUpper);
+      return lower;
+    }
+    default: {
+      this.push(identity);
+      return s;
+    }
   }
 }
 

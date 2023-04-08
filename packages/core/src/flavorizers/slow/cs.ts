@@ -92,7 +92,7 @@ export default () =>
     .section('Verbs')
     .rule(
       'Term 1',
-      (r) => r.regexp(/([čšžř])at\b/, ['$1et']),
+      (r) => r.regexp(/([čřšž])at\b/, ['$1et']),
       (p) => p.partOfSpeech('v.'),
     )
     .rule(
@@ -168,7 +168,7 @@ export default () =>
     )
     .rule(
       'TODO: Alteration (-?ňa)',
-      (r) => r.regexp(/([^aeěiouy])ňa(?=$|\s)/, ['$1eň', '$1na']),
+      (r) => r.regexp(/([^aeiouyě])ňa(?=$|\s)/, ['$1eň', '$1na']),
       (p) => p.partOfSpeech('f.'),
     )
     .rule(
@@ -178,7 +178,7 @@ export default () =>
     )
     .rule(
       'TODO: Alternation (-?a)',
-      (r) => r.regexp(/([cčšřžjľďťň])a(?=$|\s)/, ['$1e']),
+      (r) => r.regexp(/([cjčďľňřšťž])a(?=$|\s)/, ['$1e']),
       (p) => p.partOfSpeech('f.').and(p.genesis('?S')),
     )
     .rule(
@@ -191,12 +191,12 @@ export default () =>
     .section('Nouns (neuter)')
     .rule(
       'TODO: Replacement (-aní)',
-      (r) => r.regexp(/([žščřcjďťň])aní(?=$|\s)/, ['$1ení']),
+      (r) => r.regexp(/([cjčďňřšťž])aní(?=$|\s)/, ['$1ení']),
       (p) => p.partOfSpeech('n.'),
     )
     .rule(
       'Term 11',
-      (r) => r.regexp(/([cčsšrřzžbvmplľdďtťnň])j([aei])(?=$|\s)/, ['$1jí']),
+      (r) => r.regexp(/([b-dl-npr-tvzčďľňřšťž])j([aei])(?=$|\s)/, ['$1jí']),
       (p) => p.partOfSpeech('n.'),
     )
     //#endregion
@@ -224,7 +224,7 @@ export default () =>
     .rule('Replacement (-cvě-)', (r) => r.regexp(/cvě/, ['kvě']))
     .rule(
       'TODO: -?ju',
-      (r) => r.regexp(/([bcfghklľmpqrsšvzžďťň])ju/, ['$1i']),
+      (r) => r.regexp(/([bcf-hk-mp-svzďľňšťž])ju/, ['$1i']),
       (p) => p.genesis('?S'),
     )
     .rule('Replacement (-mhl-)', (r) => r.regexp(/mhl/, ['mlh']))
@@ -233,15 +233,15 @@ export default () =>
     .section('Bigrams')
     .rule(
       'Replacement (-ri?-)',
-      (r) => r.regexp(/ri(?![^aeěiouy])/, ['ři']),
+      (r) => r.regexp(/ri(?![^aeiouyě])/, ['ři']),
       (p) => p.genesis('?S'),
     )
     .rule('Alteration (-rě-)', (r) => r.regexp(/rě/, ['ře', 'ří']))
     .rule('TODO: Replacement (-?j-)', (r) =>
-      r.regexp(/([bcčfghklmpqřsšvzžďťň])j/, ['$1']),
+      r.regexp(/([bcf-hk-mpqsvzčďňřšťž])j/, ['$1']),
     )
     .rule('TODO: Replacement (-?ě-)', (r) =>
-      r.regexp(/([cčsšrřzžjlďťň])ě/, ['$1e']),
+      r.regexp(/([cjlrszčďňřšťž])ě/, ['$1e']),
     )
     .rule('TODO: Replacement: (-rj-)', (r) => r.regexp(/rj/, ['ř']))
     .rule('TODO: Replacement: (-av-)', (r) => r.regexp(/av(?=[rt])/, ['au']))

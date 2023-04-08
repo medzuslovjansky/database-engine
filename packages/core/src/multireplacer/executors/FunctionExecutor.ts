@@ -1,6 +1,7 @@
 import { Intermediate } from '../Intermediate';
-import { Replacement } from '../Replacement';
-import { Executor } from './Executor';
+import type { Replacement } from '../Replacement';
+
+import type { Executor } from './Executor';
 
 type IntermediateReplacerFunction<Context> = (
   intermediate: Intermediate<Context>,

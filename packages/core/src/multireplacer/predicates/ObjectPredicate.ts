@@ -1,4 +1,4 @@
-import { Intermediate } from '../Intermediate';
+import type { Intermediate } from '../Intermediate';
 
 export interface ObjectPredicate<Context> {
   appliesTo(value: Intermediate<Context>): boolean;

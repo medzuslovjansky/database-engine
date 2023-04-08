@@ -1,6 +1,6 @@
 // noinspection SpellCheckingInspection
 
-import generate from '../flavorizers/slow/mk';
+import generate from '../src/flavorizers/slow/mk';
 
 describe('Interslavic → Macedonian', () => {
   const mk = generate();

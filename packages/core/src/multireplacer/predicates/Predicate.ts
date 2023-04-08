@@ -1,5 +1,5 @@
-import { FunctionPredicate } from './FunctionPredicate';
-import { ObjectPredicate } from './ObjectPredicate';
+import type { FunctionPredicate } from './FunctionPredicate';
+import type { ObjectPredicate } from './ObjectPredicate';
 
 export type Predicate<Context> =
   | FunctionPredicate<Context>

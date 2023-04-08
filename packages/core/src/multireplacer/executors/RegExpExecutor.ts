@@ -1,6 +1,7 @@
-import { Executor } from './Executor';
 import { Intermediate } from '../Intermediate';
-import { Replacement } from '../Replacement';
+import type { Replacement } from '../Replacement';
+
+import type { Executor } from './Executor';
 
 type ReplacementValue = string | ((match: string, ...args: any[]) => string);
 

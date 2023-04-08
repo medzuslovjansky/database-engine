@@ -2,10 +2,11 @@ import identity from 'lodash/identity';
 import isMatch from 'lodash/isMatch';
 import pickBy from 'lodash/pickBy';
 import { parse as steenparse } from '@interslavic/steen-utils';
-import { PartOfSpeech } from '@interslavic/steen-utils/types';
-import { ObjectPredicate } from '../../multireplacer';
-import { FlavorizationContext } from '../FlavorizationContext';
-import { FlavorizationIntermediate } from '../FlavorizationIntermediate';
+import type { PartOfSpeech } from '@interslavic/steen-utils/types';
+
+import type { ObjectPredicate } from '../../multireplacer';
+import type { FlavorizationContext } from '../FlavorizationContext';
+import type { FlavorizationIntermediate } from '../FlavorizationIntermediate';
 
 export class PartOfSpeechFilter
   implements ObjectPredicate<FlavorizationContext>

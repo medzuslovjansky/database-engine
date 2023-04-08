@@ -10,6 +10,7 @@
   },
   "devDependencies": {
     "@interslavic/eslint-config-razumlivost": "^1.0.0",
+    "@interslavic/jest-config-razumlivost": "^1.0.0",
     "@interslavic/prettier-config-razumlivost": "^1.0.0",
     "@interslavic/typescript-config-razumlivost": "^1.0.0",
     "@types/jest": "^29.0.0",

@@ -14,15 +14,15 @@ export default () =>
       (r) => r.regexp(/ sę(?=$|\s)/, ['sę']),
       (p) => p.partOfSpeech('v.'),
     )
-    .rule('ARA-ALA', (r) => r.regexp(/(\S)([rl])å/, ['$1a$2a']))
+    .rule('ARA-ALA', (r) => r.regexp(/(\S)([lr])å/, ['$1a$2a']))
     .rule('ra[bz]', (r) => r.regexp(/rå(?=[bz])/, ['ra']))
     .rule('Č-ŠČ', (r) => r.regexp(/ć/, ['č']))
     .rule('ZŽ', (r) => r.regexp(/žđ/, ['zž']))
     .rule('ŽD', (r) => r.regexp(/đ/, ['dž']))
-    .rule('Muffled Z', (r) => r.regexp(/z(?=[pftsšk])/, ['s']))
+    .rule('Muffled Z', (r) => r.regexp(/z(?=[fkpstš])/, ['s']))
     .rule('Little Yus (J)', (r) => r.regexp(/ję/, ['ja']))
     .rule('Little Yus (Non-J)', (r) => r.regexp(/ę/, ['ьa']))
-    .rule('Lip', (r) => r.regexp(/([bpvmf])ja/, ['$1lja']))
+    .rule('Lip', (r) => r.regexp(/([bfmpv])ja/, ['$1lja']))
     .rule('Softening', (r) =>
       r.map({
         ď: 'dzь',

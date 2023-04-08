@@ -18,7 +18,7 @@ export default () =>
     )
     .rule(
       'Инфинитив (чь)',
-      (r) => r.regexp(/[kg]ti\b/, ['čь']),
+      (r) => r.regexp(/[gk]ti\b/, ['čь']),
       (p) => p.partOfSpeech('v.'),
     )
     .rule(
@@ -60,10 +60,10 @@ export default () =>
     .rule('Č-ŠČ', (r) => r.regexp(/ć/, ['č', 'šč']))
     .rule('ZŽ', (r) => r.regexp(/žđ/, ['zž']))
     .rule('ŽD', (r) => r.regexp(/đ/, ['žd', 'dž']))
-    .rule('Muffled Z', (r) => r.regexp(/z(?=[pftsšk])/, ['s']))
+    .rule('Muffled Z', (r) => r.regexp(/z(?=[fkpstš])/, ['s']))
     .rule('Little Yus (J)', (r) => r.regexp(/ję/, ['ja']))
     .rule('Little Yus (Non-J)', (r) => r.regexp(/ę/, ['ьa']))
-    .rule('Lip', (r) => r.regexp(/([bpvmf])ja/, ['$1lja']))
+    .rule('Lip', (r) => r.regexp(/([bfmpv])ja/, ['$1lja']))
     .rule('vų → ų', (r) => r.regexp(/(?<=^|\s)vų/, ['ų']))
     .rule('Softening', (r) =>
       r.map({

@@ -1,6 +1,6 @@
 // noinspection SpellCheckingInspection
 
-import generate from '../flavorizers/slow/bg';
+import generate from '../src/flavorizers/slow/bg';
 
 describe('Interslavic → Bulgarian', () => {
   const bg = generate();

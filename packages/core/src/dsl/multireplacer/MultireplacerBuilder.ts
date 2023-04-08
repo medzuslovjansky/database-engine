@@ -1,18 +1,14 @@
 import identity from 'lodash/identity';
-import {
-  Multireplacer,
-  Predicate,
-  PredicateGroup,
-  Rule,
-} from '../../multireplacer';
-import { MultireplacerConfig } from './MultireplacerConfig';
+
+import type { Predicate, PredicateGroup } from '../../multireplacer';
+import { Multireplacer, Rule } from '../../multireplacer';
+import type { FlavorizationContext } from '../../customization';
+
+import type { MultireplacerConfig } from './MultireplacerConfig';
 import { MultireplacerRuleBuilder } from './MultireplacerRuleBuilder';
 import { MultireplacerPredicateBuilder } from './MultireplacerPredicateBuilder';
-import {
-  IMultireplacerWrapper,
-  MultireplacerWrapper,
-} from './MultireplacerWrapper';
-import { FlavorizationContext } from '../../customization';
+import type { IMultireplacerWrapper } from './MultireplacerWrapper';
+import { MultireplacerWrapper } from './MultireplacerWrapper';
 
 export class MultireplacerBuilder {
   protected multireplacer = new Multireplacer<FlavorizationContext>();

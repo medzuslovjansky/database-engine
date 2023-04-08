@@ -4,7 +4,7 @@ const { test } = require('zora');
 
 const { parse } = require('@interslavic/steen-utils');
 
-const { Odometer, flavorizers } = require('..');
+const { Odometer, flavorizers } = require('../src');
 
 const { sr } = flavorizers.slow;
 

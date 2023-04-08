@@ -28,17 +28,16 @@ export function getEditingDistance(
   for (i = 1; i <= b.length; i++) {
     for (j = 1; j <= a.length; j++) {
       const delta = difference(b[i - 1], a[j - 1]);
-      if (delta === 0) {
-        matrix[i][j] = matrix[i - 1][j - 1];
-      } else {
-        matrix[i][j] = Math.min(
-          matrix[i - 1][j - 1] + delta, // substitution
-          Math.min(
-            matrix[i][j - 1] + 1, // insertion
-            matrix[i - 1][j] + 1,
-          ),
-        ); // deletion
-      }
+      matrix[i][j] =
+        delta === 0
+          ? matrix[i - 1][j - 1]
+          : Math.min(
+              matrix[i - 1][j - 1] + delta, // substitution
+              Math.min(
+                matrix[i][j - 1] + 1, // insertion
+                matrix[i - 1][j] + 1,
+              ),
+            );
     }
   }
 

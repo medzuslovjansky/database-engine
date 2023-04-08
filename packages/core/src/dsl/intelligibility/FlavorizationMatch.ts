@@ -1,9 +1,9 @@
-import {
+import type {
   LemmaIntermediate,
   FlavorizationIntermediate,
 } from '../../customization';
 
-import { FlavorizationDistance } from './FlavorizationDistance';
+import type { FlavorizationDistance } from './FlavorizationDistance';
 
 export type FlavorizationMatch = {
   source: FlavorizationIntermediate;

@@ -1,7 +1,9 @@
 import upperFirst from 'lodash/upperFirst';
-import { Executor } from './Executor';
+
 import { Intermediate } from '../Intermediate';
-import { Replacement } from '../Replacement';
+import type { Replacement } from '../Replacement';
+
+import type { Executor } from './Executor';
 
 export class MapExecutor<T> implements Executor<T> {
   protected readonly maxLength: number;
@@ -37,7 +39,7 @@ export class MapExecutor<T> implements Executor<T> {
     for (let i = 0; i < str.length; i++) {
       for (let l = this.maxLength; l >= 0; l--) {
         if (l > 0) {
-          const chunk = str.substr(i, l);
+          const chunk = str.slice(i, i + l);
           const transliteratedChunk = this.map.get(chunk);
           if (transliteratedChunk !== undefined) {
             worked = true;

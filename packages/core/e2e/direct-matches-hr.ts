@@ -1,6 +1,6 @@
 // noinspection SpellCheckingInspection
 
-import generate from '../flavorizers/slow/hr';
+import generate from '../src/flavorizers/slow/hr';
 
 describe('Interslavic → Croatian', () => {
   const hr = generate();

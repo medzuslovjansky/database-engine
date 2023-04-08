@@ -30,7 +30,7 @@ export default () =>
     .section('Nouns')
     .rule(
       'Feminization',
-      (r) => r.regexp(/([^aåeěėęijoȯuųy])(?=$|\s)/, ['$1', '$1a']),
+      (r) => r.regexp(/([^aeijouyåėęěųȯ])(?=$|\s)/, ['$1', '$1a']),
       (p) => p.partOfSpeech('m.'),
     )
     //#endregion
@@ -58,7 +58,7 @@ export default () =>
     .section('Verbs')
     .rule(
       'Alteration (-kti)',
-      (r) => r.regexp(/[kg]ti(?=$|\s)/, ['ć']),
+      (r) => r.regexp(/[gk]ti(?=$|\s)/, ['ć']),
       (p) => p.partOfSpeech('v.'),
     )
     .rule(
@@ -71,7 +71,7 @@ export default () =>
     .section('Phonetical changes')
     .rule('Syllabic L', (r) => r.regexp(/ȯl/, ['lu', 'il', 'el', 'o']))
     .rule('Syllabic R', (r) =>
-      r.regexp(/(?<=[bdghkmpstv])r(?=[bčdḓđfgkmnsštťvz])/, ['r', 'ar']),
+      r.regexp(/(?<=[bdghkmpstv])r(?=[bdfgkmnstvzčđšťḓ])/, ['r', 'ar']),
     )
     .rule('Unvoicing (-z-)', (r) => r.regexp(/z/, ['z', 's']))
     .rule('j→i', (r) => r.regexp(/ji/, ['i']))

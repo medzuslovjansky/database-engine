@@ -2,9 +2,10 @@ import {
   parse as steenparse,
   types as steentypes,
 } from '@interslavic/steen-utils';
-import { ObjectPredicate } from '../../multireplacer';
-import { FlavorizationIntermediate } from '../FlavorizationIntermediate';
-import { FlavorizationContext } from '../FlavorizationContext';
+
+import type { ObjectPredicate } from '../../multireplacer';
+import type { FlavorizationIntermediate } from '../FlavorizationIntermediate';
+import type { FlavorizationContext } from '../FlavorizationContext';
 
 export class GenesisFilter implements ObjectPredicate<FlavorizationContext> {
   public approximate = false;
@@ -27,16 +28,19 @@ export class GenesisFilter implements ObjectPredicate<FlavorizationContext> {
     const result = new GenesisFilter();
 
     if (value) {
-      for (const letter of value.split('')) {
+      for (const letter of value) {
         switch (letter) {
-          case '?':
+          case '?': {
             result.approximate = true;
             continue;
-          case '!':
+          }
+          case '!': {
             result.negated = true;
             continue;
-          default:
+          }
+          default: {
             result.values.add(steenparse.genesis(letter));
+          }
         }
       }
     }
@@ -48,17 +52,13 @@ export class GenesisFilter implements ObjectPredicate<FlavorizationContext> {
 
   public appliesTo({ context }: FlavorizationIntermediate): boolean {
     if (this.negated) {
-      if (this.approximate) {
-        return !context.genesis || !this.values.has(context.genesis);
-      } else {
-        return !!context.genesis && !this.values.has(context.genesis);
-      }
+      return this.approximate
+        ? !context.genesis || !this.values.has(context.genesis)
+        : !!context.genesis && !this.values.has(context.genesis);
     } else {
-      if (this.approximate) {
-        return !context.genesis || this.values.has(context.genesis);
-      } else {
-        return !!context.genesis && this.values.has(context.genesis);
-      }
+      return this.approximate
+        ? !context.genesis || this.values.has(context.genesis)
+        : !!context.genesis && this.values.has(context.genesis);
     }
   }
 }

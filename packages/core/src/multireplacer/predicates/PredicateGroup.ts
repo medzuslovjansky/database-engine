@@ -1,6 +1,7 @@
-import { Intermediate } from '../Intermediate';
-import { Predicate } from './Predicate';
-import { ObjectPredicate } from './ObjectPredicate';
+import type { Intermediate } from '../Intermediate';
+
+import type { Predicate } from './Predicate';
+import type { ObjectPredicate } from './ObjectPredicate';
 import { ObjectPredicateWrapper } from './ObjectPredicateWrapper';
 
 export class PredicateGroup<Context> implements ObjectPredicate<Context> {

@@ -13,13 +13,13 @@ export default () =>
     //#region Suffixes
     .rule(
       'yva[tn]-uva[tn]',
-      (r) => r.regexp(/y(?=va[tn])/, ['u']),
+      (r) => r.regexp(/y(?=va[nt])/, ['u']),
       (p) => p.partOfSpeech('v., adj., adv.'),
     )
     .rule('čsk → ck, čn', (r) =>
-      r.regexp(/čsk(?=[ayeio]?(\s|$))/, ['ck', 'čn']),
+      r.regexp(/čsk(?=[aeioy]?(\s|$))/, ['ck', 'čn']),
     )
-    .rule('[sz]Ьk', (r) => r.regexp(/([sz])(?=k[ayeio]?(\s|$))/, ['$1ь']))
+    .rule('[sz]Ьk', (r) => r.regexp(/([sz])(?=k[aeioy]?(\s|$))/, ['$1ь']))
     //#endregion
 
     //#region Adverbs
@@ -55,7 +55,7 @@ export default () =>
     )
     .rule(
       'soft -je ending ',
-      (r) => r.regexp(/([čďĺńťžź])je(?=\s|$)/, ['$1$1ьa']),
+      (r) => r.regexp(/([čďĺńťźž])je(?=\s|$)/, ['$1$1ьa']),
       (p) => p.partOfSpeech('n.'),
     )
     .rule(
@@ -121,20 +121,20 @@ export default () =>
       (r) => r.regexp(/pijan/, ['pjan']),
       (p) => p.genesis('?S'),
     )
-    .rule('Lip', (r) => r.regexp(/([bpvmf])ja/, ['$1lja']))
-    .rule('-oro-, -olo-', (r) => r.regexp(/(?<=\S)([rl])å/, ['o$1o', '$1å']))
+    .rule('Lip', (r) => r.regexp(/([bfmpv])ja/, ['$1lja']))
+    .rule('-oro-, -olo-', (r) => r.regexp(/(?<=\S)([lr])å/, ['o$1o', '$1å']))
     .rule('-ere-, -ele, -olo-, -i, -e', (r) =>
-      r.regexp(/([rl])ě/, ['$1ě', 'e$1e', 'o$1o']),
+      r.regexp(/([lr])ě/, ['$1ě', 'e$1e', 'o$1o']),
     )
     .rule('Syllabic -er-', (r) =>
-      r.regexp(/ŕ(?=[bcćčdđeghklmnpsśštťvzžň])/, ['er']),
+      r.regexp(/ŕ(?=[b-eghk-npstvzćčđňśšťž])/, ['er']),
     )
     .rule('Syllabic -or-', (r) =>
-      r.regexp(/([bdghkmpstv])r([bčdḓđfgkmnsštťvz])/, ['$1or$2']),
+      r.regexp(/([bdghkmpstv])r([bdfgkmnstvzčđšťḓ])/, ['$1or$2']),
     )
-    .rule('Syllabic l→ł', (r) => r.regexp(/(?<=ȯ)l(?=[pkn])/, ['ł']))
-    .rule('Ę before dental/alveolar', (r) => r.regexp(/([tdsznlr])ę/, ['$1ьa']))
-    .rule('Ę before soft/hissing', (r) => r.regexp(/([čđšžćcj])ę/, ['$1a']))
+    .rule('Syllabic l→ł', (r) => r.regexp(/(?<=ȯ)l(?=[knp])/, ['ł']))
+    .rule('Ę before dental/alveolar', (r) => r.regexp(/([dlnr-tz])ę/, ['$1ьa']))
+    .rule('Ę before soft/hissing', (r) => r.regexp(/([cjćčđšž])ę/, ['$1a']))
     .rule('Ę (other cases)', (r) => r.regexp(/ę/, ['ja']))
     .rule('Ě - I/Y/E', (r) => r.regexp(/ě/, ['i']))
     .rule('Đ - Ž/ĎŽ', (r) => r.regexp(/đ/, ['dž']))
@@ -143,11 +143,11 @@ export default () =>
       (r) => r.regexp(/krac/, ['krat']),
       (p) => p.genesis('I'),
     )
-    .rule('-by[tv]-', (r) => r.regexp(/by(?=[łtv])/, ['by', 'bu']))
+    .rule('-by[tv]-', (r) => r.regexp(/by(?=[tvł])/, ['by', 'bu']))
     //#endregion
 
     //#region Phonetics
-    .rule('-[mvp](j)en-', (r) => r.regexp(/(?<=[młvp])je/, ['le']))
+    .rule('-[mvp](j)en-', (r) => r.regexp(/(?<=[mpvł])je/, ['le']))
     .rule('-[ln](j)en-', (r) => r.regexp(/(?<=[ln])jen/, ['en']))
     .rule('-r', (r) => r.regexp(/ŕ(?=\s|$)/, ['r']))
     .rule('šč', (r) => r.regexp(/čt/, ['šč']))
@@ -226,7 +226,7 @@ export default () =>
       }),
     )
     .rule('Apostrophe', (r) =>
-      r.regexp(/(?<=([бпвмфз]|[аоуіеяюєїр]\S))([яєюї])/, ['$2', "'$2"]),
+      r.regexp(/(?<=([бвзмпф]|[аеоруюяєії]\S))([юяєї])/, ['$2', "'$2"]),
     )
     .rule('Restore case', (r) => r.restoreCase())
     .build();

@@ -1,4 +1,4 @@
-import { Predicate } from '../../multireplacer';
+import type { Predicate } from '../../multireplacer';
 import { GenesisFilter, PartOfSpeechFilter } from '../../customization';
 
 export class MultireplacerPredicateBuilder {
