@@ -1,4 +1,4 @@
-import fs from 'fs';
+import fs from 'node:fs';
 
 import * as csv from 'csv';
 import type { Parser } from 'csv-parse';
@@ -13,6 +13,7 @@ export type Table = Record<string, unknown>[];
 export async function parseFile(
   filePath: string,
   options: ParseFileOptions = {},
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
 ): Promise<any[]> {
   const { delimiter = ',', silent = false } = options;
   if (silent && !fs.existsSync(filePath)) {

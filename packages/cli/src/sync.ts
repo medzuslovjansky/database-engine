@@ -1,10 +1,11 @@
-import { CommandBuilder } from 'yargs';
+import type { CommandBuilder } from 'yargs';
+
 import { GIDs, LANGS, NATURAL_LANGUAGES } from '../sync/constants';
+import type { SyncOptions } from '../sync';
 import {
   ConfigManagerFactory,
   GoogleSheetsAPI,
   SheetsCache,
-  SyncOptions,
   SyncRoutine,
 } from '../sync';
 import { GoogleAuthService } from '../sync/google/auth';

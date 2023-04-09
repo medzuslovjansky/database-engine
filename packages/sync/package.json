@@ -4,26 +4,39 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "test": ":"
+    "build": "tsc",
+    "lint": "eslint . --fix",
+    "lint:ci": "eslint .",
+    "test": "jest"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/medzuslovjansky/razumlivost.git",
-    "directory": "packages/csv"
+    "directory": "packages/sync"
   },
   "devDependencies": {
-    "@types/jest": "^29.0.0",
+    "@interslavic/eslint-config-razumlivost": "^1.0.0",
+    "@interslavic/jest-config-razumlivost": "^1.0.0",
+    "@interslavic/prettier-config-razumlivost": "^1.0.0",
+    "@interslavic/typescript-config-razumlivost": "^1.0.0",
     "@types/lodash": "^4.14.182",
-    "jest": "^29.0.0",
-    "ts-jest": "^29.0.0",
     "typescript": "~4.3.5"
   },
   "dependencies": {
+    "@interslavic/steen-utils": "^1.6.0",
     "@interslavic/razumlivost-core": "^1.0.0",
     "@interslavic/razumlivost-config": "^1.0.0",
     "@interslavic/razumlivost-csv": "^1.0.0",
     "@interslavic/razumlivost-google": "^1.0.0",
     "lodash": "^4.17.21",
     "tslib": "^2.4.0"
+  },
+  "prettier": "@interslavic/prettier-config-razumlivost",
+  "eslintConfig": {
+    "extends": "@interslavic/razumlivost",
+    "rules": {
+      "unicorn/prevent-abbreviations": "off",
+      "@typescript-eslint/no-non-null-assertion": "off"
+    }
   }
 }

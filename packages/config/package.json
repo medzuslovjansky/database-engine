@@ -8,6 +8,11 @@
     "lint:ci": "eslint .",
     "test": "jest"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/medzuslovjansky/razumlivost.git",
+    "directory": "packages/config"
+  },
   "devDependencies": {
     "@interslavic/eslint-config-razumlivost": "^1.0.0",
     "@interslavic/jest-config-razumlivost": "^1.0.0",

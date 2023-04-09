@@ -1,9 +1,9 @@
-import type SheetsCache from './cache/SheetsCache';
-import type GoogleSheetsAPI from './sheets/GoogleSheetsAPI';
-import type { ConfigManager } from './config/ConfigManager';
+import type { SheetsCache } from '@interslavic/razumlivost-csv';
+import type { SheetsDocument } from '@interslavic/razumlivost-google';
+import type { Config } from '@interslavic/razumlivost-config';
 
 export type SyncRoutineConfig = {
-  readonly configManager: ConfigManager;
+  readonly configManager: Config;
   readonly sheetsCache: SheetsCache;
-  readonly googleSheets: GoogleSheetsAPI;
+  readonly googleSheets: SheetsDocument;
 };

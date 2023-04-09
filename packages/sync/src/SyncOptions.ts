@@ -1,4 +1,4 @@
-import { GIDs, NATURAL_LANGUAGES } from './constants';
+import type { GIDs, NATURAL_LANGUAGES } from './constants';
 
 export type SyncOptions = {
   readonly setPermissions: boolean;

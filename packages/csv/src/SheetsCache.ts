@@ -1,6 +1,6 @@
-import fs from 'fs-extra';
-import path from 'path';
+import path from 'node:path';
 
+import fs from 'fs-extra';
 import chalk from 'chalk';
 import { https } from 'follow-redirects';
 
@@ -9,15 +9,15 @@ import type {
   FlavorizationRecord,
   Raw,
   TranslationRecord,
-} from '../../types/tables';
-import { GIDs } from '../constants';
+} from './tables';
+import { GIDs } from './constants';
 import { parseFile, writeFile } from './csv';
 
-export default class SheetsCache {
-  constructor(private readonly rootDir: string) {}
+export class SheetsCache {
+  constructor(private readonly rootDirectory: string) {}
 
   async init() {
-    await fs.mkdirp(this.rootDir);
+    await fs.mkdirp(this.rootDirectory);
   }
 
   async getTranslations(): Promise<Raw<TranslationRecord>[]> {
@@ -37,7 +37,7 @@ export default class SheetsCache {
   }
 
   async getAnalysis(lang: string): Promise<Raw<AnalysisRecord>[]> {
-    const csvPath = path.join(this.rootDir, `analysis-${lang}.csv`);
+    const csvPath = path.join(this.rootDirectory, `analysis-${lang}.csv`);
     return parseFile(csvPath);
   }
 
@@ -56,7 +56,7 @@ export default class SheetsCache {
         file.on('error', reject);
         file.on('finish', () => {
           file.close();
-          resolve(undefined);
+          resolve(void 0);
         });
       });
 
@@ -73,11 +73,11 @@ export default class SheetsCache {
   }
 
   _resolveSheetPath(name: keyof typeof GIDs) {
-    return path.join(this.rootDir, `${name}.csv`);
+    return path.join(this.rootDirectory, `${name}.csv`);
   }
 
   async parseSheet(name: keyof typeof GIDs): Promise<Raw<TranslationRecord>[]> {
-    const csvPath = path.join(this.rootDir, `${name}.csv`);
+    const csvPath = path.join(this.rootDirectory, `${name}.csv`);
     return parseFile(csvPath);
   }
 }

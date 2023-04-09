@@ -1,5 +1,7 @@
 import { drive_v3 } from 'googleapis';
-import { AuthClient } from '../auth/AuthClient';
+
+import type { AuthClient } from '../auth/AuthClient';
+
 import Drive = drive_v3.Drive;
 import Schema$File = drive_v3.Schema$File;
 

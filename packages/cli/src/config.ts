@@ -1,4 +1,5 @@
-import { CommandBuilder } from 'yargs';
+import type { CommandBuilder } from 'yargs';
+
 import { ConfigManagerFactory } from '../sync';
 
 export const command = 'config [options]';

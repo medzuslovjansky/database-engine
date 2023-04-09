@@ -5,3 +5,4 @@ export {
   IMultireplacerWrapper as MultireplacerWrapper,
   MultireplacerBuilder,
 } from './dsl/multireplacer';
+export * from './multireplacer';

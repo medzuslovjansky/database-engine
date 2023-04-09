@@ -1,18 +1,14 @@
-import { values, snakeCase } from 'lodash';
-import type { SyncRoutineConfig } from './SyncRoutineConfig';
-import type { SyncOptions } from './SyncOptions';
-import {
+import type {
   AnalysisRecord,
   FlavorizationRecord,
   Raw,
   TranslationRecord,
-} from '../types/tables';
+} from './types/tables';
+import type { SyncRoutineConfig } from './SyncRoutineConfig';
+import type { SyncOptions } from './SyncOptions';
 import { flavorize } from './utils/flavorize';
 import { analyze } from './utils/analyze';
-import { NATURAL_LANGUAGES } from './constants';
-import { genericSync } from './utils/genericSync';
-import { drive_v3 } from 'googleapis';
-import { UserConfig } from './config/UserConfig';
+import type { NATURAL_LANGUAGES } from './constants';
 
 export class SyncRoutine {
   private flavorizations: Raw<FlavorizationRecord>[] = [];
@@ -20,7 +16,19 @@ export class SyncRoutine {
   private analysis: Record<
     keyof typeof NATURAL_LANGUAGES,
     Raw<AnalysisRecord>[]
-  > = {} as any;
+  > = {
+    be: [],
+    bg: [],
+    cs: [],
+    hr: [],
+    mk: [],
+    pl: [],
+    ru: [],
+    sk: [],
+    sl: [],
+    sr: [],
+    uk: [],
+  };
 
   constructor(
     private readonly config: SyncRoutineConfig,
@@ -31,10 +39,6 @@ export class SyncRoutine {
     await this._download();
     await this._flavorize();
     await this._analyze();
-    if (Math.random() > 5) {
-      await this._readPermissions();
-    }
-    await this._setPermissions();
     await this._upload();
   }
 
@@ -87,94 +91,6 @@ export class SyncRoutine {
         await sheetsCache.writeSheet(lang, newAnalysis);
       }
     }
-  }
-
-  private async _setPermissions() {
-    if (!this.options.setPermissions) {
-      return;
-    }
-
-    const { configManager, googleSheets } = this.config;
-    await genericSync<drive_v3.Schema$Permission, UserConfig>({
-      async getAfter(): Promise<UserConfig[]> {
-        const config = await configManager.load();
-        return values(config.users);
-      },
-      async getBefore(): Promise<drive_v3.Schema$Permission[]> {
-        return googleSheets.getSharedAccounts();
-      },
-      async update(
-        before: drive_v3.Schema$Permission,
-        after: UserConfig,
-      ): Promise<void> {
-        if (before.role !== after.role) {
-          if (after.role !== 'editor' && after.role !== 'owner') {
-            return this.delete(before);
-          } else {
-            return this.insert(after);
-          }
-        }
-      },
-      async delete(r: drive_v3.Schema$Permission): Promise<void> {
-        await googleSheets.revokePermission(r.id!);
-      },
-      extractIdAfter(r: UserConfig): string {
-        return r.email;
-      },
-      extractIdBefore(r: drive_v3.Schema$Permission): string {
-        return r.emailAddress!;
-      },
-      async insert(r: UserConfig): Promise<void> {
-        await googleSheets.grantPermission(r.email);
-      },
-    });
-  }
-
-  private async _readPermissions() {
-    if (!this.options.setPermissions) {
-      return;
-    }
-
-    const { configManager, googleSheets } = this.config;
-    await genericSync<UserConfig, drive_v3.Schema$Permission>({
-      async getBefore(): Promise<UserConfig[]> {
-        const config = await configManager.load();
-        return values(config.users);
-      },
-      async getAfter(): Promise<drive_v3.Schema$Permission[]> {
-        return googleSheets.getSharedAccounts();
-      },
-      async update(
-        before: UserConfig,
-        after: drive_v3.Schema$Permission,
-      ): Promise<void> {
-        configManager.updateUserByEmail(before.email, {
-          email: after.emailAddress!,
-          role:
-            after.role === 'writer' || after.role === 'owner'
-              ? 'editor'
-              : 'reader',
-        });
-      },
-      async delete(r: UserConfig): Promise<void> {
-        configManager.removeUserByEmail(r.email);
-      },
-      extractIdBefore(r: UserConfig): string {
-        return r.email;
-      },
-      extractIdAfter(r: drive_v3.Schema$Permission): string {
-        return r.emailAddress!;
-      },
-      async insert(r: drive_v3.Schema$Permission): Promise<void> {
-        configManager.addUser(snakeCase(r.emailAddress!.split('@')[0]!), {
-          email: r.emailAddress!,
-          role: r.role === 'writer' || r.role === 'owner' ? 'editor' : 'reader',
-        });
-      },
-      async commit() {
-        await configManager.save();
-      },
-    });
   }
 
   private async _upload() {

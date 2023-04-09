@@ -12,7 +12,6 @@ module.exports = {
   "parser": "@typescript-eslint/parser",
   "parserOptions": {
     "ecmaVersion": 11,
-    "extraFileExtensions": [".mjs"],
     "project": "tsconfig.json",
     "sourceType": "module"
   },
@@ -28,8 +27,17 @@ module.exports = {
     "import/order": ["error", {
       "newlines-between": "always"
     }],
+    "unicorn/consistent-function-scoping": "off",
     "unicorn/filename-case": "off",
+    "unicorn/no-null": "off",
     "unicorn/prefer-module": "off",
+    "@typescript-eslint/consistent-type-imports": "error",
+    "@typescript-eslint/no-unused-vars": [
+      "error",
+      {
+        "argsIgnorePattern": "^_"
+      }
+    ]
   },
   "overrides": [
     {

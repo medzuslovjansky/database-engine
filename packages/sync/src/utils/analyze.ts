@@ -1,10 +1,11 @@
-import {
+import type {
   AnalysisRecord,
   FlavorizationRecord,
   Raw,
   TranslationRecord,
-} from '../../types/tables';
-import { NATURAL_LANGUAGES } from '../constants';
+} from '../types';
+import type { NATURAL_LANGUAGES } from '../constants';
+
 import { leftJoin } from './sql';
 
 export function* analyze(

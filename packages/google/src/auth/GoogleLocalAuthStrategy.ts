@@ -1,11 +1,12 @@
-import fs from 'fs-extra';
-import path from 'path';
+import path from 'node:path';
 
-import { Auth, google } from 'googleapis';
+import fs from 'fs-extra';
+import type { Auth } from 'googleapis';
+import { google } from 'googleapis';
 import { authenticate } from '@google-cloud/local-auth';
 
 import { CREDENTIALS_FILENAME, SCOPES, USER_TOKEN_FILENAME } from './constants';
-import { GoogleAuthStrategy } from './GoogleAuthStrategy';
+import type { GoogleAuthStrategy } from './GoogleAuthStrategy';
 
 export class GoogleLocalAuthStrategy implements GoogleAuthStrategy {
   constructor(private readonly cwd = process.cwd()) {}

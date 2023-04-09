@@ -1,10 +1,10 @@
-import fs from 'fs';
-import path from 'path';
+import fs from 'node:fs';
+import path from 'node:path';
 
 import { google } from 'googleapis';
 
 import { JWT_TOKEN_FILENAME, SCOPES } from './constants';
-import { GoogleAuthStrategy } from './GoogleAuthStrategy';
+import type { GoogleAuthStrategy } from './GoogleAuthStrategy';
 
 export class GoogleServiceAccountAuthStrategy implements GoogleAuthStrategy {
   constructor(

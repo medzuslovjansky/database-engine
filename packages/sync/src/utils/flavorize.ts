@@ -1,12 +1,11 @@
-import {
-  FlavorizationRecord,
-  Raw,
-  TranslationRecord,
-} from '../../types/tables';
-import { NATURAL_LANGUAGES } from '../constants';
+import type { core } from '@interslavic/steen-utils';
+import { parse } from '@interslavic/steen-utils';
+import { flavorizers, Odometer } from '@interslavic/razumlivost-core';
+
+import type { FlavorizationRecord, Raw, TranslationRecord } from '../types';
+import type { NATURAL_LANGUAGES } from '../constants';
+
 import { leftJoin } from './sql';
-import { core, parse } from '@interslavic/steen-utils';
-import { flavorizers, Odometer } from '../../index';
 
 export type FlavorizeStepOptions = {
   /**
@@ -53,8 +52,9 @@ export function* flavorize(
       ignoreCase: true,
       ignoreNonLetters: true,
       ignoreDiacritics: true,
-      extractItems: (synset) => synset.lemmas(),
-      extractValue: (lemma) => lemma.value.replace(/(\p{Letter})\1+/gu, '$1'),
+      extractItems: (synset: core.Synset) => synset.lemmas(),
+      extractValue: (lemma: core.Lemma) =>
+        lemma.value.replace(/(\p{Letter})\1+/gu, '$1'),
     });
 
     const isPhrase = parse.partOfSpeech(t.partOfSpeech).name === 'phrase';
@@ -69,7 +69,7 @@ export function* flavorize(
           const similar = odometer.compare(flavorized, translation);
           if (similar.editingDistance === 0) {
             const newValue = similar.result.clone();
-            newValue.annotations.splice(0, Infinity);
+            newValue.annotations.splice(0, Number.POSITIVE_INFINITY);
             f[lang] = newValue.toString();
             console.log(`${t.id} ${lang} ${t[lang]} ${f[lang]}`);
           }

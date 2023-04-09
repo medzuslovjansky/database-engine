@@ -9,3 +9,7 @@ const databaseDirectory = path.join(currentDirectory, '..', 'db');
 
 export const config = new Config(databaseDirectory);
 export const loadConfig = once(() => config.load());
+
+export * from './Config';
+export * from './dto';
+export * from './types';

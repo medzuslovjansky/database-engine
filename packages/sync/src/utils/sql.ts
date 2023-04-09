@@ -26,6 +26,7 @@ export interface LeftJoin {
   ): Iterable<[T, ...(To | null)[]]>;
 }
 
+// @ts-expect-error TS2322
 export const leftJoin: LeftJoin = function* <T, To>(
   idExtractor: IdExtractor<T | To>,
   mainTable: Iterable<T>,
@@ -47,4 +48,4 @@ export const leftJoin: LeftJoin = function* <T, To>(
     ];
     yield row;
   }
-} as any;
+};

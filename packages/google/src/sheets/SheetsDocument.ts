@@ -1,6 +1,8 @@
 import { sheets_v4 } from 'googleapis';
-import { SHEET_IDs } from '../../constants';
-import { AuthClient } from '../auth/AuthClient';
+
+import { SHEET_IDs } from '../constants';
+import type { AuthClient } from '../auth/AuthClient';
+
 import Sheets = sheets_v4.Sheets;
 
 export type SheetsDocumentConfig = {
