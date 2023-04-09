@@ -1,24 +1,17 @@
 import type { CommandBuilder } from 'yargs';
-
-import { ConfigManagerFactory } from '../sync';
+import { loadConfig } from '@interslavic/razumlivost-config';
 
 export const command = 'config [options]';
 
 export const describe = 'Edit the configuration file';
 
 export const handler = async (argv: ConfigOptions) => {
-  const configManager = await ConfigManagerFactory.createConfigManagerFromPath({
-    encryptionKey: argv.encryptionKey,
-    decryptionKey: argv.decryptionKey,
-    configFilePath: argv.configFile,
-  });
-
-  await configManager.load();
+  const configManager = await loadConfig();
 
   if (argv.user) {
-    configManager.addUser(argv.user.id, {
+    configManager.users.addUser(argv.user.id, {
       email: argv.user.email,
-      role: argv.user.role ?? 'editor',
+      comment: '',
     });
 
     await configManager.save();

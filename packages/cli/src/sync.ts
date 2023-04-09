@@ -1,28 +1,27 @@
 import type { CommandBuilder } from 'yargs';
-
-import { GIDs, LANGS, NATURAL_LANGUAGES } from '../sync/constants';
-import type { SyncOptions } from '../sync';
+import type { SyncOptions } from '@interslavic/razumlivost-sync';
+import { SheetsCache } from '@interslavic/razumlivost-csv';
+import { SyncRoutine } from '@interslavic/razumlivost-sync';
+import { loadConfig } from '@interslavic/razumlivost-config';
 import {
-  ConfigManagerFactory,
-  GoogleSheetsAPI,
-  SheetsCache,
-  SyncRoutine,
-} from '../sync';
-import { GoogleAuthService } from '../sync/google/auth';
+  GoogleAuthService,
+  SheetsDocument,
+} from '@interslavic/razumlivost-google';
+
+import { GIDs, LANGS, NATURAL_LANGUAGES } from './constants';
 
 export const command = 'sync [options]';
 
 export const describe = 'Syncs the database';
 
 export const handler = async (argv: SyncOptions) => {
-  const configManager = await ConfigManagerFactory.createConfigManagerFromPath({
-    decryptionKey: argv.decryptionKey,
-    configFilePath: argv.configFile,
-  });
-
+  const configManager = await loadConfig();
   const authService = new GoogleAuthService();
   const authClient = await authService.authorize();
-  const googleSheets = new GoogleSheetsAPI(authClient);
+  const googleSheets = new SheetsDocument({
+    authClient,
+    spreadsheetId: '1N79e_yVHDo-d026HljueuKJlAAdeELAiPzdFzdBuKbY',
+  });
   const sheetsCache = new SheetsCache('.cache');
 
   const sync = new SyncRoutine(
