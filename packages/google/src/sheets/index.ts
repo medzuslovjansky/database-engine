@@ -1,1 +1,2 @@
-export * from './SheetsDocument';
+export * from './Spreadsheet';
+export * from './Sheet';

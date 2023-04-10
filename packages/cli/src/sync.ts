@@ -3,10 +3,7 @@ import type { SyncOptions } from '@interslavic/razumlivost-sync';
 import { SheetsCache } from '@interslavic/razumlivost-csv';
 import { SyncRoutine } from '@interslavic/razumlivost-sync';
 import { loadConfig } from '@interslavic/razumlivost-config';
-import {
-  GoogleAuthService,
-  SheetsDocument,
-} from '@interslavic/razumlivost-google';
+import { GoogleAPIs, GoogleAuthService } from '@interslavic/razumlivost-google';
 
 import { GIDs, LANGS, NATURAL_LANGUAGES } from './constants';
 
@@ -18,10 +15,11 @@ export const handler = async (argv: SyncOptions) => {
   const configManager = await loadConfig();
   const authService = new GoogleAuthService();
   const authClient = await authService.authorize();
-  const googleSheets = new SheetsDocument({
-    authClient,
-    spreadsheetId: '1N79e_yVHDo-d026HljueuKJlAAdeELAiPzdFzdBuKbY',
-  });
+  const google = new GoogleAPIs({ auth: authClient });
+  const googleSheets = google.spreadsheet(
+    '1N79e_yVHDo-d026HljueuKJlAAdeELAiPzdFzdBuKbY',
+  );
+
   const sheetsCache = new SheetsCache('.cache');
 
   const sync = new SyncRoutine(

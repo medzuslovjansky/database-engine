@@ -6,6 +6,7 @@
     "razumlivost": "dist/index.js"
   },
   "scripts": {
+    "start": "ts-node src/index.ts",
     "build": "tsc",
     "lint": "eslint . --fix",
     "lint:ci": "eslint .",
