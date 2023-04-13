@@ -1,4 +1,4 @@
-import type { Config, UserConfig } from '@interslavic/razumlivost-config';
+import type { Config, UserConfig } from '@interslavic/razumlivost-database';
 import { values } from 'lodash';
 import type { drive_v3 } from 'googleapis';
 

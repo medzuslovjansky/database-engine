@@ -2,7 +2,7 @@ import type { CommandBuilder } from 'yargs';
 import type { SyncOptions } from '@interslavic/razumlivost-sync';
 import { SheetsCache } from '@interslavic/razumlivost-csv';
 import { SyncRoutine } from '@interslavic/razumlivost-sync';
-import { loadConfig } from '@interslavic/razumlivost-config';
+import { loadConfig } from '@interslavic/razumlivost-database';
 import { GoogleAPIs, GoogleAuthService } from '@interslavic/razumlivost-google';
 
 import { GIDs, LANGS, NATURAL_LANGUAGES } from './constants';

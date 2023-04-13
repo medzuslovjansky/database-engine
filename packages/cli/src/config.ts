@@ -1,5 +1,5 @@
 import type { CommandBuilder } from 'yargs';
-import { loadConfig } from '@interslavic/razumlivost-config';
+import { loadConfig } from '@interslavic/razumlivost-database';
 
 export const command = 'config [options]';
 

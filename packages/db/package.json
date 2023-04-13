@@ -1,8 +1,7 @@
 {
-  "name": "@interslavic/razumlivost-sync",
+  "name": "@interslavic/razumlivost-database",
   "version": "1.0.0",
   "main": "dist/index.js",
-  "types": "dist/index.d.ts",
   "scripts": {
     "build": "tsc",
     "lint": "eslint . --fix",
@@ -12,31 +11,39 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/medzuslovjansky/razumlivost.git",
-    "directory": "packages/sync"
+    "directory": "packages/config"
   },
   "devDependencies": {
     "@interslavic/eslint-config-razumlivost": "^1.0.0",
     "@interslavic/jest-config-razumlivost": "^1.0.0",
     "@interslavic/prettier-config-razumlivost": "^1.0.0",
     "@interslavic/typescript-config-razumlivost": "^1.0.0",
-    "@types/lodash": "^4.14.182",
-    "typescript": "~4.3.5"
+    "@types/jest": "^29.0.0",
+    "@types/lodash": "^4.14.192",
+    "@types/node": "^16.11.6",
+    "jest": "^29.0.0",
+    "ts-jest": "^29.0.0",
+    "typescript": "^4.9.5",
+    "yaml": "^2.2.1"
   },
   "dependencies": {
-    "@interslavic/steen-utils": "^1.6.0",
-    "@interslavic/razumlivost-core": "^1.0.0",
-    "@interslavic/razumlivost-database": "^1.0.0",
-    "@interslavic/razumlivost-csv": "^1.0.0",
-    "@interslavic/razumlivost-google": "^1.0.0",
+    "fs-extra": "^11.1.1",
     "lodash": "^4.17.21",
     "tslib": "^2.4.0"
   },
+  "license": "MIT",
   "prettier": "@interslavic/prettier-config-razumlivost",
   "eslintConfig": {
     "extends": "@interslavic/razumlivost",
     "rules": {
-      "unicorn/prevent-abbreviations": "off",
-      "@typescript-eslint/no-non-null-assertion": "off"
+      "unicorn/no-array-for-each": "off"
     }
+  },
+  "jest": {
+    "preset": "ts-jest",
+    "testEnvironment": "node",
+    "testMatch": ["<rootDir>/src/**/*.test.ts"],
+    "reporters": ["default"],
+    "verbose": true
   }
 }

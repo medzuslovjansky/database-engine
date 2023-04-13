@@ -22,7 +22,7 @@
     "yargs": "^17.6.0"
   },
   "dependencies": {
-    "@interslavic/razumlivost-config": "^1.0.0",
+    "@interslavic/razumlivost-database": "^1.0.0",
     "@interslavic/razumlivost-sync": "^1.0.0",
     "tslib": "^2.4.0"
   },
