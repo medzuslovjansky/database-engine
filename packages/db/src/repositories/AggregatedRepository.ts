@@ -8,6 +8,4 @@ export interface AggregatedRepository {
   readonly lemmas: LemmasRepository;
   readonly spreadsheets: SpreadsheetsRepository;
   readonly users: UsersRepository;
-
-  save(): Promise<void>;
 }

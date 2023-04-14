@@ -1,9 +1,4 @@
-import type {
-  Lemma,
-  Secrets,
-  Spreadsheet,
-  User,
-} from '../dto';
+import type { Lemma, Secrets, Spreadsheet, User } from '../dto';
 
 export interface DatabaseVisitor {
   visitSecrets?(node: Secrets): void | Promise<void>;

@@ -3,6 +3,6 @@ import type { Secrets } from '../dto';
 
 export class ConfigsRepository extends MultiFileRepository<string, any> {
   secrets(): Promise<Secrets> {
-    return this.all.get('secrets')!;
+    return this.findById('secrets')!;
   }
 }

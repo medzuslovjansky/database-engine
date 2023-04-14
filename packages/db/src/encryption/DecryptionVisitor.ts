@@ -1,9 +1,9 @@
 import { createDecipheriv } from 'node:crypto';
 
 import type { User } from '../dto';
-import type { DatabaseVisitorSync } from '../types';
+import type { DatabaseVisitor } from '../types';
 
-export class DecryptionVisitor implements DatabaseVisitorSync {
+export class DecryptionVisitor implements DatabaseVisitor {
   constructor(private readonly _key: string) {}
 
   visitUser(user: User): void {

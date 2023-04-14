@@ -8,7 +8,7 @@ export class UsersRepository extends MultiFileRepository<UserID, User> {
   ): Promise<boolean> {
     const user = await this._findByEmail(email);
     if (user) {
-      this.update(user.id, newDetails);
+      await this.update(user.id, newDetails);
       return true;
     }
 
@@ -18,7 +18,7 @@ export class UsersRepository extends MultiFileRepository<UserID, User> {
   public async removeByEmail(email: string): Promise<boolean> {
     const user = await this._findByEmail(email);
     if (user) {
-      this.removeById(user.id);
+      await this.deleteById(user.id);
       return true;
     }
 
@@ -26,6 +26,6 @@ export class UsersRepository extends MultiFileRepository<UserID, User> {
   }
 
   private async _findByEmail(email: string) {
-    return this.all.find((user) => user.email === email);
+    return this.find((user) => user.email === email);
   }
 }

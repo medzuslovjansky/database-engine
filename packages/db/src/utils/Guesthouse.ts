@@ -10,15 +10,15 @@ export class Guesthouse {
     }
 
     if (visitor.visitUser) {
-      await this.repository.users.all.forEach(visitor.visitUser);
+      await this.repository.users.forEach(visitor.visitUser);
     }
 
     if (visitor.visitSpreadsheet) {
-      await this.repository.spreadsheets.all.forEach(visitor.visitSpreadsheet);
+      await this.repository.spreadsheets.forEach(visitor.visitSpreadsheet);
     }
 
     if (visitor.visitLemma) {
-      await this.repository.lemmas.all.forEach(visitor.visitLemma);
+      await this.repository.lemmas.forEach(visitor.visitLemma);
     }
 
     return this;

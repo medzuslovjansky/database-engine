@@ -1,9 +1,9 @@
 import { createCipheriv, randomBytes } from 'node:crypto';
 
 import type { User } from '../dto';
-import type { DatabaseVisitorSync } from '../types';
+import type { DatabaseVisitor } from '../types';
 
-export class EncryptionVisitor implements DatabaseVisitorSync {
+export class EncryptionVisitor implements DatabaseVisitor {
   constructor(private readonly _key: string) {}
 
   visitUser(user: User): void {

@@ -1,4 +1,4 @@
-import type { UserID } from './Users';
+import type { UserID } from './User';
 
 export type SpreadsheetID = string;
 

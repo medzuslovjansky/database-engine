@@ -1,15 +1,20 @@
 import type { Entity } from './Entity';
-import type { AsyncView, SyncView } from './View';
 
 export interface Repository<ID, T extends Entity<ID>> {
-  readonly all: AsyncView<ID, T>;
-  readonly dirty: SyncView<ID, T>;
+  /* Read operations */
+  filter(predicate: (entity: T) => boolean): Promise<T[]>;
+  find(predicate: (entity: T) => boolean): Promise<T | undefined>;
+  findById(id: ID): Promise<T | undefined>;
+  hasId(id: ID): Promise<boolean>;
+  keys(): Promise<ID[]>;
+  values(): Promise<T[]>;
+  size(): Promise<number>;
 
-  add(entity: T): void;
-  upsert(entity: T): void;
-  update(id: ID, entity: Partial<T>): void;
-  remove(entity: T): void;
-  removeById(id: ID): void;
-
-  save(): Promise<void>;
+  /* Write operations */
+  insert(entity: T): Promise<void>;
+  upsert(entity: T): Promise<void>;
+  update(id: ID, entity: Partial<T>): Promise<T | undefined>;
+  forEach(visitor: (entity: T) => void | Promise<void>): Promise<void>;
+  delete(entity: T): Promise<void>;
+  deleteById(id: ID): Promise<void>;
 }
