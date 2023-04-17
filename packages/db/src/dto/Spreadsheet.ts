@@ -5,8 +5,13 @@ export type SpreadsheetID = string;
 export type Spreadsheet = {
   id: string;
   googleId: string;
-  permissions: Record<UserID, UserRole>;
+  permissions: DrivePermission[];
   sheets: Sheet[];
+};
+
+export type DrivePermission = {
+  email: string;
+  role: UserRole;
 };
 
 export type UserRole = 'owner' | 'writer' | 'reader';

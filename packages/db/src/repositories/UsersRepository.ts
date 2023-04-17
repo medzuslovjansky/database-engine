@@ -1,7 +1,17 @@
 import type { User, UserID } from '../dto';
 import { MultiFileRepository } from '../fs';
+import type { PIIHelper } from '../utils';
+
+import { UserOrganizer } from './organizers';
+import { UserSerializer } from './serialization';
 
 export class UsersRepository extends MultiFileRepository<UserID, User> {
+  constructor(rootDirectory: string, piiHelper: PIIHelper) {
+    const fileOrganizer = new UserOrganizer(rootDirectory);
+    const entitySerializer = new UserSerializer(piiHelper);
+
+    super(fileOrganizer, entitySerializer);
+  }
   public async updateByEmail(
     email: string,
     newDetails: Partial<User>,
