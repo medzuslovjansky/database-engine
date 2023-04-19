@@ -1,7 +1,7 @@
 import { readFile, writeFile } from 'node:fs/promises';
 import { dirname } from 'node:path';
-import { ensureDir } from 'fs-extra';
 
+import { ensureDir } from 'fs-extra';
 import { parse, stringify } from 'yaml';
 
 import type { Entity } from '../../types';

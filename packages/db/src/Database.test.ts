@@ -48,7 +48,9 @@ describe('Database', () => {
     });
 
     it('should be able to find values by predicate', async () => {
-      const lemma = await database.lemmas.find((lemma) => lemma.isv.includes('oko'));
+      const lemma = await database.lemmas.find((lemma) =>
+        lemma.isv.includes('oko'),
+      );
       expect(lemma).not.toBeUndefined();
       expect(lemma?.id).toBe(1);
     });
@@ -70,6 +72,20 @@ describe('Database', () => {
     it('should be able to delete entities', async () => {
       await database.lemmas.delete({ id: 1 });
       expect(await database.lemmas.values()).toHaveLength(0);
+    });
+  });
+
+  describe('users', function () {
+    it('should have no users at start', async () => {
+      const users = await database.users.values();
+      expect(users).toHaveLength(0);
+    });
+  });
+
+  describe('spreadsheets', function () {
+    it('should have no spreadsheets at start', async () => {
+      const spreadsheets = await database.spreadsheets.values();
+      expect(spreadsheets).toHaveLength(0);
     });
   });
 });
