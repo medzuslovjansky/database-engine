@@ -1,21 +1,26 @@
-import type {
-  AggregatedRepository,
-  ConfigsRepository,
+import type { AggregatedRepository } from './repositories';
+import {
+  LemmasRepository,
   SpreadsheetsRepository,
   UsersRepository,
 } from './repositories';
-import { LemmasRepository } from './repositories';
-import { CrossEntityOperations } from './utils';
+import type { PIIHelper } from './utils';
+
+export type DatabaseConfig = {
+  readonly rootDirectory: string;
+  readonly piiHelper: PIIHelper;
+};
 
 export class Database implements AggregatedRepository {
   public readonly lemmas: LemmasRepository;
-  public configs!: ConfigsRepository;
-  public users!: UsersRepository;
-  public spreadsheets!: SpreadsheetsRepository;
-  protected guesthouse!: CrossEntityOperations;
+  public readonly users: UsersRepository;
+  public readonly spreadsheets: SpreadsheetsRepository;
 
-  constructor(protected readonly rootDirectory: string) {
-    this.lemmas = new LemmasRepository(this.rootDirectory);
-    this.guesthouse = new CrossEntityOperations(this);
+  constructor(config: DatabaseConfig) {
+    const { rootDirectory, piiHelper } = config;
+
+    this.lemmas = new LemmasRepository(rootDirectory);
+    this.spreadsheets = new SpreadsheetsRepository(rootDirectory, piiHelper);
+    this.users = new UsersRepository(rootDirectory, piiHelper);
   }
 }

@@ -1,4 +1,6 @@
 import { readFile, writeFile } from 'node:fs/promises';
+import { dirname } from 'node:path';
+import { ensureDir } from 'fs-extra';
 
 import { parse, stringify } from 'yaml';
 
@@ -18,6 +20,7 @@ export class YamlSerializer<ID, T extends Entity<ID>>
   }
 
   async serialize(entityPath: string, entity: T): Promise<void> {
+    await ensureDir(dirname(entityPath));
     const raw = this.mapToSerialized(entity);
     const contents = stringify(raw);
     await writeFile(entityPath, contents);

@@ -5,12 +5,12 @@ export type Lemma = {
   isv: string[];
   partOfSpeech: string;
   translations: Partial<Record<Language, string[]>>;
-  examples: string[];
-  type: number;
-  sameInLanguages: string;
-  genesis: string;
-  frequency: number;
-  intelligibility: string;
+  examples?: string[];
+  type?: number;
+  sameInLanguages?: string;
+  genesis?: string;
+  frequency?: number;
+  intelligibility?: string;
   // metadata: {
   //   translations: TranslationMetadata;
   // };

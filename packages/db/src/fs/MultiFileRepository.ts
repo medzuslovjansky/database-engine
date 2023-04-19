@@ -16,7 +16,7 @@ export class MultiFileRepository<ID, T extends Entity<ID>>
     protected readonly entitySerializer: EntitySerializer<ID, T>,
   ) {}
 
-  async delete(entity: T): Promise<void> {
+  async delete<HasID extends Pick<T, 'id'>>(entity: HasID): Promise<void> {
     await this.deleteById(entity.id);
   }
 
