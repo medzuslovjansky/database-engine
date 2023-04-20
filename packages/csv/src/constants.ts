@@ -1,7 +1,5 @@
 export const CYRL_LANGS = ['be', 'bg', 'mk', 'ru', 'sr', 'uk'];
 
-export const LANGS = [...CYRL_LANGS, 'cs', 'hr', 'pl', 'sk', 'sl'].sort();
-
 export const NATURAL_LANGUAGES = {
   ru: 'Russian',
   be: 'Belarusian',
@@ -14,11 +12,6 @@ export const NATURAL_LANGUAGES = {
   sr: 'Serbian',
   mk: 'Macedonian',
   bg: 'Bulgarian',
-};
-
-export const LANGUAGE_NAMES = {
-  isv: 'Interslavic',
-  ...NATURAL_LANGUAGES,
 };
 
 export const SHEET_IDs = {

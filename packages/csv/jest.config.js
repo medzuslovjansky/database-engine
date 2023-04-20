@@ -1,1 +1,1 @@
-module.exports = require('@interslavic/jest-config-razumlivost');
+module.exports = require('@interslavic/jest-config-database-engine');

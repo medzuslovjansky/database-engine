@@ -1,8 +1,9 @@
 {
-  "extends": "@interslavic/typescript-config-razumlivost",
+  "extends": "@interslavic/typescript-config-database-engine",
   "compilerOptions": {
     "rootDir": "src",
     "outDir": "dist",
     "types": ["node", "jest"]
-  }
+  },
+  "include": ["src"],
 }

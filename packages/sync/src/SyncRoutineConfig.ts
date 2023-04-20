@@ -1,6 +1,6 @@
-import type { SheetsCache } from '@interslavic/razumlivost-csv';
-import type { Spreadsheet } from '@interslavic/razumlivost-google';
-import type { Config } from '@interslavic/razumlivost-database';
+import type { SheetsCache } from '@interslavic/database-engine-csv';
+import type { Spreadsheet } from '@interslavic/database-engine-google';
+import type { Config } from '@interslavic/database-engine-fs';
 
 export type SyncRoutineConfig = {
   readonly configManager: Config;

@@ -1,5 +1,5 @@
 {
-  "name": "@interslavic/razumlivost-sync",
+  "name": "@interslavic/database-engine-sync",
   "version": "1.0.0",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -11,29 +11,29 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/medzuslovjansky/razumlivost.git",
+    "url": "git+https://github.com/medzuslovjansky/database-engine.git",
     "directory": "packages/sync"
   },
   "devDependencies": {
-    "@interslavic/eslint-config-razumlivost": "^1.0.0",
-    "@interslavic/jest-config-razumlivost": "^1.0.0",
-    "@interslavic/prettier-config-razumlivost": "^1.0.0",
-    "@interslavic/typescript-config-razumlivost": "^1.0.0",
+    "@interslavic/eslint-config-database-engine": "^1.0.0",
+    "@interslavic/jest-config-database-engine": "^1.0.0",
+    "@interslavic/prettier-config-database-engine": "^1.0.0",
+    "@interslavic/typescript-config-database-engine": "^1.0.0",
     "@types/lodash": "^4.14.182",
     "typescript": "~4.3.5"
   },
   "dependencies": {
     "@interslavic/steen-utils": "^1.6.0",
-    "@interslavic/razumlivost-core": "^1.0.0",
-    "@interslavic/razumlivost-database": "^1.0.0",
-    "@interslavic/razumlivost-csv": "^1.0.0",
-    "@interslavic/razumlivost-google": "^1.0.0",
+    "@interslavic/database-engine-core": "^1.0.0",
+    "@interslavic/database-engine-fs": "^1.0.0",
+    "@interslavic/database-engine-csv": "^1.0.0",
+    "@interslavic/database-engine-google": "^1.0.0",
     "lodash": "^4.17.21",
     "tslib": "^2.4.0"
   },
-  "prettier": "@interslavic/prettier-config-razumlivost",
+  "prettier": "@interslavic/prettier-config-database-engine",
   "eslintConfig": {
-    "extends": "@interslavic/razumlivost",
+    "extends": "@interslavic/database-engine",
     "rules": {
       "unicorn/prevent-abbreviations": "off",
       "@typescript-eslint/no-non-null-assertion": "off"

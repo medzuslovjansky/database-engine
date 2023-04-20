@@ -1,9 +1,9 @@
 import type { CommandBuilder } from 'yargs';
-import type { SyncOptions } from '@interslavic/razumlivost-sync';
-import { SheetsCache } from '@interslavic/razumlivost-csv';
-import { SyncRoutine } from '@interslavic/razumlivost-sync';
-import { loadConfig } from '@interslavic/razumlivost-database';
-import { GoogleAPIs, GoogleAuthService } from '@interslavic/razumlivost-google';
+import type { SyncOptions } from '@interslavic/database-engine-sync';
+import { SheetsCache } from '@interslavic/database-engine-csv';
+import { SyncRoutine } from '@interslavic/database-engine-sync';
+import { loadConfig } from '@interslavic/database-engine-fs';
+import { GoogleAPIs, GoogleAuthService } from '@interslavic/database-engine-google';
 
 import { GIDs, LANGS, NATURAL_LANGUAGES } from './constants';
 

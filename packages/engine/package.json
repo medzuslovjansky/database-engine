@@ -1,9 +1,9 @@
 {
-  "name": "@interslavic/razumlivost-cli",
+  "name": "@interslavic/database-engine",
   "version": "1.0.0",
   "main": "dist/index.js",
   "bin": {
-    "razumlivost": "dist/index.js"
+    "isv": "dist/index.js"
   },
   "scripts": {
     "start": "ts-node src/index.ts",
@@ -13,23 +13,23 @@
     "test": "jest"
   },
   "devDependencies": {
-    "@interslavic/eslint-config-razumlivost": "^1.0.0",
-    "@interslavic/jest-config-razumlivost": "^1.0.0",
-    "@interslavic/prettier-config-razumlivost": "^1.0.0",
-    "@interslavic/typescript-config-razumlivost": "^1.0.0",
+    "@interslavic/eslint-config-database-engine": "^1.0.0",
+    "@interslavic/jest-config-database-engine": "^1.0.0",
+    "@interslavic/prettier-config-database-engine": "^1.0.0",
+    "@interslavic/typescript-config-database-engine": "^1.0.0",
     "ts-node": "^10.9.1",
     "typescript": "~4.3.5",
     "yargs": "^17.6.0"
   },
   "dependencies": {
-    "@interslavic/razumlivost-database": "^1.0.0",
-    "@interslavic/razumlivost-sync": "^1.0.0",
+    "@interslavic/database-engine-fs": "^1.0.0",
+    "@interslavic/database-engine-sync": "^1.0.0",
     "tslib": "^2.4.0"
   },
   "license": "MIT",
-  "prettier": "@interslavic/prettier-config-razumlivost",
+  "prettier": "@interslavic/prettier-config-database-engine",
   "eslintConfig": {
-    "extends": "@interslavic/razumlivost",
+    "extends": "@interslavic/database-engine",
     "rules": {
       "unicorn/prevent-abbreviations": "off",
       "unicorn/no-nested-ternary": "off",

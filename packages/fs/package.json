@@ -1,5 +1,5 @@
 {
-  "name": "@interslavic/razumlivost-database",
+  "name": "@interslavic/database-engine-fs",
   "version": "1.0.0",
   "main": "dist/index.js",
   "scripts": {
@@ -10,14 +10,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/medzuslovjansky/razumlivost.git",
+    "url": "git+https://github.com/medzuslovjansky/database-engine.git",
     "directory": "packages/config"
   },
   "devDependencies": {
-    "@interslavic/eslint-config-razumlivost": "^1.0.0",
-    "@interslavic/jest-config-razumlivost": "^1.0.0",
-    "@interslavic/prettier-config-razumlivost": "^1.0.0",
-    "@interslavic/typescript-config-razumlivost": "^1.0.0",
+    "@interslavic/eslint-config-database-engine": "^1.0.0",
+    "@interslavic/jest-config-database-engine": "^1.0.0",
+    "@interslavic/prettier-config-database-engine": "^1.0.0",
+    "@interslavic/typescript-config-database-engine": "^1.0.0",
     "@types/jest": "^29.0.0",
     "@types/lodash": "^4.14.192",
     "@types/node": "^16.11.6",
@@ -34,9 +34,9 @@
     "tslib": "^2.4.0"
   },
   "license": "MIT",
-  "prettier": "@interslavic/prettier-config-razumlivost",
+  "prettier": "@interslavic/prettier-config-database-engine",
   "eslintConfig": {
-    "extends": "@interslavic/razumlivost",
+    "extends": "@interslavic/database-engine",
     "rules": {
       "unicorn/no-array-callback-reference": "off",
       "unicorn/no-array-for-each": "off"
