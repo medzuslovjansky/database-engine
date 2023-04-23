@@ -1,14 +1,14 @@
 import type { User, UserID } from '../dto';
 import { MultiFileRepository } from '../fs';
-import type { PIIHelper } from '../utils';
+import type { CryptoService } from '../types';
 
 import { UserOrganizer } from './organizers';
 import { UserSerializer } from './serialization';
 
 export class UsersRepository extends MultiFileRepository<UserID, User> {
-  constructor(rootDirectory: string, piiHelper: PIIHelper) {
+  constructor(rootDirectory: string, cryptoService: CryptoService) {
     const fileOrganizer = new UserOrganizer(rootDirectory);
-    const entitySerializer = new UserSerializer(piiHelper);
+    const entitySerializer = new UserSerializer(cryptoService);
 
     super(fileOrganizer, entitySerializer);
   }

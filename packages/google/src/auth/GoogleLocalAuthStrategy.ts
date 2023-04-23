@@ -28,6 +28,10 @@ export class GoogleLocalAuthStrategy implements GoogleAuthStrategy {
     return client;
   }
 
+  async applies(): Promise<boolean> {
+    return fs.existsSync(this.tokenPath) || fs.existsSync(this.credentialsPath);
+  }
+
   private async _loadCached(): Promise<Auth.AuthClient | null> {
     const tokenPath = this.tokenPath;
     if (fs.existsSync(tokenPath)) {

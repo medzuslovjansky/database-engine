@@ -1,9 +1,12 @@
 import type { core } from '@interslavic/steen-utils';
 import { parse } from '@interslavic/steen-utils';
-import { flavorizers, Odometer } from '@interslavic/database-engine-core';
-
-import type { FlavorizationRecord, Raw, TranslationRecord } from '../types';
-import type { NATURAL_LANGUAGES } from '../constants';
+import { flavorizers, Odometer } from '@interslavic/database-engine-analysis';
+import type {
+  NATURAL_LANGUAGES,
+  FlavorizationRecord,
+  Raw,
+  Lemma,
+} from '@interslavic/database-engine-core';
 
 import { leftJoin } from './sql';
 
@@ -20,7 +23,7 @@ export type FlavorizeStepOptions = {
 };
 
 export function* flavorize(
-  translations: Raw<TranslationRecord>[],
+  translations: Raw<Lemma>[],
   flavorizations: Raw<FlavorizationRecord>[],
   options: FlavorizeStepOptions,
 ): IterableIterator<Raw<FlavorizationRecord>> {

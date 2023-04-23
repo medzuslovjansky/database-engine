@@ -1,5 +1,10 @@
 {
   "name": "@interslavic/typescript-config-database-engine",
   "version": "1.0.0",
-  "license": "MIT"
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/medzuslovjansky/database-engine.git",
+    "directory": "packages/presets/prettier-config"
+  },
+  "license": "GPL-3.0-or-later"
 }

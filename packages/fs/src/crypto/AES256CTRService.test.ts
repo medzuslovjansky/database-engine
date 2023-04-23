@@ -1,13 +1,13 @@
-import { PIIHelper } from './PIIHelper';
+import { AES256CTRService } from './AES256CTRService';
 
 const BASE64 = /[\d+/=A-Za-z]+/;
 
-describe('PIIHelper', () => {
-  let helper: PIIHelper;
+describe('AES256CTRService', () => {
+  let helper: AES256CTRService;
 
   beforeEach(() => {
     const key = '0123456789abcdef'.repeat(4);
-    helper = new PIIHelper(key);
+    helper = new AES256CTRService(key);
   });
 
   describe('encrypt', () => {

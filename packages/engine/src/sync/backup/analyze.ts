@@ -2,14 +2,14 @@ import type {
   AnalysisRecord,
   FlavorizationRecord,
   Raw,
-  TranslationRecord,
-} from '../types';
-import type { NATURAL_LANGUAGES } from '../constants';
+  Lemma,
+  NATURAL_LANGUAGES,
+} from '@interslavic/database-engine-core';
 
 import { leftJoin } from './sql';
 
 export function* analyze(
-  translations: Raw<TranslationRecord>[],
+  translations: Raw<Lemma>[],
   flavorizations: Raw<FlavorizationRecord>[],
   analysises: Raw<AnalysisRecord>[],
   lang: keyof typeof NATURAL_LANGUAGES,
@@ -44,14 +44,14 @@ export function* analyze(
 // import 'zx/globals';
 //
 // import _ from "lodash";
-// import { core, parse, types } from "@interslavic/steen-utils";
+// import { core, parse, types } from "@interslavic/steen-backup";
 //
 // import razumlivost from '../../dist';
 //
-// import { LANGS } from "../utils/constants.ts";
-// import * as csv from '../utils/csv.ts';
+// import { LANGS } from "../backup/constants.ts";
+// import * as csv from '../backup/csv.ts';
 // import { updateSameInLanguages } from './google-sheets.ts';
-// import { loadDictionary } from "../utils/hunspell.ts";
+// import { loadDictionary } from "../backup/hunspell.ts";
 //
 // const odometer = new razumlivost.Odometer({
 //   ignoreCase: true,

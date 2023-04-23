@@ -1,6 +1,11 @@
 {
   "name": "@interslavic/prettier-config-database-engine",
   "version": "1.0.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/medzuslovjansky/database-engine.git",
+    "directory": "packages/presets/prettier-config"
+  },
   "main": "index.js",
-  "license": "MIT"
+  "license": "GPL-3.0-or-later"
 }

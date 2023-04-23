@@ -4,19 +4,19 @@ import type { AuthClient } from './auth';
 import { Spreadsheet } from './sheets';
 
 export type GoogleAPIsConfig = {
-  auth: AuthClient;
+  authClient: AuthClient;
 };
 
 export class GoogleAPIs {
-  private readonly _auth: AuthClient;
+  private readonly _authClient: AuthClient;
 
   constructor(config: GoogleAPIsConfig) {
-    this._auth = config.auth;
+    this._authClient = config.authClient;
   }
 
   spreadsheet(id: string) {
     const api = new sheets_v4.Sheets({
-      auth: this._auth,
+      auth: this._authClient,
     });
 
     return new Spreadsheet({ api, spreadsheetId: id });

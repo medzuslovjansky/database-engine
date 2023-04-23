@@ -1,4 +1,4 @@
-export class PIIHelper {
+export class NoCryptoService {
   public encrypt(value: string): string {
     return value;
   }

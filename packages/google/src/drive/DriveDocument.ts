@@ -3,9 +3,18 @@ import { drive_v3 } from 'googleapis';
 import type { AuthClient } from '../auth';
 
 import Drive = drive_v3.Drive;
-import Schema$File = drive_v3.Schema$File;
 
-type DriveDocumentCachedData = Partial<Schema$File>;
+type DriveDocumentCachedData = {
+  mimeType?: string | null;
+  name?: string | null;
+  permissions?: DriveDocumentPermission[] | null;
+};
+
+type DriveDocumentPermission = {
+  id?: string | null;
+  emailAddress?: string | null;
+  role?: string | null;
+};
 
 export type DriveDocumentConfig = {
   authClient: AuthClient;
@@ -65,7 +74,7 @@ export class DriveDocument {
     return this._cache.name!;
   }
 
-  async getPermissions(): Promise<drive_v3.Schema$Permission[]> {
+  async getPermissions(): Promise<DriveDocumentPermission[]> {
     if (!this._cache.permissions) {
       const res = await this._drive.permissions.list({
         fileId: this._fileId,
@@ -82,7 +91,7 @@ export class DriveDocument {
   async createPermission(
     emailAddress: string,
     options?: CreatePermissionOptions,
-  ) {
+  ): Promise<DriveDocumentPermission> {
     const res = await this._drive.permissions.create({
       fileId: this._fileId,
       emailMessage: options?.emailMessage,

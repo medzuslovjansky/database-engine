@@ -115,3 +115,5 @@ yarn.lock
 .DS_Store
 
 .husky
+
+.env

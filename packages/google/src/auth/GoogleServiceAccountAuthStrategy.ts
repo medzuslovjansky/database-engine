@@ -32,6 +32,11 @@ export class GoogleServiceAccountAuthStrategy implements GoogleAuthStrategy {
     return client;
   }
 
+  async applies() {
+    const token = await this._readJWTToken();
+    return !!token;
+  }
+
   async _readJWTToken() {
     if (this.env['JWT_TOKEN']) {
       return this.env['JWT_TOKEN'];

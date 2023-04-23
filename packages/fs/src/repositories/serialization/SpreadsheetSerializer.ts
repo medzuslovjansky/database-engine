@@ -2,17 +2,17 @@ import { cloneDeep } from 'lodash';
 
 import type { Spreadsheet } from '../../dto';
 import { YamlSerializer } from '../../fs';
-import type { PIIHelper } from '../../utils';
+import type { CryptoService } from '../../types';
 
 export class SpreadsheetSerializer extends YamlSerializer<string, Spreadsheet> {
-  constructor(private readonly piiHelper: PIIHelper) {
+  constructor(private readonly cryptoService: CryptoService) {
     super();
   }
 
   async serialize(entityPath: string, entity: Spreadsheet): Promise<void> {
     const copy = cloneDeep(entity);
     for (const p of copy.permissions) {
-      p.email = this.piiHelper.encrypt(p.email);
+      p.email = this.cryptoService.encrypt(p.email);
     }
 
     return super.serialize(entityPath, copy);
@@ -21,7 +21,7 @@ export class SpreadsheetSerializer extends YamlSerializer<string, Spreadsheet> {
   async deserialize(entityPath: string): Promise<Spreadsheet> {
     const raw = await super.deserialize(entityPath);
     for (const p of raw.permissions) {
-      p.email = this.piiHelper.decrypt(p.email);
+      p.email = this.cryptoService.decrypt(p.email);
     }
 
     return raw;

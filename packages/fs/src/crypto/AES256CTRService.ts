@@ -1,6 +1,8 @@
 import { createCipheriv, createDecipheriv, randomBytes } from 'node:crypto';
 
-export class PIIHelper {
+import type { CryptoService } from '../types';
+
+export class AES256CTRService implements CryptoService {
   /**
    * @param key Encryption key
    */

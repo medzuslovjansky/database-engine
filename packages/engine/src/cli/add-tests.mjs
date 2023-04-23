@@ -1,11 +1,11 @@
 // import 'zx/globals';
 // import vm from 'node:vm';
 // import _ from 'lodash';
-// import { LANGS } from "../utils/constants.ts";
-// import * as csv from '../utils/csv.ts';
+// import { LANGS } from "../backup/constants.ts";
+// import * as csv from '../backup/csv.ts';
 // import razumlivost from '../../dist';
 // import findMatchingBracket from 'find-matching-bracket';
-// import { parse } from "@interslavic/steen-utils";
+// import { parse } from "@interslavic/steen-backup";
 //
 // const fingerprints = razumlivost.fingerprints;
 //

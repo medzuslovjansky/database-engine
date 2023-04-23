@@ -2,6 +2,7 @@
   "name": "@interslavic/database-engine-fs",
   "version": "1.0.0",
   "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "scripts": {
     "build": "tsc",
     "lint": "eslint . --fix",
@@ -11,7 +12,7 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/medzuslovjansky/database-engine.git",
-    "directory": "packages/config"
+    "directory": "packages/fs"
   },
   "devDependencies": {
     "@interslavic/eslint-config-database-engine": "^1.0.0",
@@ -28,6 +29,7 @@
     "yaml": "^2.2.1"
   },
   "dependencies": {
+    "@interslavic/database-engine-core": "^1.0.0",
     "csv": "^6.2.10",
     "csv-parse": "^5.3.8",
     "fs-extra": "^11.1.1",
@@ -35,7 +37,7 @@
     "tempfile": "^3.0.0",
     "tslib": "^2.4.0"
   },
-  "license": "MIT",
+  "license": "GPL-3.0-or-later",
   "prettier": "@interslavic/prettier-config-database-engine",
   "eslintConfig": {
     "extends": "@interslavic/database-engine",

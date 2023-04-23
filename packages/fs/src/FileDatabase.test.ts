@@ -1,20 +1,20 @@
 import fse from 'fs-extra';
 import tempfile from 'tempfile';
 
-import { Database } from './Database';
+import { FileDatabase } from './FileDatabase';
 
-describe('Database', () => {
+describe('FileDatabase', () => {
   const rootDirectory = tempfile('');
 
-  let database: Database;
+  let database: FileDatabase;
 
   beforeAll(async () => {
-    const { PIIHelper } = jest.requireMock('./utils/PIIHelper');
+    const { AES256CTRService } = jest.requireMock('./crypto/AES256CTRService');
 
     await fse.ensureDir(rootDirectory);
-    database = new Database({
+    database = new FileDatabase({
       rootDirectory,
-      piiHelper: new PIIHelper(),
+      cryptoService: new AES256CTRService(),
     });
   });
 

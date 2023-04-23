@@ -1,2 +1,2 @@
-export * from './GoogleAuthService';
+export * from './createAuthClient';
 export * from './AuthClient';
