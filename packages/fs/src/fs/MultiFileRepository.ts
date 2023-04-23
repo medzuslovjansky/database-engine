@@ -91,7 +91,7 @@ export class MultiFileRepository<ID, T extends Entity<ID>>
 
     if (existing) {
       const updated = merge({}, existing, entity);
-      await this.upsert(existing);
+      await this.upsert(updated);
       return updated;
     }
 

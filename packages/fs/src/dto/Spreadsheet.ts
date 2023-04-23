@@ -4,12 +4,13 @@ export type SpreadsheetID = string;
 
 export type Spreadsheet = {
   id: string;
-  googleId: string;
+  google_id: string;
   permissions: DrivePermission[];
   sheets: Sheet[];
 };
 
 export type DrivePermission = {
+  name: string;
   email: string;
   role: UserRole;
 };

@@ -1,5 +1,5 @@
 import * as dotenv from 'dotenv';
-import { findUp } from 'find-up';
+import findUp from 'find-up';
 import {
   FileDatabase,
   NoCryptoService,
@@ -13,16 +13,15 @@ import {
 export default async function createCompositionRoot() {
   await loadEnv();
 
-  console.log(process.env);
   const cryptoService = createCryptoService();
   const fileDatabase = new FileDatabase({
-    rootDirectory: process.env.ISV_ROOT_DIRECTORY ?? 'fake_db',
+    rootDirectory: process.env.ISV_DATABASE_ROOT ?? process.cwd(),
     cryptoService,
   });
 
   const authClient = await createAuthClient();
   if (!authClient) {
-    // throw new Error('Cannot find credentials to authorize with Google APIs');
+    throw new Error('Cannot find credentials to authorize with Google APIs');
   }
 
   const googleAPIs = new GoogleAPIs({ authClient });
@@ -34,8 +33,11 @@ export default async function createCompositionRoot() {
 }
 
 function createCryptoService() {
-  return process.env.ISV_ENCRYPTION_KEY
-    ? new AES256CTRService(process.env.ISV_ENCRYPTION_KEY)
+  return process.env.ISV_ENCRYPTION_KEY && process.env.ISV_ENCRYPTION_IV
+    ? new AES256CTRService(
+        process.env.ISV_ENCRYPTION_KEY,
+        process.env.ISV_ENCRYPTION_IV,
+      )
     : new NoCryptoService();
 }
 

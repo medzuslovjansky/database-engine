@@ -1,4 +1,6 @@
-id: 1N79e_yVHDo-d026HljueuKJlAAdeELAiPzdFzdBuKbY
+id: new_interslavic_words_list
+google_id: 1N79e_yVHDo-d026HljueuKJlAAdeELAiPzdFzdBuKbY
+permissions:
 sheets:
   - name: words
   - name: words_add_lang

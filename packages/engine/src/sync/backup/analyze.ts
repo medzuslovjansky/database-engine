@@ -50,7 +50,7 @@ export function* analyze(
 //
 // import { LANGS } from "../backup/constants.ts";
 // import * as csv from '../backup/csv.ts';
-// import { updateSameInLanguages } from './google-sheets.ts';
+// import { updateSameInLanguages } from './google-spreadsheets.ts';
 // import { loadDictionary } from "../backup/hunspell.ts";
 //
 // const odometer = new razumlivost.Odometer({

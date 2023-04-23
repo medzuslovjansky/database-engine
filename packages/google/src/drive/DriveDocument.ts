@@ -1,8 +1,4 @@
-import { drive_v3 } from 'googleapis';
-
-import type { AuthClient } from '../auth';
-
-import Drive = drive_v3.Drive;
+import type { drive_v3 } from 'googleapis';
 
 type DriveDocumentCachedData = {
   mimeType?: string | null;
@@ -12,12 +8,14 @@ type DriveDocumentCachedData = {
 
 type DriveDocumentPermission = {
   id?: string | null;
+  type?: string | null;
+  displayName?: string | null;
   emailAddress?: string | null;
   role?: string | null;
 };
 
 export type DriveDocumentConfig = {
-  authClient: AuthClient;
+  api: drive_v3.Drive;
   fileId: string;
   cachedData?: DriveDocumentCachedData;
 };
@@ -35,20 +33,15 @@ export type CreatePermissionOptions = {
 };
 
 export class DriveDocument {
-  private readonly _authClient: AuthClient;
   private readonly _fileId: string;
 
-  private readonly _drive: Drive;
+  private readonly _api: drive_v3.Drive;
 
   private readonly _cache: Partial<DriveDocumentCachedData> = {};
 
   constructor(config: DriveDocumentConfig) {
-    this._authClient = config.authClient;
+    this._api = config.api;
     this._fileId = config.fileId;
-    this._drive = new Drive({
-      auth: config.authClient,
-    });
-
     Object.assign(this._cache, config.cachedData);
   }
 
@@ -57,7 +50,7 @@ export class DriveDocument {
       return this._cache;
     }
 
-    const res = await this._drive.files.get({
+    const res = await this._api.files.get({
       fileId: this._fileId,
       fields: '*',
     });
@@ -76,7 +69,7 @@ export class DriveDocument {
 
   async getPermissions(): Promise<DriveDocumentPermission[]> {
     if (!this._cache.permissions) {
-      const res = await this._drive.permissions.list({
+      const res = await this._api.permissions.list({
         fileId: this._fileId,
         fields: '*', // TODO: check how to get only the fields we need
       });
@@ -92,7 +85,7 @@ export class DriveDocument {
     emailAddress: string,
     options?: CreatePermissionOptions,
   ): Promise<DriveDocumentPermission> {
-    const res = await this._drive.permissions.create({
+    const res = await this._api.permissions.create({
       fileId: this._fileId,
       emailMessage: options?.emailMessage,
       requestBody: {
@@ -109,7 +102,7 @@ export class DriveDocument {
   async deletePermission(emailAddress: string) {
     const permissionId = await this._findPermissionId(emailAddress);
 
-    const res = await this._drive.permissions.delete({
+    const res = await this._api.permissions.delete({
       fileId: this._fileId,
       permissionId,
     });
@@ -118,14 +111,14 @@ export class DriveDocument {
   }
 
   async listFiles() {
-    const res = await this._drive.files.list({
+    const res = await this._api.files.list({
       q: `'${this._fileId}' in parents`,
     });
 
     return (res.data.files ?? []).map(
       (f) =>
         new DriveDocument({
-          authClient: this._authClient,
+          api: this._api,
           fileId: f.id!,
           cachedData: f,
         }),

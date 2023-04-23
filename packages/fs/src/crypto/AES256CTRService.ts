@@ -1,38 +1,33 @@
-import { createCipheriv, createDecipheriv, randomBytes } from 'node:crypto';
+import { createCipheriv, createDecipheriv } from 'node:crypto';
 
 import type { CryptoService } from '../types';
 
 export class AES256CTRService implements CryptoService {
+  private readonly key: Buffer;
+  private readonly initVector: Buffer;
+
   /**
    * @param key Encryption key
    */
-  constructor(private readonly key: string) {}
+  constructor(key: string, initVector: string) {
+    this.key = Buffer.from(key, 'hex');
+    this.initVector = Buffer.from(initVector, 'hex');
+  }
 
   public encrypt(value: string): string {
     if (!value) return value;
 
-    const initVector = randomBytes(16);
-    const cipher = createCipheriv(
-      'aes-256-ctr',
-      Buffer.from(this.key, 'hex'),
-      initVector,
-    );
-
+    const cipher = createCipheriv('aes-256-ctr', this.key, this.initVector);
     const encrypted = Buffer.concat([cipher.update(value), cipher.final()]);
-    return `${initVector.toString('base64')}.${encrypted.toString('base64')}`;
+    return encrypted.toString('base64');
   }
 
   public decrypt(value: string): string {
     if (!value) return value;
 
-    const [iv, encrypted] = value.split('.');
-    const decipher = createDecipheriv(
-      'aes-256-ctr',
-      Buffer.from(this.key, 'hex'),
-      Buffer.from(iv, 'base64'),
-    );
+    const decipher = createDecipheriv('aes-256-ctr', this.key, this.initVector);
     const decrypted = Buffer.concat([
-      decipher.update(Buffer.from(encrypted, 'base64')),
+      decipher.update(Buffer.from(value, 'base64')),
       decipher.final(),
     ]);
 

@@ -7,13 +7,12 @@ describe('AES256CTRService', () => {
 
   beforeEach(() => {
     const key = '0123456789abcdef'.repeat(4);
-    helper = new AES256CTRService(key);
+    helper = new AES256CTRService(key, 'cf54e5d945a7d3e6a36da0b62dc12b16');
   });
 
   describe('encrypt', () => {
     it('should encrypt a string', () => {
-      const expectedFormat = concatRegExp(BASE64, /\./, BASE64);
-      expect(helper.encrypt('alice@example.com')).toMatch(expectedFormat);
+      expect(helper.encrypt('alice@example.com')).toMatch(BASE64);
     });
 
     it('should not encrypt a string if it is empty', () => {
@@ -23,8 +22,7 @@ describe('AES256CTRService', () => {
 
   describe('decrypt', () => {
     it('should decrypt a string', () => {
-      const encryptedEmail =
-        'z1Tl2UWn0+ajbaC2LcErFg==.qNMXgFcB3/MT1TsJXva972s=';
+      const encryptedEmail = 'qNMXgFcB3/MT1TsJXva972s=';
 
       expect(helper.decrypt(encryptedEmail)).toBe('alice@example.com');
     });
@@ -43,7 +41,3 @@ describe('AES256CTRService', () => {
     });
   });
 });
-
-function concatRegExp(...patterns: RegExp[]) {
-  return new RegExp(`^${patterns.map((p) => p.source).join('')}$`);
-}
