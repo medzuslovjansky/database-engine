@@ -1,5 +1,4 @@
 import { Lemma } from '../lemma';
-import { Annotation } from '../annotation';
 
 import { Synset } from './Synset';
 
@@ -70,16 +69,17 @@ describe('Synset', () => {
 
     it('should add a lemma', () => {
       const synset = anEmptySynset();
-      const annotation = new Annotation({ value: 'some annotation' });
-      const lemma = new Lemma({ value: 'value', annotations: [annotation] });
+      const lemma = new Lemma({
+        value: 'value',
+        annotations: ['some annotation'],
+      });
 
       expect(synset.add(lemma).toString()).toBe('!value (some annotation)');
     });
 
     it('should add an array of lemmas', () => {
       const synset = anEmptySynset();
-      const annotation = new Annotation({ value: 'annot.' });
-      const lemma1 = new Lemma({ value: 'value', annotations: [annotation] });
+      const lemma1 = new Lemma({ value: 'value', annotations: ['annot.'] });
       const lemma2 = new Lemma('value2');
 
       expect(synset.add([lemma1]).add([lemma2]).toString()).toBe(
@@ -107,11 +107,7 @@ describe('Synset', () => {
       const synset = anEmptySynset().add(
         new Lemma({
           value: 'hello',
-          annotations: [
-            new Annotation({
-              value: 'greeting',
-            }),
-          ],
+          annotations: ['greeting'],
         }),
       );
 
@@ -124,9 +120,6 @@ describe('Synset', () => {
       expect(clone.lemmas[0]).not.toBe(synset.lemmas[0]);
       expect(clone.lemmas[0].annotations).not.toBe(
         synset.lemmas[0].annotations,
-      );
-      expect(clone.lemmas[0].annotations[0]).not.toBe(
-        synset.lemmas[0].annotations[0],
       );
     });
   });
@@ -255,18 +248,16 @@ describe('Synset', () => {
       const synset = anEmptySynset();
       synset.add('toj, ktory rabi');
       synset.add('rabotajuci');
-      synset.lemmas[0].annotations.push(Annotation.fromString('adj.'));
+      synset.lemmas[0].annotations.push('adj.');
 
-      expect(`${synset}`).toBe(`!toj, ktory rabi (adj.); rabotajuci`);
+      expect(`${synset}`).toBe('!toj, ktory rabi (adj.); rabotajuci');
     });
   });
 
   function aComplexSynset() {
-    const annotation1 = new Annotation({ value: 'obsolete' });
-    const annotation2 = new Annotation({ value: 'medical' });
     const lemma1 = new Lemma({ value: 'you' });
-    const lemma2 = new Lemma({ value: 'thou', annotations: [annotation1] });
-    const lemma3 = new Lemma({ value: 'lupus', annotations: [annotation2] });
+    const lemma2 = new Lemma({ value: 'thou', annotations: ['obsolete'] });
+    const lemma3 = new Lemma({ value: 'lupus', annotations: ['medical'] });
     const lemmas = [lemma1, lemma2, lemma3];
 
     const verified = true;
@@ -279,7 +270,7 @@ describe('Synset', () => {
         debatable,
       },
       lemmas,
-      annotations: [annotation1, annotation2],
+      annotations: ['obsolete', 'medical'],
     };
   }
 

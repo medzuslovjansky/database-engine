@@ -1,8 +1,6 @@
-import type { Annotation } from '../annotation';
-
 export type LemmaOptions = {
   value: string;
-  annotations: Annotation[];
+  annotations: string[];
 };
 
 export class Lemma {
@@ -20,19 +18,17 @@ export class Lemma {
 
   public value: string;
 
-  public annotations: Annotation[];
+  public annotations: string[];
 
   public clone(): Lemma {
     return new Lemma({
       value: this.value,
-      annotations: this.annotations.map((a) => a.clone()),
+      annotations: [...this.annotations],
     });
   }
 
   public toString(): string {
-    const n = this.annotations.length;
-
-    if (n === 0) {
+    if (this.annotations.length === 0) {
       return this.value;
     }
 

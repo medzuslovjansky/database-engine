@@ -1,5 +1,3 @@
-import { Annotation } from '../annotation';
-
 import { Lemma } from './Lemma';
 
 describe('Lemma', () => {
@@ -24,7 +22,7 @@ describe('Lemma', () => {
       beforeEach(() => {
         lemma = new Lemma({
           value: 'this',
-          annotations: [Annotation.fromString('demonstrative')],
+          annotations: ['demonstrative'],
         });
       });
 
@@ -33,9 +31,7 @@ describe('Lemma', () => {
       });
 
       it('should have those annotations', () => {
-        expect(lemma.annotations.map((a) => a.value)).toEqual([
-          'demonstrative',
-        ]);
+        expect(lemma.annotations).toEqual(['demonstrative']);
       });
     });
   });
@@ -49,10 +45,7 @@ describe('Lemma', () => {
     it('should convert into its value with annotations separated by ";" inside round brackets', () => {
       lemma = new Lemma({
         value: 'and',
-        annotations: [
-          Annotation.fromString('conj.'),
-          Annotation.fromString('common'),
-        ],
+        annotations: ['conj.', 'common'],
       });
 
       expect(`${lemma}`).toBe('and (conj.; common)');
