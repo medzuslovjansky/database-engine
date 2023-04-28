@@ -1,4 +1,5 @@
 import type { SteenbergenLemmaMetadata } from './SteenbergenLemmaMetadata';
+import { parseLemma } from './parseLemma';
 
 export type LemmaOptions = {
   value: string;
@@ -33,45 +34,6 @@ export class Lemma {
   }
 
   public static parse(str: string): Lemma {
-    const trimmed = trim(str);
-
-    return new Lemma({
-      value: parseLemmaValue(trimmed),
-      annotations: parseAnnotations(trimmed),
-    });
+    return new Lemma(parseLemma(str));
   }
-}
-
-function parseLemmaValue(str: string): string {
-  const leftN = str.lastIndexOf('(');
-  if (leftN === -1) {
-    return str;
-  }
-
-  const rightN = str.lastIndexOf(')');
-  if (rightN < leftN) {
-    throw new Error(`Lemma value has incorrect parentheses: ${str}`);
-  }
-
-  return str.slice(0, leftN).trimEnd();
-}
-
-function parseAnnotations(str: string): string[] {
-  const leftN = str.lastIndexOf('(');
-  if (leftN === -1) {
-    return [];
-  }
-
-  const rightN = str.lastIndexOf(')');
-  if (rightN < leftN) {
-    throw new Error(`Lemma value has incorrect parentheses: ${str}`);
-  }
-
-  const annotation = str.slice(leftN + 1, rightN).trim();
-  // eslint-disable-next-line unicorn/no-array-callback-reference
-  return annotation.split(';').map(trim);
-}
-
-function trim(str: string): string {
-  return str.trim();
 }

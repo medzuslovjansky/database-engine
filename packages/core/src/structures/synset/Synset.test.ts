@@ -90,7 +90,7 @@ describe('Synset', () => {
     it('should throw an attempt to pass something else', () => {
       const synset = anEmptySynset();
       const smth = {} as any;
-      expect(() => synset.add(smth)).toThrowError(/Cannot add/);
+      expect(() => synset.add(smth)).toThrowError(/Invalid value type.*Object/);
     });
   });
 
@@ -251,6 +251,30 @@ describe('Synset', () => {
       synset.lemmas[0].annotations.push('adj.');
 
       expect(`${synset}`).toBe('!toj, ktory rabi (adj.); rabotajuci');
+    });
+  });
+
+  describe('#parse()', () => {
+    test.each([
+      ['', void 0],
+      ['!', void 0],
+      ['#', void 0],
+      ['#!', void 0],
+      ['!#', '#!'],
+      ['!#course', '#!course'],
+      ['!U-Boot', void 0],
+      ['#co-worker', void 0],
+      ['#!only, ĝuste nun', void 0],
+      ["з'явитися", void 0],
+      ['сей (устар.; местоим.)', void 0],
+      ['за (напр.: по грибы, за хлебом), по', void 0],
+      ['bring (up) to', void 0],
+      ['и; а зато (смысл2)', 'и, а зато (смысл2)'],
+      // ['Добрий ранок!, Доброго ранку!', void 0],
+    ])('should parse synset: %s', (value: string, expectedValue?: string) => {
+      const synset = Synset.parse(value);
+      expect(synset).toMatchSnapshot('synset');
+      expect(`${synset}`).toBe(expectedValue ?? value);
     });
   });
 

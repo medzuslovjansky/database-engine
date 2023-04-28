@@ -18,18 +18,34 @@ describe('Lemma', () => {
       });
     });
 
-    describe('with a string', () => {
+    describe('parsed from a string', () => {
       beforeEach(() => {
-        lemma = Lemma.parse('bring (up) on  (colloq.;  slang)');
+        lemma = Lemma.parse('');
       });
 
-      it('should have an empty value', () => {
-        expect(lemma.value).toBe('bring (up) on');
+      test.each([
+        'běguči',
+        'око (устар.)',
+        'той, що біжить',
+        'bring (up) on (colloq.; slang)',
+      ])('%j should be stringified to the same form', (testString) => {
+        const lemma = Lemma.parse(testString);
+        expect(lemma).toMatchSnapshot();
+        expect(`${lemma}`).toBe(testString);
       });
 
-      it('should have no annotations', () => {
-        expect(lemma.annotations).toEqual(['colloq.', 'slang']);
-      });
+      test.each([
+        'zabezpamečena lěva zatvorka)',
+        'zabezpamečena prava zatvorka (',
+        'měšane ) zatvorky (',
+      ])(
+        'should throw an error if there are unbalanced brackets',
+        (testString) => {
+          expect(() => Lemma.parse(testString)).toThrow(
+            /incorrect parentheses/,
+          );
+        },
+      );
     });
 
     describe('with value and annotations', () => {

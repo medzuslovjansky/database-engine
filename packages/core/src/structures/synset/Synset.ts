@@ -1,6 +1,8 @@
 import { isIterable } from '../../utils';
 import { Lemma } from '../lemma';
 
+import { parseSynset } from './parseSynset';
+
 export type SynsetOptions = SynsetMetadata & {
   lemmas: Lemma[];
 };
@@ -149,6 +151,10 @@ export class Synset {
       (this.verified ? '' : '!') +
       this.lemmas.map(String).join(hasCommas ? '; ' : ', ')
     );
+  }
+
+  public static parse(str: string) {
+    return new Synset(parseSynset(str));
   }
 }
 

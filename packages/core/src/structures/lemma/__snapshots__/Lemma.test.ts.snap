@@ -1,0 +1,34 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Lemma when created parsed from a string "bring (up) on (colloq.; slang)" should be stringified to the same form 1`] = `
+Lemma {
+  "annotations": [
+    "colloq.",
+    "slang",
+  ],
+  "value": "bring (up) on",
+}
+`;
+
+exports[`Lemma when created parsed from a string "běguči" should be stringified to the same form 1`] = `
+Lemma {
+  "annotations": [],
+  "value": "běguči",
+}
+`;
+
+exports[`Lemma when created parsed from a string "око (устар.)" should be stringified to the same form 1`] = `
+Lemma {
+  "annotations": [
+    "устар.",
+  ],
+  "value": "око",
+}
+`;
+
+exports[`Lemma when created parsed from a string "той, що біжить" should be stringified to the same form 1`] = `
+Lemma {
+  "annotations": [],
+  "value": "той, що біжить",
+}
+`;
