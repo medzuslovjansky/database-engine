@@ -13,21 +13,20 @@ export type SynsetMetadata = {
 type EqualityPredicate<T> = (a: T, b: T) => boolean;
 
 export class Synset {
+  public verified: boolean;
+  public debatable: boolean;
+  public readonly lemmas: Lemma[];
+
   constructor(options: Partial<SynsetOptions> = {}) {
-    this.meta = {
-      verified: options.verified,
-      debatable: options.debatable,
-    };
-
-    this.lemmas = options.lemmas || [];
+    this.verified = options.verified ?? false;
+    this.debatable = options.debatable ?? false;
+    this.lemmas = options.lemmas ?? [];
   }
-
-  public meta: SynsetMetadata;
-  public lemmas: Lemma[];
 
   public clone(): Synset {
     return new Synset({
-      ...this.meta,
+      verified: this.verified,
+      debatable: this.debatable,
       lemmas: this.lemmas.map((g) => g.clone()),
     });
   }
@@ -63,8 +62,8 @@ export class Synset {
     equals: EqualityPredicate<Lemma> = valueEquals,
   ): Synset {
     const result = new Synset({
-      verified: this.meta.verified && other.meta.verified,
-      debatable: this.meta.debatable || other.meta.debatable,
+      verified: this.verified && other.verified,
+      debatable: this.debatable || other.debatable,
     });
 
     for (const l1 of this.lemmas) {
@@ -92,8 +91,8 @@ export class Synset {
     equals: EqualityPredicate<Lemma> = valueEquals,
   ): Synset {
     const result = new Synset({
-      verified: this.meta.verified && other.meta.verified,
-      debatable: this.meta.debatable || other.meta.debatable,
+      verified: this.verified && other.verified,
+      debatable: this.debatable || other.debatable,
     }).add(this.lemmas);
 
     for (const l2 of other.lemmas) {
@@ -118,8 +117,8 @@ export class Synset {
     equals: EqualityPredicate<Lemma> = valueEquals,
   ): Synset {
     const result = new Synset({
-      verified: this.meta.verified && other.meta.verified,
-      debatable: this.meta.debatable || other.meta.debatable,
+      verified: this.verified && other.verified,
+      debatable: this.debatable || other.debatable,
     });
 
     for (const l1 of this.lemmas) {
@@ -148,8 +147,8 @@ export class Synset {
     const hasCommas = this.lemmas.some((l) => l.value.includes(','));
 
     return (
-      (this.meta.debatable ? '#' : '') +
-      (this.meta.verified ? '' : '!') +
+      (this.debatable ? '#' : '') +
+      (this.verified ? '' : '!') +
       this.lemmas.map(String).join(hasCommas ? '; ' : ', ')
     );
   }

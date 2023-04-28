@@ -18,6 +18,20 @@ describe('Lemma', () => {
       });
     });
 
+    describe('with a string', () => {
+      beforeEach(() => {
+        lemma = Lemma.parse('bring (up) on  (colloq.;  slang)');
+      });
+
+      it('should have an empty value', () => {
+        expect(lemma.value).toBe('bring (up) on');
+      });
+
+      it('should have no annotations', () => {
+        expect(lemma.annotations).toEqual(['colloq.', 'slang']);
+      });
+    });
+
     describe('with value and annotations', () => {
       beforeEach(() => {
         lemma = new Lemma({

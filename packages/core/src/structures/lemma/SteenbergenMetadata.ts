@@ -1,8 +1,8 @@
 export type SteenbergenMetadata = {
   id: number;
-  addition: string;
+  addition?: string;
   partOfSpeech: string;
-  type: string;
+  type: number;
   sameInLanguages?: string;
   genesis?: string;
   frequency?: number;

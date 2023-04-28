@@ -10,11 +10,11 @@ describe('Synset', () => {
       });
 
       it('should not report itself as verified', () => {
-        expect(anEmptySynset().meta.verified).toBe(undefined);
+        expect(anEmptySynset().verified).toBe(false);
       });
 
       it('should not report itself as debatable', () => {
-        expect(anEmptySynset().meta.debatable).toBe(undefined);
+        expect(anEmptySynset().debatable).toBe(false);
       });
 
       it('should be empty', () => {
@@ -28,14 +28,14 @@ describe('Synset', () => {
         expect(synset.lemmas).toEqual(lemmas);
       });
 
-      it('should contain meta.verified', () => {
+      it('should have .verified property', () => {
         const { synset, meta } = aComplexSynset();
-        expect(synset.meta.verified).toBe(meta.verified);
+        expect(synset.verified).toBe(meta.verified);
       });
 
-      it('should contain meta.debatable', () => {
+      it('should have .debatable property', () => {
         const { synset, meta } = aComplexSynset();
-        expect(synset.meta.debatable).toBe(meta.debatable);
+        expect(synset.debatable).toBe(meta.debatable);
       });
 
       it('should be not empty', () => {
@@ -79,10 +79,10 @@ describe('Synset', () => {
 
     it('should add an array of lemmas', () => {
       const synset = anEmptySynset();
-      const lemma1 = new Lemma({ value: 'value', annotations: ['annot.'] });
-      const lemma2 = new Lemma('value2');
+      const lemma1 = Lemma.parse('value (annot.)');
+      const lemma2 = new Lemma({ value: 'value2' });
 
-      expect(synset.add([lemma1]).add([lemma2]).toString()).toBe(
+      expect(synset.add([lemma1, lemma2]).toString()).toBe(
         '!value (annot.), value2',
       );
     });
@@ -147,8 +147,8 @@ describe('Synset', () => {
     it('should always take the worst-case metadata', () => {
       const synset1 = anEmptySynset().add(['a', 'b']);
       const synset2 = anEmptySynset();
-      synset1.meta.verified = false;
-      synset1.meta.debatable = true;
+      synset1.verified = false;
+      synset1.debatable = true;
 
       const union = synset1.union(synset2);
       expect(union.toString()).toBe('#!a, b');
@@ -169,8 +169,8 @@ describe('Synset', () => {
     it('should always take the worst-case metadata', () => {
       const synset1 = anEmptySynset().add(['a', 'b']);
       const synset2 = anEmptySynset();
-      synset1.meta.verified = false;
-      synset1.meta.debatable = true;
+      synset1.verified = false;
+      synset1.debatable = true;
 
       const union = synset1.difference(synset2);
       expect(union.toString()).toBe('#!a, b');
@@ -189,8 +189,8 @@ describe('Synset', () => {
       const s1 = anEmptySynset().add(['this', 'lemma']);
       const s2 = anEmptySynset().add(['that', 'lemma']);
 
-      s1.meta.verified = s2.meta.verified = true;
-      s2.meta.debatable = true;
+      s1.verified = s2.verified = true;
+      s2.debatable = true;
 
       expect(s1.intersection(s2).toString()).toBe('#lemma');
     });
@@ -206,40 +206,40 @@ describe('Synset', () => {
   describe('when stringified', () => {
     it('should prepend ! if it is not verified', () => {
       const { synset } = aComplexSynset();
-      synset.meta.verified = false;
-      synset.meta.debatable = false;
+      synset.verified = false;
+      synset.debatable = false;
 
       expect(`${synset}`).toMatch(/^!/);
     });
 
     it('should not prepend ! if it is verified', () => {
       const { synset } = aComplexSynset();
-      synset.meta.verified = true;
-      synset.meta.debatable = false;
+      synset.verified = true;
+      synset.debatable = false;
 
       expect(`${synset}`).not.toMatch(/^!/);
     });
 
     it('should prepend # if it is debatable', () => {
       const { synset } = aComplexSynset();
-      synset.meta.debatable = true;
-      synset.meta.verified = true;
+      synset.debatable = true;
+      synset.verified = true;
 
       expect(`${synset}`).toMatch(/^#[^!]/);
     });
 
     it('should not prepend # if it is not debatable', () => {
       const { synset } = aComplexSynset();
-      synset.meta.debatable = false;
-      synset.meta.verified = false;
+      synset.debatable = false;
+      synset.verified = false;
 
       expect(`${synset}`).not.toMatch(/^#/);
     });
 
     it('should prepend both #! if it is verified and debatable', () => {
       const { synset } = aComplexSynset();
-      synset.meta.verified = false;
-      synset.meta.debatable = true;
+      synset.verified = false;
+      synset.debatable = true;
 
       expect(`${synset}`).toMatch(/^#!/);
     });
