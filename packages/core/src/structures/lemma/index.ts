@@ -1,2 +1,2 @@
 export * from './Lemma';
-export * from './SteenbergenMetadata';
+export * from './SteenbergenLemmaMetadata';

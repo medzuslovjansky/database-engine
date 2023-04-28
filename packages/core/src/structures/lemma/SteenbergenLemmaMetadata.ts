@@ -1,4 +1,4 @@
-export type SteenbergenMetadata = {
+export type SteenbergenLemmaMetadata = {
   id: number;
   addition?: string;
   partOfSpeech: string;

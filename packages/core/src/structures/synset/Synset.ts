@@ -31,6 +31,14 @@ export class Synset {
     });
   }
 
+  public isEmpty(): boolean {
+    return this.lemmas.length === 0;
+  }
+
+  public get size(): number {
+    return this.lemmas.length;
+  }
+
   public add(value: Lemma | string | Iterable<Lemma> | Iterable<string>): this {
     if (isIterable(value) && typeof value !== 'string') {
       for (const val of value) {
@@ -40,19 +48,17 @@ export class Synset {
       return this;
     }
 
-    let lemma!: Lemma;
+    let lemma: Lemma;
 
     if (typeof value === 'string') {
-      lemma = new Lemma({ value });
+      lemma = Lemma.parse(value);
     } else if (value instanceof Lemma) {
       lemma = value.clone();
+    } else {
+      throw new TypeError('Invalid value type: ' + value);
     }
 
-    if (lemma) {
-      this.lemmas.push(lemma);
-    } else {
-      throw new TypeError('Cannot add non-Lemma/LemmaGroup/string to a synset');
-    }
+    this.lemmas.push(lemma);
 
     return this;
   }
@@ -76,14 +82,6 @@ export class Synset {
     }
 
     return result;
-  }
-
-  public isEmpty(): boolean {
-    return this.lemmas.length === 0;
-  }
-
-  public get size(): number {
-    return this.lemmas.length;
   }
 
   public union(

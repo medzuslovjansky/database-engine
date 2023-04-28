@@ -1,4 +1,4 @@
-import type { SteenbergenMetadata } from './SteenbergenMetadata';
+import type { SteenbergenLemmaMetadata } from './SteenbergenLemmaMetadata';
 
 export type LemmaOptions = {
   value: string;
@@ -15,7 +15,7 @@ export class Lemma {
 
   public annotations: string[];
 
-  public steen?: SteenbergenMetadata;
+  public steen?: SteenbergenLemmaMetadata;
 
   public clone(): Lemma {
     return new Lemma({
