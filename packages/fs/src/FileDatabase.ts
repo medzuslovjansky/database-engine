@@ -1,6 +1,6 @@
 import type { AggregatedRepository } from './repositories';
 import {
-  LemmasRepository,
+  MultilingualSynsetRepository,
   SpreadsheetsRepository,
   UsersRepository,
 } from './repositories';
@@ -12,14 +12,14 @@ export type FileDatabaseConfig = {
 };
 
 export class FileDatabase implements AggregatedRepository {
-  public readonly lemmas: LemmasRepository;
+  public readonly multisynsets: MultilingualSynsetRepository;
   public readonly users: UsersRepository;
   public readonly spreadsheets: SpreadsheetsRepository;
 
   constructor(config: FileDatabaseConfig) {
     const { rootDirectory, cryptoService } = config;
 
-    this.lemmas = new LemmasRepository(rootDirectory);
+    this.multisynsets = new MultilingualSynsetRepository(rootDirectory);
     this.spreadsheets = new SpreadsheetsRepository(
       rootDirectory,
       cryptoService,

@@ -86,6 +86,11 @@ export class Synset {
     return result;
   }
 
+  public includes(value: Lemma | string): boolean {
+    const lemma = typeof value === 'string' ? Lemma.parse(value) : value;
+    return this.lemmas.some((l) => l.value === lemma.value);
+  }
+
   public union(
     other: Synset,
     equals: EqualityPredicate<Lemma> = valueEquals,

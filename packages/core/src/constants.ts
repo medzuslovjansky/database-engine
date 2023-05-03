@@ -22,7 +22,7 @@ export const NATURAL_SLAVIC_LANGUAGES = {
 };
 
 export const SLAVIC_LANGUAGES = {
-  'art-x-interslv': 'Interslavic',
+  isv: 'Interslavic',
   ...NATURAL_SLAVIC_LANGUAGES,
 };
 

@@ -1,7 +1,13 @@
 import type { Language } from '../../constants';
-import type { Synset } from '../synset';
+import { Synset } from '../synset';
 
 export class MultilingualSynset {
-  public id?: string;
-  public synsets: Partial<Record<Language, Synset>> = {};
+  public id = 0; // TODO: make it constructable
+  public synsets: MultilingualSynset$Synsets = {
+    isv: new Synset(),
+  };
 }
+
+export type MultilingualSynset$Synsets = {
+  isv: Synset;
+} & Partial<Record<Language, Synset>>;

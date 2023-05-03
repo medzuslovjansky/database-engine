@@ -21,6 +21,10 @@ export function parseLemma(rawStr: string) {
     annotations = [];
   }
 
+  if (annotations[0] === '') {
+    annotations.splice(0, 1);
+  }
+
   return { value, annotations };
 }
 

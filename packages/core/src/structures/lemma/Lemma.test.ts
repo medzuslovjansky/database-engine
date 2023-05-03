@@ -34,6 +34,13 @@ describe('Lemma', () => {
         expect(`${lemma}`).toBe(testString);
       });
 
+      it('should ignore empty annotations', () => {
+        const lemma = Lemma.parse('pråzdne anotacije ()');
+        expect(lemma.value).toBe('pråzdne anotacije');
+        expect(lemma.annotations).toEqual([]);
+        expect(`${lemma}`).toBe('pråzdne anotacije');
+      });
+
       test.each([
         'zabezpamečena lěva zatvorka)',
         'zabezpamečena prava zatvorka (',
