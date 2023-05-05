@@ -1,11 +1,12 @@
 import { isIterable } from '../../utils';
-import { Lemma } from '../lemma';
+import { Lemma as LemmaBase } from '../lemma';
 
 import { parseSynset } from './parseSynset';
 
-export type SynsetOptions = SynsetMetadata & {
-  lemmas: Lemma[];
-};
+export type SynsetOptions<Lemma extends LemmaBase = LemmaBase> =
+  SynsetMetadata & {
+    lemmas: Lemma[];
+  };
 
 export type SynsetMetadata = {
   verified?: boolean;
@@ -14,12 +15,12 @@ export type SynsetMetadata = {
 
 type EqualityPredicate<T> = (a: T, b: T) => boolean;
 
-export class Synset {
+export class Synset<Lemma extends LemmaBase = LemmaBase> {
   public verified: boolean;
   public debatable: boolean;
   public readonly lemmas: Lemma[];
 
-  constructor(options: Partial<SynsetOptions> = {}) {
+  constructor(options: Partial<SynsetOptions<Lemma>> = {}) {
     this.verified = options.verified ?? false;
     this.debatable = options.debatable ?? false;
     this.lemmas = options.lemmas ?? [];
@@ -50,24 +51,24 @@ export class Synset {
       return this;
     }
 
-    let lemma: Lemma;
+    let lemma: LemmaBase;
 
     if (typeof value === 'string') {
-      lemma = Lemma.parse(value);
-    } else if (value instanceof Lemma) {
+      lemma = LemmaBase.parse(value);
+    } else if (value instanceof LemmaBase) {
       lemma = value.clone();
     } else {
       throw new TypeError('Invalid value type: ' + value);
     }
 
-    this.lemmas.push(lemma);
+    this.lemmas.push(lemma as Lemma);
 
     return this;
   }
 
   public intersection(
     other: Synset,
-    equals: EqualityPredicate<Lemma> = valueEquals,
+    equals: EqualityPredicate<LemmaBase> = valueEquals,
   ): Synset {
     const result = new Synset({
       verified: this.verified && other.verified,
@@ -87,13 +88,13 @@ export class Synset {
   }
 
   public includes(value: Lemma | string): boolean {
-    const lemma = typeof value === 'string' ? Lemma.parse(value) : value;
+    const lemma = typeof value === 'string' ? LemmaBase.parse(value) : value;
     return this.lemmas.some((l) => l.value === lemma.value);
   }
 
   public union(
     other: Synset,
-    equals: EqualityPredicate<Lemma> = valueEquals,
+    equals: EqualityPredicate<LemmaBase> = valueEquals,
   ): Synset {
     const result = new Synset({
       verified: this.verified && other.verified,
@@ -119,7 +120,7 @@ export class Synset {
 
   public difference(
     other: Synset,
-    equals: EqualityPredicate<Lemma> = valueEquals,
+    equals: EqualityPredicate<LemmaBase> = valueEquals,
   ): Synset {
     const result = new Synset({
       verified: this.verified && other.verified,
@@ -163,6 +164,6 @@ export class Synset {
   }
 }
 
-function valueEquals(a: Lemma, b: Lemma): boolean {
+function valueEquals(a: LemmaBase, b: LemmaBase): boolean {
   return a.value === b.value;
 }

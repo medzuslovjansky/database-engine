@@ -1,9 +1,17 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
+export type ArrayMapper<R extends Record<string, any>> = new (
+  values: any[],
+) => ArrayMapped<R>;
+
+export type ArrayMapped<R extends Record<string, any>> = {
+  [P in keyof R]: R[P];
+} & { _values: unknown[] };
+
 export function createArrayMapperClass<R extends Record<string, any>>(
   className: string,
   propertyNames: (keyof R)[],
-): new (values: unknown[]) => R {
+): ArrayMapper<R> {
   const DynamicClass = {
     [className]: class {
       // @ts-expect-error TS6138: Property '_values' is declared but its value is never read.
@@ -23,5 +31,5 @@ export function createArrayMapperClass<R extends Record<string, any>>(
     });
   }
 
-  return DynamicClass as unknown as new (values: unknown[]) => R;
+  return DynamicClass as unknown as ArrayMapper<R>;
 }

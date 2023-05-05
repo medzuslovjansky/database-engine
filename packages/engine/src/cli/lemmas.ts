@@ -1,16 +1,37 @@
 import type { CommandBuilder } from 'yargs';
 
 import compose from '../compositionRoot';
+import { GSheets2Git } from '../sync';
+import type { WordsSheet } from '../google';
 
 export const command = 'lemmas <subcommand> [options]';
 
 export const describe = 'Executes operations on lemmas';
 
 export const handler = async (argv: LemmasArgv) => {
-  if (argv.subcommand !== 'fetch') {
-    throw new Error('Unknown subcommand');
+  switch (argv.subcommand) {
+    case 'fetch': {
+      return fetchLemmas();
+    }
+    case 'repair': {
+      return repairDb();
+    }
+    default: {
+      throw new Error(`Unknown subcommand: ${argv.subcommand}`);
+    }
   }
+};
 
+async function repairDb() {
+  const { fileDatabase } = await compose();
+  console.log('Repairing database...');
+  // eslint-disable-next-line unicorn/no-array-for-each
+  await fileDatabase.multisynsets.forEach(() => {
+    /* noop */
+  });
+}
+
+async function fetchLemmas() {
   const { fileDatabase, googleAPIs } = await compose();
   console.log('Fetching lemmas...');
 
@@ -28,17 +49,23 @@ export const handler = async (argv: LemmasArgv) => {
     throw new Error('Cannot find the sheet: words');
   }
 
-  console.log('Protected ranges:', wordsSheet.protectedRanges);
-};
+  const sync = new GSheets2Git(
+    fileDatabase.multisynsets,
+    wordsSheet as WordsSheet,
+    false,
+  );
+
+  await sync.execute();
+}
 
 export const builder: CommandBuilder<LemmasArgv, any> = {
   subcommand: {
-    choices: ['fetch'],
+    choices: ['fetch', 'repair'],
     description: 'Subcommand to execute',
     demandOption: true,
   },
 };
 
 export type LemmasArgv = {
-  subcommand: 'fetch';
+  subcommand: 'fetch' | 'repair';
 };

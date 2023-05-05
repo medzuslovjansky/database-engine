@@ -1,20 +1,19 @@
-export abstract class SyncOperation<Clean, Dirty = Clean> {
-  protected abstract getBefore(): Promise<Clean[]>;
-  protected abstract getAfter(): Promise<Dirty[]>;
-  protected abstract extractIdBefore(record: Clean): string;
-  protected abstract extractIdAfter(record: Dirty): string;
-  protected abstract insert(record: Dirty): Promise<void>;
-  protected abstract update(
-    beforeRecord: Clean,
-    afterRecord: Dirty,
-  ): Promise<void>;
-  protected abstract delete(record: Clean): Promise<void>;
+/* eslint-disable @typescript-eslint/no-empty-function */
 
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
+export abstract class EntitySyncOperation<Before, After = Before> {
+  protected abstract getBefore(): Promise<Before[]>;
+  protected abstract getAfter(): Promise<After[]>;
+  protected abstract extractIdBefore(record: Before): unknown;
+  protected abstract extractIdAfter(record: After): unknown;
+  protected abstract insert(record: After): Promise<void>;
+  protected abstract update(
+    beforeRecord: Before,
+    afterRecord: After,
+  ): Promise<void>;
+  protected abstract delete(record: Before): Promise<void>;
+
   protected async beginTransaction(): Promise<void> {}
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
   protected async rollbackTransaction(): Promise<void> {}
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
   protected async commit(): Promise<void> {}
 
   async execute(): Promise<void> {

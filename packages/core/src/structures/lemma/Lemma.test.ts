@@ -46,11 +46,11 @@ describe('Lemma', () => {
         'zabezpamečena prava zatvorka (',
         'měšane ) zatvorky (',
       ])(
-        'should throw an error if there are unbalanced brackets',
+        'should ignore annotations if there are unbalanced brackets',
         (testString) => {
-          expect(() => Lemma.parse(testString)).toThrow(
-            /incorrect parentheses/,
-          );
+          const lemma = Lemma.parse(testString);
+          expect(lemma.value).toBe(testString);
+          expect(lemma.annotations).toEqual([]);
         },
       );
     });

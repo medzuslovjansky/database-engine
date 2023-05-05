@@ -1,6 +1,6 @@
 import fse from 'fs-extra';
 import tempfile from 'tempfile';
-import { Synset } from '@interslavic/database-engine-core';
+import { InterslavicSynset, Synset } from '@interslavic/database-engine-core';
 
 import { FileDatabase } from './FileDatabase';
 
@@ -29,7 +29,7 @@ describe('FileDatabase', () => {
     });
 
     it('should add values', async () => {
-      const isv = Synset.parse('oko');
+      const isv = InterslavicSynset.parse('oko');
       isv.lemmas[0]!.steen = {
         id: 1,
         addition: 'očese',

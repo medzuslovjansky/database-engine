@@ -248,7 +248,7 @@ describe('Synset', () => {
       const synset = anEmptySynset();
       synset.add('toj, ktory rabi');
       synset.add('rabotajuci');
-      synset.lemmas[0].annotations.push('adj.');
+      synset.lemmas[0].annotations = ['adj.'];
 
       expect(`${synset}`).toBe('!toj, ktory rabi (adj.); rabotajuci');
     });

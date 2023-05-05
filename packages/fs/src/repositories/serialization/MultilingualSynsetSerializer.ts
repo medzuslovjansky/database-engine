@@ -1,11 +1,12 @@
-import { symlink, readdir } from 'node:fs/promises';
+import { readdir, symlink, unlink } from 'node:fs/promises';
 import { join } from 'node:path';
 
 import type {
   Language,
   SteenbergenLemmaMetadata,
+  InterslavicLemma,
 } from '@interslavic/database-engine-core';
-import { snakeCase } from 'lodash';
+import { difference, snakeCase } from 'lodash';
 import { MultilingualSynset } from '@interslavic/database-engine-core';
 import { Lemma, Synset } from '@interslavic/database-engine-core';
 
@@ -49,25 +50,31 @@ export class MultilingualSynsetSerializer extends XmlSerializer<
             annotations: lemmaXml['@_annotation']?.split(/\s*;\s*/),
           });
 
-          const steen: SteenbergenLemmaMetadata = (lemma.steen ??= {} as any);
-          if (lemmaXml['@_steen:id']) {
-            steen.id = Number(lemmaXml['@_steen:id']);
+          if (lang === 'isv') {
+            const steen: SteenbergenLemmaMetadata = {} as any;
+
+            if (lemmaXml['@_steen:id']) {
+              steen.id = Number(lemmaXml['@_steen:id']);
+            }
+            if (lemmaXml['@_steen:addition']) {
+              steen.addition = lemmaXml['@_steen:addition'];
+            }
+            if (lemmaXml['@_steen:pos']) {
+              steen.partOfSpeech = lemmaXml['@_steen:pos'];
+            }
+            if (lemmaXml['@_steen:type']) {
+              steen.type = Number(lemmaXml['@_steen:type']);
+            }
+            if (lemmaXml['@_steen:same']) {
+              steen.sameInLanguages = lemmaXml['@_steen:same'];
+            }
+            if (lemmaXml['@_steen:genesis']) {
+              steen.genesis = lemmaXml['@_steen:genesis'];
+            }
+
+            (lemma as InterslavicLemma).steen = steen;
           }
-          if (lemmaXml['@_steen:addition']) {
-            steen.addition = lemmaXml['@_steen:addition'];
-          }
-          if (lemmaXml['@_steen:pos']) {
-            steen.partOfSpeech = lemmaXml['@_steen:pos'];
-          }
-          if (lemmaXml['@_steen:type']) {
-            steen.type = Number(lemmaXml['@_steen:type']);
-          }
-          if (lemmaXml['@_steen:same']) {
-            steen.sameInLanguages = lemmaXml['@_steen:same'];
-          }
-          if (lemmaXml['@_steen:genesis']) {
-            steen.genesis = lemmaXml['@_steen:genesis'];
-          }
+
           return lemma;
         }),
       });
@@ -90,6 +97,7 @@ export class MultilingualSynsetSerializer extends XmlSerializer<
         '@_standalone': 'no',
       },
       'multilingual-synset': {
+        '@_id': `${entity.id}`,
         '@_xmlns': 'https://interslavic.fun/schemas/zonal-wordnet.xsd',
         '@_xmlns:xsi': 'http://www.w3.org/2001/XMLSchema-instance',
         '@_xmlns:steen': 'https://interslavic.fun/schemas/steenbergen.xsd',
@@ -97,28 +105,33 @@ export class MultilingualSynsetSerializer extends XmlSerializer<
           'https://interslavic.fun/schemas/zonal-wordnet.xsd file://../../../../schemas/zonal-wordnet.xsd',
           'https://interslavic.fun/schemas/steenbergen.xsd file://../../../../schemas/steenbergen.xsd',
         ].join('\n'),
-        '@_id': `${entity.id}`,
-        // TODO: sort by language: isv, en, ru, be, uk, pl, cs, sk, sl, hr, sr, bg, mk
-        synset: Object.entries(entity.synsets).map(
-          ([lang, synset]) =>
-            ({
-              '@_lang': lang === 'isv' ? 'art-x-interslv' : lang,
-              '@_verified': synset.verified ? undefined : 'false',
-              lemma: synset.lemmas.map<LemmaXml>((lemma) => ({
-                '#text': lemma.value,
-                '@_annotation':
-                  lemma.annotations.length > 0
-                    ? lemma.annotations.join('; ')
-                    : undefined,
-                '@_steen:id': lemma.steen?.id?.toString(),
-                '@_steen:addition': lemma.steen?.addition,
-                '@_steen:pos': lemma.steen?.partOfSpeech,
-                '@_steen:type': lemma.steen?.type?.toString(),
-                '@_steen:same': lemma.steen?.sameInLanguages,
-                '@_steen:genesis': lemma.steen?.genesis,
-              })),
-            } as SynsetXml),
-        ),
+        synset: Object.entries(entity.synsets)
+          .filter(([, synset]) => synset)
+          .sort(byLanguageCode)
+          .map(
+            ([lang, synset]) =>
+              ({
+                '@_lang': lang === 'isv' ? 'art-x-interslv' : lang,
+                '@_verified': synset.verified ? undefined : 'false',
+                lemma: synset.lemmas.map<LemmaXml>((lemma) => {
+                  const steen = (lemma as InterslavicLemma).steen;
+
+                  return {
+                    '#text': lemma.value,
+                    '@_annotation':
+                      lemma.annotations.length > 0
+                        ? lemma.annotations.join('; ')
+                        : undefined,
+                    '@_steen:id': steen?.id?.toString(),
+                    '@_steen:addition': steen?.addition,
+                    '@_steen:pos': steen?.partOfSpeech,
+                    '@_steen:type': steen?.type?.toString(),
+                    '@_steen:same': steen?.sameInLanguages,
+                    '@_steen:genesis': steen?.genesis,
+                  };
+                }),
+              } as SynsetXml),
+          ),
       },
     };
 
@@ -130,15 +143,28 @@ export class MultilingualSynsetSerializer extends XmlSerializer<
     entity: MultilingualSynset,
   ): Promise<void> {
     const [realname, ...symlinks] = entity.synsets
-      .isv!.lemmas.map((lemma) => snakeCase(lemma.value))
+      .isv!.lemmas.map((lemma) => snakeCase(lemma.value.normalize('NFD')))
       .sort((a, b) => a.localeCompare(b));
 
     await super.serialize(join(entityPath, `${realname}.xml`), entity);
-    await Promise.all(
-      symlinks.map((symlinkName) =>
-        symlink(`${realname}.xml`, join(entityPath, `${symlinkName}.xml`)),
+
+    const actualNames = await readdir(entityPath);
+    const plannedNames = [realname, ...symlinks].map((n) => `${n}.xml`);
+    const redundantNames = difference(actualNames, plannedNames);
+
+    await Promise.all([
+      ...redundantNames.map((redundantName) => {
+        return unlink(join(entityPath, redundantName));
+      }),
+      ...symlinks.map((symlinkName) =>
+        symlink(
+          `${realname}.xml`,
+          join(entityPath, `${symlinkName}.xml`),
+        ).catch((error: any) =>
+          error.code === 'EEXIST' ? undefined : Promise.reject(error),
+        ),
       ),
-    );
+    ]);
   }
 
   async deserialize(entityPath: string): Promise<MultilingualSynset> {
@@ -156,4 +182,60 @@ export class MultilingualSynsetSerializer extends XmlSerializer<
 
 function isValidFilename(filename: string): boolean {
   return !filename.startsWith('_') && filename.endsWith('.xml');
+}
+
+const LANGUAGE_ORDER: string[] = [
+  'isv',
+  'en',
+  'be',
+  'bg',
+  'bs',
+  'cnr',
+  'cs',
+  'csb',
+  'cu',
+  'dsb',
+  'hr',
+  'hsb',
+  'mk',
+  'pl',
+  'qpm',
+  'ru',
+  'rue',
+  'sk',
+  'sl',
+  'sr',
+  'szl',
+  'uk',
+  'eo',
+  'es',
+  'fr',
+  'ia',
+  'it',
+  'pt',
+  'da',
+  'de',
+  'nl',
+] as Language[];
+
+function byLanguageCode<T>(a: [string, T], b: [string, T]): number {
+  const indexA = LANGUAGE_ORDER.indexOf(a[0]);
+  const indexB = LANGUAGE_ORDER.indexOf(b[0]);
+
+  // If both keys are custom, sort them alphabetically
+  if (indexA === -1 && indexB === -1) {
+    // eslint-disable-next-line unicorn/no-nested-ternary
+    return a[0] < b[0] ? -1 : a[0] > b[0] ? 1 : 0;
+  }
+
+  // If only one of the keys is custom, place it at the end
+  if (indexA === -1) {
+    return 1;
+  }
+  if (indexB === -1) {
+    return -1;
+  }
+
+  // If both keys are in the language order array, sort based on their positions
+  return indexA - indexB;
 }

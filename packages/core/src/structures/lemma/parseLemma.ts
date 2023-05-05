@@ -3,7 +3,7 @@ export function parseLemma(rawStr: string) {
   const leftN = str.lastIndexOf('(');
   const rightN = str.lastIndexOf(')');
   if (rightN < leftN || (leftN === -1 && rightN !== -1)) {
-    throw new Error(`Lemma value has incorrect parentheses: ${str}`);
+    return { value: str, annotations: [] };
   }
 
   let value: string;

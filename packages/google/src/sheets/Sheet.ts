@@ -1,6 +1,11 @@
+import { isEqual, camelCase, upperFirst } from 'lodash';
 import type { sheets_v4 } from 'googleapis';
 
+import type { ArrayMapper } from '../utils/createArrayMapperClass';
+import { createArrayMapperClass } from '../utils/createArrayMapperClass';
+
 import type { BatchExecutor } from './BatchExecutor';
+import type { SheetRecord } from './SheetRecord';
 
 export type SheetConfig = {
   api: sheets_v4.Sheets;
@@ -14,10 +19,12 @@ export type Sheet$GetValuesOptions = {
   range?: string;
 };
 
-export class Sheet {
+export class Sheet<T extends SheetRecord = SheetRecord> {
   private readonly _api: sheets_v4.Sheets;
   private readonly _batch: BatchExecutor;
   private readonly _properties: sheets_v4.Schema$SheetProperties;
+  private _columnHeaders?: unknown[];
+  private _arrayMapper?: ArrayMapper<T>;
 
   public readonly protectedRanges: sheets_v4.Schema$ProtectedRange[];
   public readonly spreadsheetId: string;
@@ -39,16 +46,42 @@ export class Sheet {
     return this._properties.title!;
   }
 
-  async getValues(options: Sheet$GetValuesOptions) {
+  protected async ensureColumnHeaders() {
+    if (this._columnHeaders) {
+      return;
+    }
+
     const res = await this._api.spreadsheets.values.get({
-      range: `${this.title}!${options.range ?? ''}`,
+      range: `${this.title}!1:1`,
       spreadsheetId: this.spreadsheetId,
     });
 
-    return res.data.values;
+    this._columnHeaders = res.data.values![0];
+    const mapperClassName = `${upperFirst(camelCase(this.title))}Mapper`;
+    this._arrayMapper = createArrayMapperClass(
+      mapperClassName,
+      this._columnHeaders.map(String),
+    );
   }
 
-  async flush() {
+  async getValues(options: Sheet$GetValuesOptions = {}): Promise<T[]> {
+    await this.ensureColumnHeaders();
+
+    const res = await this._api.spreadsheets.values.get({
+      range: options.range ? `${this.title}!${options.range}` : this.title,
+      spreadsheetId: this.spreadsheetId,
+    });
+
+    const Mapper = this._arrayMapper!;
+    const values = res.data.values ?? [];
+    if (isEqual(values[0], this._columnHeaders)) {
+      values.shift();
+    }
+
+    return values.filter((row) => row[0] != null).map((row) => new Mapper(row));
+  }
+
+  async flush(): Promise<void> {
     await this._batch.flush();
   }
 
