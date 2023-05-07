@@ -19,6 +19,13 @@ jobs:
       - name: Build
         run: npm run build
 
+      - name: Create and push Git tag
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git tag "v${{ github.event.release.tag_name }}"
+          git push origin "v${{ github.event.release.tag_name }}"
+
       - name: Release
         run: npm run publish
         env:
