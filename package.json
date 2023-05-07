@@ -8,7 +8,6 @@
   },
   "scripts": {
     "prepare": "husky install && lerna bootstrap",
-    "publish": "lerna publish from-git",
     "bootstrap": "lerna bootstrap",
     "build": "lerna run build",
     "clean": "lerna clean",
