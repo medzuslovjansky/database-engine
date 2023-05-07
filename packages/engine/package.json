@@ -1,6 +1,6 @@
 {
   "name": "@interslavic/database-engine",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/medzuslovjansky/database-engine.git",
@@ -22,7 +22,7 @@
     "test": ":"
   },
   "devDependencies": {
-    "@interslavic/eslint-config-database-engine": "^1.0.1",
+    "@interslavic/eslint-config-database-engine": "^1.0.2",
     "@interslavic/jest-config-database-engine": "^1.0.1",
     "@interslavic/prettier-config-database-engine": "^1.0.1",
     "@interslavic/typescript-config-database-engine": "^1.0.1",
@@ -30,13 +30,13 @@
     "typescript": "^4.9.5"
   },
   "dependencies": {
-    "@interslavic/database-engine-analysis": "^1.0.1",
-    "@interslavic/database-engine-core": "^1.0.1",
-    "@interslavic/database-engine-fs": "^1.0.1",
-    "@interslavic/database-engine-google": "^1.0.1",
+    "@interslavic/database-engine-analysis": "^1.0.2",
+    "@interslavic/database-engine-core": "^1.0.2",
+    "@interslavic/database-engine-fs": "^1.0.2",
+    "@interslavic/database-engine-google": "^1.0.2",
     "dotenv": "^16.0.3",
-    "lodash": "^4.17.21",
     "find-up": "^5.0.0",
+    "lodash": "^4.17.21",
     "tslib": "^2.4.0",
     "yargs": "^17.6.0"
   },

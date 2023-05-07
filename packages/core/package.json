@@ -1,6 +1,6 @@
 {
   "name": "@interslavic/database-engine-core",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/medzuslovjansky/database-engine.git",
@@ -19,7 +19,7 @@
     "test": "jest"
   },
   "devDependencies": {
-    "@interslavic/eslint-config-database-engine": "^1.0.1",
+    "@interslavic/eslint-config-database-engine": "^1.0.2",
     "@interslavic/jest-config-database-engine": "^1.0.1",
     "@interslavic/prettier-config-database-engine": "^1.0.1",
     "@interslavic/typescript-config-database-engine": "^1.0.1",
