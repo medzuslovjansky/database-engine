@@ -23,7 +23,7 @@ jobs:
           useLockFile: false
 
       - name: Lint
-        run: npm run lint
+        run: npm run lint:ci
 
       - name: Build
         run: npm run build
