@@ -19,15 +19,8 @@ jobs:
       - name: Build
         run: npm run build
 
-      - name: Create and push Git tag
-        run: |
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
-          git tag "v${{ github.event.release.tag_name }}"
-          git push origin "v${{ github.event.release.tag_name }}"
-
       - name: Release
-        run: npm run publish -- --yes
+        run: 'npx lerna publish ${{ github.event.release.tag_name }} --yes --no-git-tag-version --no-push --exact --force-publish=*'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
