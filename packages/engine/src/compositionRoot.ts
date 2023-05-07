@@ -10,26 +10,44 @@ import {
   GoogleAPIs,
 } from '@interslavic/database-engine-google';
 
-export default async function createCompositionRoot() {
+export type CompositionRootOptions = {
+  offline?: boolean;
+};
+
+export type CompositionRoot = {
+  fileDatabase: FileDatabase;
+  googleAPIs?: GoogleAPIs;
+};
+
+async function createCompositionRoot(): Promise<Required<CompositionRoot>>;
+async function createCompositionRoot(
+  options: CompositionRootOptions,
+): Promise<CompositionRoot>;
+async function createCompositionRoot(
+  options: CompositionRootOptions = {},
+): Promise<CompositionRoot> {
   await loadEnv();
 
+  const root: Partial<CompositionRoot> = {};
   const cryptoService = createCryptoService();
-  const fileDatabase = new FileDatabase({
+  const fileDatabase = await FileDatabase.create({
     rootDirectory: process.env.ISV_DATABASE_ROOT ?? process.cwd(),
     cryptoService,
   });
 
-  const authClient = await createAuthClient();
-  if (!authClient) {
-    throw new Error('Cannot find credentials to authorize with Google APIs');
+  root.fileDatabase = fileDatabase;
+
+  if (options.offline !== true) {
+    const authClient = await createAuthClient();
+    if (!authClient) {
+      throw new Error('Cannot find credentials to authorize with Google APIs');
+    }
+
+    const googleAPIs = new GoogleAPIs({ authClient });
+    root.googleAPIs = googleAPIs;
   }
 
-  const googleAPIs = new GoogleAPIs({ authClient });
-
-  return {
-    fileDatabase,
-    googleAPIs,
-  };
+  return root as CompositionRoot;
 }
 
 function createCryptoService() {
@@ -51,3 +69,5 @@ async function loadEnv() {
     }
   }
 }
+
+export default createCompositionRoot;

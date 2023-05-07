@@ -12,7 +12,6 @@ export interface MultilingualSynsetXml {
   '@_xmlns': 'https://interslavic.fun/schemas/zonal-wordnet.xsd';
   '@_xmlns:xsi': 'http://www.w3.org/2001/XMLSchema-instance';
   '@_xmlns:steen': 'https://interslavic.fun/schemas/steenbergen.xsd';
-  '@_xsi:schemaLocation': string;
 }
 
 export interface SynsetXml {

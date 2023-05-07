@@ -3,15 +3,25 @@ import type { MultilingualSynset } from '@interslavic/database-engine-core';
 import { MultiFileRepository } from '../fs';
 
 import { MultilingualSynsetOrganizer } from './organizers';
+import type { MultilingualSynsetSerializerOptions } from './serialization';
 import { MultilingualSynsetSerializer } from './serialization';
+
+export type MultilingualSynsetRepositoryOptions = {
+  rootDirectory: string;
+  prettier?: MultilingualSynsetSerializerOptions['prettier'];
+};
 
 export class MultilingualSynsetRepository extends MultiFileRepository<
   number,
   MultilingualSynset
 > {
-  constructor(rootDirectory: string) {
-    const fileOrganizer = new MultilingualSynsetOrganizer(rootDirectory);
-    const entitySerializer = new MultilingualSynsetSerializer();
+  constructor(options: MultilingualSynsetRepositoryOptions) {
+    const fileOrganizer = new MultilingualSynsetOrganizer(
+      options.rootDirectory,
+    );
+    const entitySerializer = new MultilingualSynsetSerializer({
+      prettier: options.prettier,
+    });
 
     super(fileOrganizer, entitySerializer);
   }

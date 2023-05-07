@@ -8,8 +8,6 @@ export const command = 'spreadsheets <subcommand> [options]';
 export const describe = 'Executes operations on Google Spreadsheets';
 
 export const handler = async (argv: SheetsArgv) => {
-  const { fileDatabase, googleAPIs } = await compose();
-
   switch (argv.subcommand) {
     case 'fetch': {
       return fetchSheet();
@@ -17,6 +15,8 @@ export const handler = async (argv: SheetsArgv) => {
   }
 
   async function fetchSheet() {
+    const { fileDatabase, googleAPIs } = await compose();
+
     const config = await fileDatabase.spreadsheets.findById(argv.id);
     if (!config) {
       throw new Error(`Cannot find the spreadsheet: ${argv.id}`);

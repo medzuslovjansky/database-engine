@@ -10,6 +10,7 @@ import { difference, snakeCase } from 'lodash';
 import { MultilingualSynset } from '@interslavic/database-engine-core';
 import { Lemma, Synset } from '@interslavic/database-engine-core';
 
+import type { XmlSerializerOptions } from '../../fs';
 import { XmlSerializer } from '../../fs';
 import type {
   LemmaXml,
@@ -17,17 +18,27 @@ import type {
   SynsetXml,
 } from '../../dto';
 
+export type MultilingualSynsetSerializerOptions = {
+  prettier?: XmlSerializerOptions['prettier'];
+};
+
 // TODO: refactor parsing and formatting
 export class MultilingualSynsetSerializer extends XmlSerializer<
   number,
   MultilingualSynset
 > {
-  constructor() {
+  constructor(options: MultilingualSynsetSerializerOptions = {}) {
     super({
-      alwaysCreateTextNode: true,
-      ignoreAttributes: false,
-      isArray(eleName: string): boolean {
-        return eleName === 'synset' || eleName === 'lemma';
+      x2j: {
+        alwaysCreateTextNode: true,
+        ignoreAttributes: false,
+        isArray(eleName: string): boolean {
+          return eleName === 'synset' || eleName === 'lemma';
+        },
+      },
+      prettier: {
+        ...options.prettier,
+        parser: 'xml',
       },
     });
   }
@@ -101,10 +112,6 @@ export class MultilingualSynsetSerializer extends XmlSerializer<
         '@_xmlns': 'https://interslavic.fun/schemas/zonal-wordnet.xsd',
         '@_xmlns:xsi': 'http://www.w3.org/2001/XMLSchema-instance',
         '@_xmlns:steen': 'https://interslavic.fun/schemas/steenbergen.xsd',
-        '@_xsi:schemaLocation': [
-          'https://interslavic.fun/schemas/zonal-wordnet.xsd file://../../../../schemas/zonal-wordnet.xsd',
-          'https://interslavic.fun/schemas/steenbergen.xsd file://../../../../schemas/steenbergen.xsd',
-        ].join('\n'),
         synset: Object.entries(entity.synsets)
           .filter(([, synset]) => synset)
           .sort(byLanguageCode)

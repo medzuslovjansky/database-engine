@@ -4,14 +4,14 @@ import compose from '../compositionRoot';
 import { GSheets2Git } from '../sync';
 import type { WordsSheet } from '../google';
 
-export const command = 'lemmas <subcommand> [options]';
+export const command = 'synsets <subcommand> [options]';
 
-export const describe = 'Executes operations on lemmas';
+export const describe = 'Executes operations on synsets';
 
-export const handler = async (argv: LemmasArgv) => {
+export const handler = async (argv: SynsetsArgv) => {
   switch (argv.subcommand) {
     case 'fetch': {
-      return fetchLemmas();
+      return fetchSynsets();
     }
     case 'repair': {
       return repairDb();
@@ -23,7 +23,7 @@ export const handler = async (argv: LemmasArgv) => {
 };
 
 async function repairDb() {
-  const { fileDatabase } = await compose();
+  const { fileDatabase } = await compose({ offline: true });
   console.log('Repairing database...');
   // eslint-disable-next-line unicorn/no-array-for-each
   await fileDatabase.multisynsets.forEach(() => {
@@ -31,19 +31,19 @@ async function repairDb() {
   });
 }
 
-async function fetchLemmas() {
+async function fetchSynsets() {
   const { fileDatabase, googleAPIs } = await compose();
-  console.log('Fetching lemmas...');
+  console.log('Fetching synsets...');
 
-  const lemmaSheet = await fileDatabase.spreadsheets.findById(
+  const synsetSheet = await fileDatabase.spreadsheets.findById(
     'new_interslavic_words_list',
   );
 
-  if (!lemmaSheet) {
+  if (!synsetSheet) {
     throw new Error('Cannot find the spreadsheet: new_interslavic_words_list');
   }
 
-  const newInterslavicWordsList = googleAPIs.spreadsheet(lemmaSheet.google_id);
+  const newInterslavicWordsList = googleAPIs.spreadsheet(synsetSheet.google_id);
   const wordsSheet = await newInterslavicWordsList.getSheetByTitle('words');
   if (!wordsSheet) {
     throw new Error('Cannot find the sheet: words');
@@ -58,7 +58,7 @@ async function fetchLemmas() {
   await sync.execute();
 }
 
-export const builder: CommandBuilder<LemmasArgv, any> = {
+export const builder: CommandBuilder<SynsetsArgv, any> = {
   subcommand: {
     choices: ['fetch', 'repair'],
     description: 'Subcommand to execute',
@@ -66,6 +66,6 @@ export const builder: CommandBuilder<LemmasArgv, any> = {
   },
 };
 
-export type LemmasArgv = {
+export type SynsetsArgv = {
   subcommand: 'fetch' | 'repair';
 };

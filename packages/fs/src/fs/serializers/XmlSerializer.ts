@@ -13,15 +13,16 @@ import type { Entity } from '../../types';
 
 import type { EntitySerializer } from './EntitySerializer';
 
-export type XmlSerializerOptions = XmlBuilderOptionsOptional & {
-  [key: string]: unknown;
-};
+export type XmlSerializerOptions = Partial<{
+  x2j: XmlBuilderOptionsOptional & { [key: string]: unknown };
+  prettier: prettier.Options & { [key: string]: unknown };
+}>;
 
 export class XmlSerializer<ID, T extends Entity<ID>>
   implements EntitySerializer<ID, T>
 {
-  protected readonly builder = new XMLBuilder(this.options);
-  protected readonly parser = new XMLParser(this.options);
+  protected readonly builder = new XMLBuilder(this.options.x2j);
+  protected readonly parser = new XMLParser(this.options.x2j);
 
   constructor(
     protected readonly options: XmlSerializerOptions & X2jOptionsOptional,
@@ -45,13 +46,9 @@ export class XmlSerializer<ID, T extends Entity<ID>>
     await ensureDir(dirname(entityPath));
     const raw = this.mapToSerialized(entity);
     const contents = this.builder.build(raw);
-    // TODO: use .prettierc from the database root
-    const formatted = prettier.format(contents, {
-      parser: 'xml',
-      tabWidth: 2,
-      // @ts-expect-error TS2345
-      xmlWhitespaceSensitivity: 'ignore',
-    });
+    const formatted = this.options.prettier
+      ? prettier.format(contents, this.options.prettier)
+      : contents;
     await writeFile(entityPath, formatted);
   }
 }

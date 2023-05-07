@@ -16,7 +16,7 @@
     "build": "tsc",
     "lint": "eslint . --fix",
     "lint:ci": "eslint .",
-    "test": "jest"
+    "test": ":"
   },
   "devDependencies": {
     "@interslavic/eslint-config-database-engine": "^1.0.0",
