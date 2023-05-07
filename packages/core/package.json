@@ -6,6 +6,9 @@
     "url": "git+https://github.com/medzuslovjansky/database-engine.git",
     "directory": "packages/core"
   },
+  "publishConfig": {
+    "access": "public"
+  },
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
@@ -16,10 +19,10 @@
     "test": "jest"
   },
   "devDependencies": {
-    "@interslavic/eslint-config-database-engine": "^1.0.0",
-    "@interslavic/jest-config-database-engine": "^1.0.0",
-    "@interslavic/prettier-config-database-engine": "^1.0.0",
-    "@interslavic/typescript-config-database-engine": "^1.0.0",
+    "@interslavic/eslint-config-database-engine": "1.0.0",
+    "@interslavic/jest-config-database-engine": "1.0.0",
+    "@interslavic/prettier-config-database-engine": "1.0.0",
+    "@interslavic/typescript-config-database-engine": "1.0.0",
     "ts-node": "^10.9.1",
     "typescript": "^4.9.5",
     "yargs": "^17.6.0"
@@ -36,5 +39,6 @@
       "unicorn/no-nested-ternary": "off",
       "@typescript-eslint/no-non-null-assertion": "off"
     }
-  }
+  },
+  "gitHead": "2e2841f5330db8eb8951869c5de62d4c50a9a0ca"
 }
