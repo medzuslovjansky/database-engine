@@ -31,6 +31,7 @@ module.exports = {
     "unicorn/filename-case": "off",
     "unicorn/no-null": "off",
     "unicorn/prefer-module": "off",
+    "import/no-extraneous-dependencies": "error",
     "@typescript-eslint/consistent-type-imports": "error",
     "@typescript-eslint/no-unused-vars": [
       "error",
