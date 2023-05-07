@@ -27,7 +27,14 @@ jobs:
           git push origin "v${{ github.event.release.tag_name }}"
 
       - name: Release
-        run: npm run publish
+        run: npm run publish -- --yes
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Commit changes
+        uses: EndBug/add-and-commit@v9
+        with:
+          message: 'release: v${{ github.event.release.tag_name }}'
+          author_name: Medžuslovjansky Bot
+          author_email: noreply@interslavic.fun
