@@ -1,0 +1,60 @@
+---
+id: 530
+isv: kovati
+addition:
+partOfSpeech: v.tr. ipf.
+type: 1
+sameInLanguages: ""
+genesis: ""
+translations:
+  en:
+    - forge
+  ru:
+    - ковать
+  be:
+    - каваць
+    - куваць
+    - куць
+  uk:
+    - кувати
+  pl:
+    - kovat
+    - kout
+  cs:
+    - kovať
+    - kút
+  sk:
+    - кова
+  bg:
+    - кова
+  mk:
+    - ковати
+  sr:
+    - kovati
+  hr:
+    - mint
+  sl:
+    - mint
+  cu:
+    - mint
+  de:
+    - Schmiede
+  nl:
+    - smeden
+  eo:
+    - forĝas
+metadata:
+  autotranslated:
+    - cu
+    - eo
+    - hr
+    - sl
+  debatable: []
+frequency: 1.02958
+intelligibility:
+  - pl: 1
+  - ru: 1
+  - sr: 1
+  - uk: 1
+examples:
+  - "Kovati is a traditional craft in many Slavic countries where metal is worked by hand using a hammer and anvil."

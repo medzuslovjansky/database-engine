@@ -1,0 +1,49 @@
+{
+  "name": "@interslavic/database-engine",
+  "version": "1.0.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/medzuslovjansky/database-engine.git",
+    "directory": "packages/engine"
+  },
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "bin": {
+    "isv": "cli.js"
+  },
+  "scripts": {
+    "start": "ts-node src/cli/index.ts",
+    "build": "tsc",
+    "lint": "eslint . --fix",
+    "lint:ci": "eslint .",
+    "test": ":"
+  },
+  "devDependencies": {
+    "@interslavic/eslint-config-database-engine": "^1.0.0",
+    "@interslavic/jest-config-database-engine": "^1.0.0",
+    "@interslavic/prettier-config-database-engine": "^1.0.0",
+    "@interslavic/typescript-config-database-engine": "^1.0.0",
+    "ts-node": "^10.9.1",
+    "typescript": "^4.9.5",
+    "yargs": "^17.6.0"
+  },
+  "dependencies": {
+    "@interslavic/database-engine-analysis": "^1.0.0",
+    "@interslavic/database-engine-core": "^1.0.0",
+    "@interslavic/database-engine-fs": "^1.0.0",
+    "@interslavic/database-engine-google": "^1.0.0",
+    "dotenv": "^16.0.3",
+    "find-up": "^5.0.0",
+    "tslib": "^2.4.0"
+  },
+  "license": "GPL-3.0-or-later",
+  "prettier": "@interslavic/prettier-config-database-engine",
+  "eslintConfig": {
+    "extends": "@interslavic/database-engine",
+    "rules": {
+      "unicorn/prevent-abbreviations": "off",
+      "unicorn/no-nested-ternary": "off",
+      "@typescript-eslint/no-non-null-assertion": "off"
+    }
+  }
+}

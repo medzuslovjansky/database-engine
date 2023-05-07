@@ -1,0 +1,177 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Synset #parse() should parse synset: !#: synset 1`] = `
+Synset {
+  "debatable": true,
+  "lemmas": [],
+  "verified": false,
+}
+`;
+
+exports[`Synset #parse() should parse synset: !#course: synset 1`] = `
+Synset {
+  "debatable": true,
+  "lemmas": [
+    Lemma {
+      "annotations": [],
+      "value": "course",
+    },
+  ],
+  "verified": false,
+}
+`;
+
+exports[`Synset #parse() should parse synset: !: synset 1`] = `
+Synset {
+  "debatable": false,
+  "lemmas": [],
+  "verified": false,
+}
+`;
+
+exports[`Synset #parse() should parse synset: !U-Boot: synset 1`] = `
+Synset {
+  "debatable": false,
+  "lemmas": [
+    Lemma {
+      "annotations": [],
+      "value": "U-Boot",
+    },
+  ],
+  "verified": false,
+}
+`;
+
+exports[`Synset #parse() should parse synset: #!: synset 1`] = `
+Synset {
+  "debatable": true,
+  "lemmas": [],
+  "verified": false,
+}
+`;
+
+exports[`Synset #parse() should parse synset: #!only, ĝuste nun: synset 1`] = `
+Synset {
+  "debatable": true,
+  "lemmas": [
+    Lemma {
+      "annotations": [],
+      "value": "only",
+    },
+    Lemma {
+      "annotations": [],
+      "value": "ĝuste nun",
+    },
+  ],
+  "verified": false,
+}
+`;
+
+exports[`Synset #parse() should parse synset: #: synset 1`] = `
+Synset {
+  "debatable": true,
+  "lemmas": [],
+  "verified": true,
+}
+`;
+
+exports[`Synset #parse() should parse synset: #co-worker: synset 1`] = `
+Synset {
+  "debatable": true,
+  "lemmas": [
+    Lemma {
+      "annotations": [],
+      "value": "co-worker",
+    },
+  ],
+  "verified": true,
+}
+`;
+
+exports[`Synset #parse() should parse synset: : synset 1`] = `
+Synset {
+  "debatable": false,
+  "lemmas": [],
+  "verified": true,
+}
+`;
+
+exports[`Synset #parse() should parse synset: bring (up) to: synset 1`] = `
+Synset {
+  "debatable": false,
+  "lemmas": [
+    Lemma {
+      "annotations": [],
+      "value": "bring (up) to",
+    },
+  ],
+  "verified": true,
+}
+`;
+
+exports[`Synset #parse() should parse synset: з'явитися: synset 1`] = `
+Synset {
+  "debatable": false,
+  "lemmas": [
+    Lemma {
+      "annotations": [],
+      "value": "з'явитися",
+    },
+  ],
+  "verified": true,
+}
+`;
+
+exports[`Synset #parse() should parse synset: за (напр.: по грибы, за хлебом), по: synset 1`] = `
+Synset {
+  "debatable": false,
+  "lemmas": [
+    Lemma {
+      "annotations": [
+        "напр.: по грибы, за хлебом",
+      ],
+      "value": "за",
+    },
+    Lemma {
+      "annotations": [],
+      "value": "по",
+    },
+  ],
+  "verified": true,
+}
+`;
+
+exports[`Synset #parse() should parse synset: и; а зато (смысл2): synset 1`] = `
+Synset {
+  "debatable": false,
+  "lemmas": [
+    Lemma {
+      "annotations": [],
+      "value": "и",
+    },
+    Lemma {
+      "annotations": [
+        "смысл2",
+      ],
+      "value": "а зато",
+    },
+  ],
+  "verified": true,
+}
+`;
+
+exports[`Synset #parse() should parse synset: сей (устар.; местоим.): synset 1`] = `
+Synset {
+  "debatable": false,
+  "lemmas": [
+    Lemma {
+      "annotations": [
+        "устар.",
+        "местоим.",
+      ],
+      "value": "сей",
+    },
+  ],
+  "verified": true,
+}
+`;

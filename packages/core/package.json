@@ -1,0 +1,40 @@
+{
+  "name": "@interslavic/database-engine-core",
+  "version": "1.0.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/medzuslovjansky/database-engine.git",
+    "directory": "packages/core"
+  },
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "start": "ts-node src/index.ts",
+    "build": "tsc",
+    "lint": "eslint . --fix",
+    "lint:ci": "eslint .",
+    "test": "jest"
+  },
+  "devDependencies": {
+    "@interslavic/eslint-config-database-engine": "^1.0.0",
+    "@interslavic/jest-config-database-engine": "^1.0.0",
+    "@interslavic/prettier-config-database-engine": "^1.0.0",
+    "@interslavic/typescript-config-database-engine": "^1.0.0",
+    "ts-node": "^10.9.1",
+    "typescript": "^4.9.5",
+    "yargs": "^17.6.0"
+  },
+  "dependencies": {
+    "tslib": "^2.4.0"
+  },
+  "license": "GPL-3.0-or-later",
+  "prettier": "@interslavic/prettier-config-database-engine",
+  "eslintConfig": {
+    "extends": "@interslavic/database-engine",
+    "rules": {
+      "unicorn/prevent-abbreviations": "off",
+      "unicorn/no-nested-ternary": "off",
+      "@typescript-eslint/no-non-null-assertion": "off"
+    }
+  }
+}

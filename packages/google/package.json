@@ -1,0 +1,39 @@
+{
+  "name": "@interslavic/database-engine-google",
+  "version": "1.0.0",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "lint": "eslint . --fix",
+    "lint:ci": "eslint .",
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/medzuslovjansky/database-engine.git",
+    "directory": "packages/google"
+  },
+  "devDependencies": {
+    "@interslavic/eslint-config-database-engine": "^1.0.0",
+    "@interslavic/jest-config-database-engine": "^1.0.0",
+    "@interslavic/prettier-config-database-engine": "^1.0.0",
+    "@interslavic/typescript-config-database-engine": "^1.0.0",
+    "@types/lodash": "^4.14.182",
+    "typescript": "^4.9.5"
+  },
+  "dependencies": {
+    "@interslavic/database-engine-core": "^1.0.0",
+    "@google-cloud/local-auth": "^2.1.1",
+    "googleapis": "^118.0.0",
+    "tslib": "^2.4.0"
+  },
+  "prettier": "@interslavic/prettier-config-database-engine",
+  "eslintConfig": {
+    "extends": "@interslavic/database-engine",
+    "rules": {
+      "unicorn/prevent-abbreviations": "off",
+      "@typescript-eslint/no-non-null-assertion": "off"
+    }
+  }
+}

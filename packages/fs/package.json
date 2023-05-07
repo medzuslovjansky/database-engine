@@ -1,0 +1,52 @@
+{
+  "name": "@interslavic/database-engine-fs",
+  "version": "1.0.0",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "lint": "eslint . --fix",
+    "lint:ci": "eslint .",
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/medzuslovjansky/database-engine.git",
+    "directory": "packages/fs"
+  },
+  "devDependencies": {
+    "@interslavic/eslint-config-database-engine": "^1.0.0",
+    "@interslavic/jest-config-database-engine": "^1.0.0",
+    "@interslavic/prettier-config-database-engine": "^1.0.0",
+    "@interslavic/typescript-config-database-engine": "^1.0.0",
+    "@types/jest": "^29.0.0",
+    "@types/lodash": "^4.14.192",
+    "@types/node": "^16.11.6",
+    "jest": "^29.0.0",
+    "tempfile": "^3.0.0",
+    "ts-jest": "^29.0.0",
+    "typescript": "^4.9.5"
+  },
+  "dependencies": {
+    "@interslavic/database-engine-core": "^1.0.0",
+    "csv": "^6.2.10",
+    "csv-parse": "^5.3.8",
+    "fast-xml-parser": "^4.2.2",
+    "fs-extra": "^11.1.1",
+    "lodash": "^4.17.21",
+    "prettier": "^2.8.8",
+    "@prettier/plugin-xml": "^2.2.0",
+    "tempfile": "^3.0.0",
+    "tslib": "^2.4.0",
+    "yaml": "^2.2.1"
+  },
+  "license": "GPL-3.0-or-later",
+  "prettier": "@interslavic/prettier-config-database-engine",
+  "eslintConfig": {
+    "extends": "@interslavic/database-engine",
+    "rules": {
+      "unicorn/no-array-callback-reference": "off",
+      "unicorn/no-array-for-each": "off"
+    }
+  }
+}

@@ -1,0 +1,16 @@
+id: 1wXjUu15x6hSpDzDUbLVUwLgDua2DyXs-xjpxGJvFCno
+permissions:
+  admin: owner
+  user: editor
+sheets:
+  - name: flavorizations
+  - name: be
+  - name: bg
+  - name: cs
+  - name: hr
+  - name: mk
+  - name: pl
+  - name: ru
+  - name: sk
+  - name: sl
+  - name: uk

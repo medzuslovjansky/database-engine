@@ -103,10 +103,19 @@ dist
 # TernJS port file
 .tern-port
 
-# IntelliJ
-.idea/
+# IDE-related
+.idea
+.vscode
 
-# Mac
+# Generated content
+/website
+
+package-lock.json
+yarn.lock
 .DS_Store
 
-/__fixtures__
+.husky
+
+.env
+credentials.json
+*.secret.*
