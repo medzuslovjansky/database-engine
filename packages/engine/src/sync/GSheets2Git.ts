@@ -1,7 +1,7 @@
 import type { MultilingualSynsetRepository } from '@interslavic/database-engine-fs';
 
-import type { WordsSheet } from '../google/sheets';
-import type { WordsDTO } from '../google';
+import type { WordsDTO, WordsSheet } from '../google';
+import { amends, amendedBy } from '../symbols';
 import { toMultiSynset } from '../google';
 
 import { IdSyncOperation } from './IdSyncOperation';
@@ -20,23 +20,21 @@ export class GSheets2Git extends IdSyncOperation<number> {
   private async grecords(): Promise<Map<number, WordsDTO>> {
     if (!this._grecords) {
       const dtos = await this.gsheets.getValues();
-      const stable = dtos.filter((dto) => dto.id >= 0);
-      this._grecords = new Map(stable.map((dto) => [Number(dto.id), dto]));
+      const stable = dtos.filter((dto: WordsDTO) => dto.id > 0);
+      const grecords = (this._grecords = new Map<number, WordsDTO>(
+        stable.map((dto: WordsDTO) => [Number(dto.id), dto]),
+      ));
 
       if (this.beta) {
-        for (const dto of dtos) {
-          if (dto.id >= 0) {
-            continue;
+        const beta = dtos.filter((dto: WordsDTO) => dto.id < 0);
+        for (const record of beta) {
+          const base = grecords.get(-record.id) as WordsDTO;
+          if (base) {
+            base[amendedBy] = record;
+            record[amends] = base;
           }
 
-          dto.id = -dto.id;
-          const existing = this._grecords.get(dto.id);
-          if (existing) {
-            Object.assign(existing, dto);
-            dto.id = -dto.id;
-          } else {
-            this._grecords.set(dto.id, dto);
-          }
+          grecords.set(Number(record.id), record);
         }
       }
     }
