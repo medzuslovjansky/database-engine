@@ -21,4 +21,11 @@ describe('createArrayMapperClass', () => {
     instance.b = 4;
     expect(array).toEqual([3, 4]);
   });
+
+  it('should support construction from an object', () => {
+    const DynamicClass = createArrayMapperClass('DynamicClass', ['a', 'b']);
+    const instance = new DynamicClass({ a: 4, b: 3, c: 5 });
+    const values = instance[DynamicClass.symbols.values];
+    expect(values).toEqual([4, 3]);
+  });
 });

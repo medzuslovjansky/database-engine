@@ -1,4 +1,8 @@
-export type WordsDTO = {
+import type { ArrayMapped } from '@interslavic/database-engine-google';
+
+import type { amends, amendedBy } from '../../symbols';
+
+export type WordsDTO = ArrayMapped<{
   id: string | number;
   isv: string;
   addition: string;
@@ -25,4 +29,7 @@ export type WordsDTO = {
   frequency: string | number;
   intelligibility: string;
   using_example: string;
+}> & {
+  [amends]?: WordsDTO;
+  [amendedBy]?: WordsDTO;
 };
