@@ -44,13 +44,15 @@ export function createArrayMapperClass<R extends Record<string, any>>(
         }
       }
 
-      static readonly symbols = symbols;
-
       static mapFn(values: unknown, index?: number) {
         return new DynamicClass(values, index);
       }
     },
   }[className];
+
+  Object.defineProperty(DynamicClass, 'symbols', {
+    get: () => symbols,
+  });
 
   for (const [index, name] of propertyNames.entries()) {
     Object.defineProperty(DynamicClass.prototype, name, {

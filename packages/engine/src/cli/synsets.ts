@@ -49,11 +49,11 @@ async function fetchSynsets() {
     throw new Error('Cannot find the sheet: words');
   }
 
-  const sync = new GSheets2Git(
-    fileDatabase.multisynsets,
-    wordsSheet as WordsSheet,
-    false,
-  );
+  const sync = new GSheets2Git({
+    beta: process.env.ISV_BETA === 'true',
+    fs: fileDatabase.multisynsets,
+    gsheets: wordsSheet as WordsSheet,
+  });
 
   await sync.execute();
 }
@@ -68,4 +68,5 @@ export const builder: CommandBuilder<SynsetsArgv, any> = {
 
 export type SynsetsArgv = {
   subcommand: 'fetch' | 'repair';
+  beta: boolean;
 };
