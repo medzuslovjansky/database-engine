@@ -23,7 +23,7 @@ export type ArrayMapped<R extends Record<string, any>> = {
 } & {
   [_index]?: number;
   [_values]: unknown[];
-};
+} & Iterable<unknown>;
 
 export function createArrayMapperClass<R extends Record<string, any>>(
   className: string,
@@ -42,6 +42,10 @@ export function createArrayMapperClass<R extends Record<string, any>>(
           const obj = values as R;
           this[_values] = propertyNames.map((name) => obj[name]);
         }
+      }
+
+      [Symbol.iterator]() {
+        return this[_values][Symbol.iterator]();
       }
 
       static mapFn(values: unknown, index?: number) {

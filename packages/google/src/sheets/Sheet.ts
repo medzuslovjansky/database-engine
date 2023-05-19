@@ -37,12 +37,20 @@ export class Sheet<T extends SheetRecord = SheetRecord> {
     this.protectedRanges = config.protectedRanges;
   }
 
+  get Mapper(): ArrayMapper<T> | undefined {
+    return this._arrayMapper;
+  }
+
   get id(): number {
     return this._properties.sheetId!;
   }
 
   get title(): string {
     return this._properties.title!;
+  }
+
+  get batch(): BatchExecutor {
+    return this._batch;
   }
 
   async getValues(): Promise<ArrayMapped<T>[]> {
