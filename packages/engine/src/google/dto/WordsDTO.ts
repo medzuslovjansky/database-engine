@@ -1,6 +1,6 @@
 import type { ArrayMapped } from '@interslavic/database-engine-google';
 
-import type { amends, amendedBy } from '../../symbols';
+import type { amends, beta } from '../../symbols';
 
 export type WordsDTO = ArrayMapped<{
   id: string | number;
@@ -31,5 +31,5 @@ export type WordsDTO = ArrayMapped<{
   using_example: string;
 }> & {
   [amends]?: WordsDTO;
-  [amendedBy]?: WordsDTO;
+  [beta]?: boolean;
 };

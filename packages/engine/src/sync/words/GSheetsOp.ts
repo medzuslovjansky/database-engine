@@ -1,6 +1,6 @@
 import { IdSyncOperation } from '../core';
 import type { WordsDTO, WordsSheet } from '../../google';
-import { amendedBy, amends } from '../../symbols';
+import { amends, beta } from '../../symbols';
 
 export type GSheetsOpOptions = {
   readonly beta: boolean;
@@ -27,12 +27,13 @@ export abstract class GSheetsOp extends IdSyncOperation<number> {
       ));
 
       if (this.beta) {
-        const beta = dtos.filter((dto: WordsDTO) => dto.id < 0);
-        for (const record of beta) {
+        const betaRecords = dtos.filter((dto: WordsDTO) => dto.id < 0);
+        for (const record of betaRecords) {
+          record[beta] = true;
+
           const id = (record.id = -record.id);
           const base = grecords.get(id) as WordsDTO;
           if (base) {
-            base[amendedBy] = record;
             record[amends] = base;
           }
           grecords.set(id, record);

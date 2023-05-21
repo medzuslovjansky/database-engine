@@ -60,10 +60,10 @@ export class Sheet<T extends SheetRecord = SheetRecord> {
     });
 
     const values = res.data.values ?? [];
-    const Mapper = this._ensureMapper(values);
+    this._ensureMapper(values);
     values.shift();
     // eslint-disable-next-line unicorn/no-array-callback-reference
-    return values.map(Mapper.mapFn) as ArrayMapped<T>[];
+    return values.map(this._mapFn) as ArrayMapped<T>[];
   }
 
   async flush(): Promise<void> {
@@ -78,9 +78,12 @@ export class Sheet<T extends SheetRecord = SheetRecord> {
         headers.map(String),
       );
     }
-
-    return this._arrayMapper;
   }
+
+  private _mapFn = (values: unknown[], index?: number) => {
+    const Mapper = this._arrayMapper!;
+    return new Mapper(values, index);
+  };
 
   // async updateSameInLanguages(values: string[]) {
   //   const res = await this._api.spreadsheets.values.update({

@@ -11,6 +11,19 @@ export type BatchExecutor$AppendRowsRequest = {
   values: unknown[][];
 };
 
+export type BatchExecutor$UpdateRowsRequest = {
+  sheetId?: number;
+  startRowIndex: number;
+  startColumnIndex?: number;
+  values: unknown[][];
+};
+
+export type BatchExecutor$DeleteRowsRequest = {
+  sheetId?: number;
+  startRowIndex: number;
+  endRowIndex?: number;
+};
+
 export class BatchExecutor {
   private readonly api: sheets_v4.Sheets;
   private readonly spreadsheetId: string;
@@ -106,21 +119,46 @@ export class BatchExecutor {
   }
 
   private appendCells(request: sheets_v4.Schema$AppendCellsRequest): this {
-    this.requests.push({
-      appendCells: {
-        sheetId: this.sheetId,
-        ...request,
-      },
-    });
+    this.requests.push({ appendCells: request });
     return this;
   }
 
   public appendRows(request: BatchExecutor$AppendRowsRequest): this {
     this.appendCells({
       fields: 'userEnteredValue',
+      sheetId: request.sheetId ?? this.sheetId,
       rows: request.values.map((row) => ({
         values: row.map((value) => this._toCellData(value)),
       })),
+    });
+
+    return this;
+  }
+
+  public updateRows(request: BatchExecutor$UpdateRowsRequest): this {
+    this.updateCells({
+      fields: 'userEnteredValue',
+      range: {
+        sheetId: request.sheetId ?? this.sheetId,
+        startRowIndex: request.startRowIndex,
+        startColumnIndex: request.startColumnIndex ?? 0,
+      },
+      rows: request.values.map((row) => ({
+        values: row.map((value) => this._toCellData(value)),
+      })),
+    });
+
+    return this;
+  }
+
+  public deleteRows(request: BatchExecutor$DeleteRowsRequest): this {
+    this.deleteRange({
+      range: {
+        sheetId: request.sheetId ?? this.sheetId,
+        startRowIndex: request.startRowIndex,
+        endRowIndex: request.endRowIndex ?? request.startRowIndex + 1,
+      },
+      shiftDimension: 'ROWS',
     });
 
     return this;
@@ -268,7 +306,6 @@ export class BatchExecutor {
     return this;
   }
 
-  // @ts-expect-error 6133
   private deleteRange(request: sheets_v4.Schema$DeleteRangeRequest): this {
     this.requests.push({ deleteRange: request });
     return this;
@@ -410,7 +447,6 @@ export class BatchExecutor {
     return this;
   }
 
-  // @ts-expect-error 6133
   private updateCells(request: sheets_v4.Schema$UpdateCellsRequest): this {
     this.requests.push({ updateCells: request });
     return this;
