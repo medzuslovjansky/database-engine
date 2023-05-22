@@ -2,7 +2,7 @@ import type { MultilingualSynsetRepository } from '@interslavic/database-engine-
 import type { ArrayMapper } from '@interslavic/database-engine-google';
 import type { MultilingualSynset } from '@interslavic/database-engine-core';
 
-import {beta} from '../../symbols';
+import { amends, beta } from '../../symbols';
 import type { WordsDTO } from '../../google';
 
 import type { GSheetsOpOptions } from './GSheetsOp';
@@ -21,10 +21,7 @@ export class Git2Gsheets extends GSheetsOp {
   constructor(options: Git2GsheetsOptions) {
     if (!options.beta) throw new Error('Git2Gsheets is only for beta words');
 
-    super({
-      ...options,
-      beta: true,
-    });
+    super(options);
 
     this.fs = options.fs;
     if (options.selectedIds) {
@@ -49,19 +46,19 @@ export class Git2Gsheets extends GSheetsOp {
   }
 
   protected async insert(id: number): Promise<void> {
-    const synset = (await this.fs.findById(id))!;
-    const dto = this._synset2dto(synset);
+    const synset = await this.fs.findById(id);
+    const dto = this._synset2dto(synset!);
     this.gsheets.batch.appendRows({
       values: [[...dto]],
     });
   }
 
   protected async update(id: number): Promise<void> {
-    const synset = (await this.fs.findById(id))!;
-    const dto = this._synset2dto(synset);
+    const synset = await this.fs.findById(id);
+    const dto = this._synset2dto(synset!);
     const gmap = await this._grecords();
     const existing: WordsDTO = gmap.get(id)!;
-    const startRowIndex = existing.getIndex()! + 1;
+    const startRowIndex = existing.getIndex() + 1;
     if (Number.isNaN(startRowIndex)) {
       throw new TypeError(`ID ${id} not found in the spreadsheet`);
     }
@@ -96,14 +93,31 @@ export class Git2Gsheets extends GSheetsOp {
 
   protected async delete(id: number): Promise<void> {
     const dto = (await this._grecords().then((r) => r.get(id)))!;
-    if (dto[beta]) {
+    if (dto[beta] && !dto[amends]) {
       this.gsheets.batch.deleteRows({
-        startRowIndex: dto.getIndex()!,
+        startRowIndex: dto.getIndex(),
       });
     } else {
-      const copy = dto.getCopy();
-      copy.id = -Math.abs(+copy.id);
-      copy.isv = '!' + copy.isv;
+      const copy = Object.assign(dto.getCopy(), {
+        id: -Math.abs(+dto.id),
+        isv: '!' + dto.isv,
+        ru: '-',
+        be: '-',
+        uk: '-',
+        pl: '-',
+        cs: '-',
+        sk: '-',
+        bg: '-',
+        mk: '-',
+        sr: '-',
+        hr: '-',
+        sl: '-',
+        cu: '-',
+        de: '-',
+        nl: '-',
+        eo: '-',
+      });
+
       this.gsheets.batch.appendRows({
         values: [[...copy]],
       });
@@ -152,6 +166,7 @@ export class Git2Gsheets extends GSheetsOp {
       intelligibility: '',
       using_example: steen.using_example,
     });
+
     return dto;
   }
 }

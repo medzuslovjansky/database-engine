@@ -14,7 +14,7 @@ export type ArrayMapped<R extends Record<string, any>> = {
   [P in keyof R]: R[P];
 } & Iterable<unknown> & {
     getCopy(): ArrayMapped<R>;
-    getIndex(): number | undefined;
+    getIndex(): number;
     getSlice(from: keyof R, to?: keyof R): unknown[];
   };
 
@@ -27,7 +27,7 @@ export function createArrayMapperClass<R extends Record<string, any>>(
       [_index]: number | undefined;
       [_values]: unknown[];
 
-      constructor(values: unknown, index?: number) {
+      constructor(values: unknown, index = Number.NaN) {
         this[_index] = index;
         if (Array.isArray(values)) {
           this[_values] = values;

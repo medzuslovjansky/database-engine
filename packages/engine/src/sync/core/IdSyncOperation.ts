@@ -22,11 +22,15 @@ export abstract class IdSyncOperation<ID = string> {
         this.getAfterIds(),
       ]);
 
-      await Promise.all([
-        ...difference(beforeIds, afterIds).map((id) => this.delete(id)),
-        ...intersection(beforeIds, afterIds).map((id) => this.update(id)),
-        ...difference(afterIds, beforeIds).map((id) => this.insert(id)),
-      ]);
+      await Promise.all(
+        intersection(beforeIds, afterIds).map((id) => this.update(id)),
+      );
+      await Promise.all(
+        difference(beforeIds, afterIds).map((id) => this.delete(id)),
+      );
+      await Promise.all(
+        difference(afterIds, beforeIds).map((id) => this.insert(id)),
+      );
 
       await this.commit?.();
     } catch (error) {

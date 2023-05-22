@@ -66,6 +66,10 @@ export class MultiFileRepository<ID, T extends Entity<ID>>
     return fse.pathExists(entityPath);
   }
 
+  async deduceId(filePath: string): Promise<ID | undefined> {
+    return this.fileOrganizer.deduceId(filePath);
+  }
+
   async insert(entity: T): Promise<void> {
     if (await this.hasId(entity.id)) {
       throw new Error(`Entity with id ${entity.id} already exists.`);

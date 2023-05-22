@@ -60,7 +60,9 @@ describe('createArrayMapperClass', () => {
     const instance = new DynamicClass([4, 3, 5]);
     expect(instance.getSlice('b')).toEqual([3, 5]);
     expect(instance.getSlice('a', 'c')).toEqual([4, 3]);
-    expect(() => instance.getSlice('d' as any)).toThrowError('Property d not found');
+    expect(() => instance.getSlice('d' as any)).toThrowError(
+      'Property d not found',
+    );
     expect(() => instance.getSlice('a', 'd' as any)).toThrowError(
       'Property d not found',
     );

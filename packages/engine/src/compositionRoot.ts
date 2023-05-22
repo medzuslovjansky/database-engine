@@ -30,15 +30,16 @@ async function createCompositionRoot(
 
   const root: Partial<CompositionRoot> = {};
   const cryptoService = createCryptoService();
+  const rootDirectory = process.env.ISV_DATABASE_ROOT ?? process.cwd();
   const fileDatabase = await FileDatabase.create({
-    rootDirectory: process.env.ISV_DATABASE_ROOT ?? process.cwd(),
+    rootDirectory,
     cryptoService,
   });
 
   root.fileDatabase = fileDatabase;
 
   if (options.offline !== true) {
-    const authClient = await createAuthClient();
+    const authClient = await createAuthClient(rootDirectory);
     if (!authClient) {
       throw new Error('Cannot find credentials to authorize with Google APIs');
     }
