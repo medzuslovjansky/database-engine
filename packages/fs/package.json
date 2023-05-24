@@ -1,6 +1,6 @@
 {
   "name": "@interslavic/database-engine-fs",
-  "version": "1.0.2",
+  "version": "1.0.4",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
@@ -18,10 +18,10 @@
     "access": "public"
   },
   "devDependencies": {
-    "@interslavic/eslint-config-database-engine": "^1.0.2",
-    "@interslavic/jest-config-database-engine": "^1.0.1",
-    "@interslavic/prettier-config-database-engine": "^1.0.1",
-    "@interslavic/typescript-config-database-engine": "^1.0.1",
+    "@interslavic/eslint-config-database-engine": "1.0.4",
+    "@interslavic/jest-config-database-engine": "1.0.4",
+    "@interslavic/prettier-config-database-engine": "1.0.4",
+    "@interslavic/typescript-config-database-engine": "1.0.4",
     "@types/jest": "^29.0.0",
     "@types/lodash": "^4.14.192",
     "@types/node": "^16.11.6",
@@ -31,7 +31,7 @@
     "typescript": "^4.9.5"
   },
   "dependencies": {
-    "@interslavic/database-engine-core": "^1.0.2",
+    "@interslavic/database-engine-core": "1.0.4",
     "@prettier/plugin-xml": "^2.2.0",
     "csv": "^6.2.10",
     "csv-parse": "^5.3.8",
