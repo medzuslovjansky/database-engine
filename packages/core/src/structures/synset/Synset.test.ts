@@ -13,10 +13,6 @@ describe('Synset', () => {
         expect(anEmptySynset().verified).toBe(false);
       });
 
-      it('should not report itself as debatable', () => {
-        expect(anEmptySynset().debatable).toBe(false);
-      });
-
       it('should be empty', () => {
         expect(anEmptySynset().isEmpty()).toBe(true);
       });
@@ -31,11 +27,6 @@ describe('Synset', () => {
       it('should have .verified property', () => {
         const { synset, meta } = aComplexSynset();
         expect(synset.verified).toBe(meta.verified);
-      });
-
-      it('should have .debatable property', () => {
-        const { synset, meta } = aComplexSynset();
-        expect(synset.debatable).toBe(meta.debatable);
       });
 
       it('should be not empty', () => {
@@ -148,10 +139,9 @@ describe('Synset', () => {
       const synset1 = anEmptySynset().add(['a', 'b']);
       const synset2 = anEmptySynset();
       synset1.verified = false;
-      synset1.debatable = true;
 
       const union = synset1.union(synset2);
-      expect(union.toString()).toBe('#!a, b');
+      expect(union.toString()).toBe('!a, b');
     });
   });
 
@@ -170,10 +160,9 @@ describe('Synset', () => {
       const synset1 = anEmptySynset().add(['a', 'b']);
       const synset2 = anEmptySynset();
       synset1.verified = false;
-      synset1.debatable = true;
 
       const union = synset1.difference(synset2);
-      expect(union.toString()).toBe('#!a, b');
+      expect(union.toString()).toBe('!a, b');
     });
   });
 
@@ -190,9 +179,16 @@ describe('Synset', () => {
       const s2 = anEmptySynset().add(['that', 'lemma']);
 
       s1.verified = s2.verified = true;
-      s2.debatable = true;
 
-      expect(s1.intersection(s2).toString()).toBe('#lemma');
+      expect(s1.intersection(s2).toString()).toBe('lemma');
+    });
+
+    it('should take the worst metadata if there is an intersection', () => {
+      const s1 = anEmptySynset().add(['this', 'lemma']);
+      const s2 = anEmptySynset().add(['that', 'lemma']);
+
+      s1.verified = true;
+      expect(s1.intersection(s2).toString()).toBe('!lemma');
     });
   });
 
@@ -207,7 +203,6 @@ describe('Synset', () => {
     it('should prepend ! if it is not verified', () => {
       const { synset } = aComplexSynset();
       synset.verified = false;
-      synset.debatable = false;
 
       expect(`${synset}`).toMatch(/^!/);
     });
@@ -215,33 +210,8 @@ describe('Synset', () => {
     it('should not prepend ! if it is verified', () => {
       const { synset } = aComplexSynset();
       synset.verified = true;
-      synset.debatable = false;
 
       expect(`${synset}`).not.toMatch(/^!/);
-    });
-
-    it('should prepend # if it is debatable', () => {
-      const { synset } = aComplexSynset();
-      synset.debatable = true;
-      synset.verified = true;
-
-      expect(`${synset}`).toMatch(/^#[^!]/);
-    });
-
-    it('should not prepend # if it is not debatable', () => {
-      const { synset } = aComplexSynset();
-      synset.debatable = false;
-      synset.verified = false;
-
-      expect(`${synset}`).not.toMatch(/^#/);
-    });
-
-    it('should prepend both #! if it is verified and debatable', () => {
-      const { synset } = aComplexSynset();
-      synset.verified = false;
-      synset.debatable = true;
-
-      expect(`${synset}`).toMatch(/^#!/);
     });
 
     it('should separate lemmas with (;) and lemmas with (,) inside', () => {
@@ -258,13 +228,8 @@ describe('Synset', () => {
     test.each([
       ['', void 0],
       ['!', void 0],
-      ['#', void 0],
-      ['#!', void 0],
-      ['!#', '#!'],
-      ['!#course', '#!course'],
       ['!U-Boot', void 0],
-      ['#co-worker', void 0],
-      ['#!only, ĝuste nun', void 0],
+      ['!only, ĝuste nun', void 0],
       ["з'явитися", void 0],
       ['сей (устар.; местоим.)', void 0],
       ['за (напр.: по грибы, за хлебом), по', void 0],
@@ -285,13 +250,11 @@ describe('Synset', () => {
     const lemmas = [lemma1, lemma2, lemma3];
 
     const verified = true;
-    const debatable = true;
 
     return {
-      synset: new Synset({ lemmas, debatable, verified }),
+      synset: new Synset({ lemmas, verified }),
       meta: {
         verified,
-        debatable,
       },
       lemmas,
       annotations: ['obsolete', 'medical'],

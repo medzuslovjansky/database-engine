@@ -1,10 +1,9 @@
 import { Lemma } from '../lemma';
 
-import { isDebatable, isVerified, stripMetacharacters } from './metacharacters';
+import { isVerified, stripMetacharacters } from './metacharacters';
 
 export function parseSynset(rawStr: string) {
   const verified = isVerified(rawStr);
-  const debatable = isDebatable(rawStr);
   const annotations = rawStr.includes('(')
     ? new AnnotationHelper()
     : new NoopAnnotationHelper();
@@ -19,7 +18,6 @@ export function parseSynset(rawStr: string) {
 
   return {
     verified,
-    debatable,
     lemmas,
   };
 }

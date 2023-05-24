@@ -10,26 +10,22 @@ export type SynsetOptions<Lemma extends LemmaBase = LemmaBase> =
 
 export type SynsetMetadata = {
   verified?: boolean;
-  debatable?: boolean;
 };
 
 type EqualityPredicate<T> = (a: T, b: T) => boolean;
 
 export class Synset<Lemma extends LemmaBase = LemmaBase> {
   public verified: boolean;
-  public debatable: boolean;
   public readonly lemmas: Lemma[];
 
   constructor(options: Partial<SynsetOptions<Lemma>> = {}) {
     this.verified = options.verified ?? false;
-    this.debatable = options.debatable ?? false;
     this.lemmas = options.lemmas ?? [];
   }
 
   public clone(): Synset {
     return new Synset({
       verified: this.verified,
-      debatable: this.debatable,
       lemmas: this.lemmas.map((g) => g.clone()),
     });
   }
@@ -72,7 +68,6 @@ export class Synset<Lemma extends LemmaBase = LemmaBase> {
   ): Synset {
     const result = new Synset({
       verified: this.verified && other.verified,
-      debatable: this.debatable || other.debatable,
     });
 
     for (const l1 of this.lemmas) {
@@ -98,7 +93,6 @@ export class Synset<Lemma extends LemmaBase = LemmaBase> {
   ): Synset {
     const result = new Synset({
       verified: this.verified && other.verified,
-      debatable: this.debatable || other.debatable,
     }).add(this.lemmas);
 
     for (const l2 of other.lemmas) {
@@ -124,7 +118,6 @@ export class Synset<Lemma extends LemmaBase = LemmaBase> {
   ): Synset {
     const result = new Synset({
       verified: this.verified && other.verified,
-      debatable: this.debatable || other.debatable,
     });
 
     for (const l1 of this.lemmas) {
@@ -153,7 +146,6 @@ export class Synset<Lemma extends LemmaBase = LemmaBase> {
     const hasCommas = this.lemmas.some((l) => l.value.includes(','));
 
     return (
-      (this.debatable ? '#' : '') +
       (this.verified ? '' : '!') +
       this.lemmas.map(String).join(hasCommas ? '; ' : ', ')
     );

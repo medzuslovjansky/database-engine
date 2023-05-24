@@ -1,47 +1,61 @@
 import {
+  Synset,
   InterslavicSynset,
   MultilingualSynset,
-  Synset,
 } from '@interslavic/database-engine-core';
 
-import type { WordsDTO } from '../dto';
+import type { WordsDTO, WordsRecord } from '../dto';
 
-export function toMultiSynset(value: WordsDTO): MultilingualSynset {
+export function toMultiSynset(dto: WordsDTO): MultilingualSynset {
   const multilingualSynset = new MultilingualSynset();
 
-  multilingualSynset.id = +value.id;
+  const debated = new Set<keyof WordsRecord>();
+  for (const key of dto.getKeys()) {
+    const value = `${dto[key]}`.trimStart();
+    if (value.startsWith('#')) {
+      debated.add(key);
+      dto[key] = value.slice(1);
+    }
+  }
 
-  multilingualSynset.synsets.isv = InterslavicSynset.parse(value.isv);
+  if (debated.size > 0) {
+    multilingualSynset.steen = { debated };
+  }
+
+  multilingualSynset.id = +dto.id;
+
+  multilingualSynset.synsets.isv = InterslavicSynset.parse(dto.isv);
   for (const lemma of multilingualSynset.synsets.isv.lemmas) {
     lemma.steen = {
-      id: +value.id,
-      addition: value.addition || undefined,
-      partOfSpeech: value.partOfSpeech,
-      type: value.type ? Number(value.type) : undefined,
-      sameInLanguages: value.sameInLanguages || undefined,
-      genesis: value.genesis || undefined,
-      frequency: value.frequency
-        ? Number(`${value.frequency}`.replace(',', '.'))
+      id: +dto.id,
+      addition: dto.addition || undefined,
+      partOfSpeech: dto.partOfSpeech,
+      type: dto.type ? Number(dto.type) : undefined,
+      sameInLanguages: dto.sameInLanguages || undefined,
+      genesis: dto.genesis || undefined,
+      frequency: dto.frequency
+        ? Number(`${dto.frequency}`.replace(',', '.'))
         : undefined,
-      using_example: value.using_example || undefined,
+      using_example: dto.using_example || undefined,
     };
   }
 
-  multilingualSynset.synsets.be = maybeParseSynset(value.be);
-  multilingualSynset.synsets.bg = maybeParseSynset(value.bg);
-  multilingualSynset.synsets.cs = maybeParseSynset(value.cs);
-  multilingualSynset.synsets.cu = maybeParseSynset(value.cu);
-  multilingualSynset.synsets.de = maybeParseSynset(value.de);
-  multilingualSynset.synsets.eo = maybeParseSynset(value.eo);
-  multilingualSynset.synsets.hr = maybeParseSynset(value.hr);
-  multilingualSynset.synsets.mk = maybeParseSynset(value.mk);
-  multilingualSynset.synsets.nl = maybeParseSynset(value.nl);
-  multilingualSynset.synsets.pl = maybeParseSynset(value.pl);
-  multilingualSynset.synsets.ru = maybeParseSynset(value.ru);
-  multilingualSynset.synsets.sk = maybeParseSynset(value.sk);
-  multilingualSynset.synsets.sl = maybeParseSynset(value.sl);
-  multilingualSynset.synsets.sr = maybeParseSynset(value.sr);
-  multilingualSynset.synsets.uk = maybeParseSynset(value.uk);
+  multilingualSynset.synsets.en = maybeParseSynset(dto.en);
+  multilingualSynset.synsets.be = maybeParseSynset(dto.be);
+  multilingualSynset.synsets.bg = maybeParseSynset(dto.bg);
+  multilingualSynset.synsets.cs = maybeParseSynset(dto.cs);
+  multilingualSynset.synsets.cu = maybeParseSynset(dto.cu);
+  multilingualSynset.synsets.de = maybeParseSynset(dto.de);
+  multilingualSynset.synsets.eo = maybeParseSynset(dto.eo);
+  multilingualSynset.synsets.hr = maybeParseSynset(dto.hr);
+  multilingualSynset.synsets.mk = maybeParseSynset(dto.mk);
+  multilingualSynset.synsets.nl = maybeParseSynset(dto.nl);
+  multilingualSynset.synsets.pl = maybeParseSynset(dto.pl);
+  multilingualSynset.synsets.ru = maybeParseSynset(dto.ru);
+  multilingualSynset.synsets.sk = maybeParseSynset(dto.sk);
+  multilingualSynset.synsets.sl = maybeParseSynset(dto.sl);
+  multilingualSynset.synsets.sr = maybeParseSynset(dto.sr);
+  multilingualSynset.synsets.uk = maybeParseSynset(dto.uk);
 
   return multilingualSynset;
 }

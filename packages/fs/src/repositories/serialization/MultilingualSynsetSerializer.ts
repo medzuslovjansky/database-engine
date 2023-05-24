@@ -5,6 +5,7 @@ import type {
   Language,
   SteenbergenLemmaMetadata,
   InterslavicLemma,
+  MultilingualSynset$Steen,
 } from '@interslavic/database-engine-core';
 import { difference, snakeCase } from 'lodash';
 import { MultilingualSynset } from '@interslavic/database-engine-core';
@@ -46,6 +47,10 @@ export class MultilingualSynsetSerializer extends XmlSerializer<
   protected mapToEntity(raw: unknown): MultilingualSynset {
     const document = raw as MultilingualSynsetXmlDocument;
     const multisynsetXml = document['multilingual-synset'];
+    const debated = new Set(
+      (multisynsetXml['@_steen:debated'] ?? '').split(','),
+    ) as Required<MultilingualSynset$Steen>['debated'];
+
     // eslint-disable-next-line unicorn/no-array-reduce
     const synsets = multisynsetXml.synset.reduce((accumulator, synsetXml) => {
       const lang: Language =
@@ -96,6 +101,10 @@ export class MultilingualSynsetSerializer extends XmlSerializer<
     const result = new MultilingualSynset();
     result.id = Number(multisynsetXml['@_id']);
     result.synsets = synsets;
+    if (debated.size > 0) {
+      result.steen = { debated };
+    }
+
     return result;
   }
 
@@ -109,6 +118,9 @@ export class MultilingualSynsetSerializer extends XmlSerializer<
       },
       'multilingual-synset': {
         '@_id': `${entity.id}`,
+        '@_steen:debated': entity.steen?.debated?.size
+          ? [...entity.steen!.debated!].sort().join(',')
+          : undefined,
         '@_xmlns': 'https://interslavic.fun/schemas/zonal-wordnet.xsd',
         '@_xmlns:xsi': 'http://www.w3.org/2001/XMLSchema-instance',
         '@_xmlns:steen': 'https://interslavic.fun/schemas/steenbergen.xsd',

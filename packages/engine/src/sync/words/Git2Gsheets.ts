@@ -167,6 +167,10 @@ export class Git2Gsheets extends GSheetsOp {
       using_example: steen.using_example,
     });
 
+    for (const key of ms.steen?.debated ?? []) {
+      dto[key] = `#${dto[key]}`;
+    }
+
     return dto;
   }
 }

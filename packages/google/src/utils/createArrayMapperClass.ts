@@ -14,6 +14,7 @@ export type ArrayMapped<R extends Record<string, any>> = {
   [P in keyof R]: R[P];
 } & Iterable<unknown> & {
     getCopy(): ArrayMapped<R>;
+    getKeys(): (keyof R)[];
     getIndex(): number;
     getSlice(from: keyof R, to?: keyof R): unknown[];
   };
@@ -39,6 +40,10 @@ export function createArrayMapperClass<R extends Record<string, any>>(
 
       getCopy(): ArrayMapped<R> {
         return new (DynamicClass as any)([...this[_values]], this[_index]);
+      }
+
+      getKeys(): (keyof R)[] {
+        return propertyNames;
       }
 
       getIndex(): number | undefined {

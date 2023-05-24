@@ -39,6 +39,12 @@ describe('createArrayMapperClass', () => {
     expect([...instance1]).toEqual([4, 3, 5]);
   });
 
+  it('should have getKeys() method', () => {
+    const DynamicClass = createArrayMapperClass('DynamicClass', ['a', 'b']);
+    const instance = new DynamicClass([4, 3, 5]);
+    expect(instance.getKeys()).toEqual(['a', 'b']);
+  });
+
   it('should support JSON serialization', () => {
     const DynamicClass = createArrayMapperClass('DynamicClass', ['a', 'b']);
     const instance = new DynamicClass([4, 3, 5]);
