@@ -7,8 +7,9 @@ import { getGoogleGitSyncPrerequisites } from './common';
 export async function push(argv: PushArgv) {
   const { fileDatabase, wordsSheet } = await getGoogleGitSyncPrerequisites();
 
+  // TODO: find out why need slice(1)
   let synsetIds = await Promise.all(
-    argv._.map(async (filePath) => {
+    argv._.slice(1).map(async (filePath) => {
       const id = await fileDatabase.multisynsets.deduceId(filePath);
       if (id === undefined) {
         console.warn(`Invalid filepath: ${filePath}`);

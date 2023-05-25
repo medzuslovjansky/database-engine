@@ -124,6 +124,10 @@ export class Git2Gsheets extends GSheetsOp {
     }
   }
 
+  protected async commit(): Promise<void> {
+    await this.gsheets.batch.flush();
+  }
+
   private __ruIndex?: number;
   private get ruIndex(): number {
     if (this.__ruIndex === undefined) {
@@ -164,7 +168,7 @@ export class Git2Gsheets extends GSheetsOp {
       eo: `${ms.synsets.eo ?? ''}`,
       frequency: steen.frequency ?? '',
       intelligibility: '',
-      using_example: steen.using_example,
+      using_example: steen.using_example ?? '',
     });
 
     for (const key of ms.steen?.debated ?? []) {

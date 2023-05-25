@@ -33,6 +33,7 @@ export class BatchExecutor {
   constructor(config: BatchExecutorConfig) {
     this.api = config.api;
     this.spreadsheetId = config.spreadsheetId;
+    this.sheetId = config.sheetId;
   }
 
   clone(config: { sheetId?: number } = {}) {
