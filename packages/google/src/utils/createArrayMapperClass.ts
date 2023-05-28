@@ -2,28 +2,22 @@
 
 const _index = Symbol('index');
 const _values = Symbol('values');
-export const symbols = {
-  index: _index,
-  values: _values,
-} as const;
 
 export type ArrayMapper<R extends Record<string, any>> = (new (
   values: any,
   index?: number,
 ) => ArrayMapped<R>) & {
-  readonly mapFn: <T extends Record<string, any>>(
-    values: any,
-    index?: number,
-  ) => ArrayMapped<T>;
-  readonly symbols: typeof symbols;
+  getColumnIndex(propertyName: keyof R): number | undefined;
 };
 
 export type ArrayMapped<R extends Record<string, any>> = {
   [P in keyof R]: R[P];
-} & {
-  [_index]?: number;
-  [_values]: unknown[];
-};
+} & Iterable<unknown> & {
+    getCopy(): ArrayMapped<R>;
+    getKeys(): (keyof R)[];
+    getIndex(): number;
+    getSlice(from: keyof R, to?: keyof R): unknown[];
+  };
 
 export function createArrayMapperClass<R extends Record<string, any>>(
   className: string,
@@ -31,10 +25,10 @@ export function createArrayMapperClass<R extends Record<string, any>>(
 ): ArrayMapper<R> {
   const DynamicClass = {
     [className]: class {
-      [_index]?: number;
+      [_index]: number | undefined;
       [_values]: unknown[];
 
-      constructor(values: unknown, index?: number) {
+      constructor(values: unknown, index = Number.NaN) {
         this[_index] = index;
         if (Array.isArray(values)) {
           this[_values] = values;
@@ -44,15 +38,54 @@ export function createArrayMapperClass<R extends Record<string, any>>(
         }
       }
 
-      static mapFn(values: unknown, index?: number) {
-        return new DynamicClass(values, index);
+      getCopy(): ArrayMapped<R> {
+        return new (DynamicClass as any)([...this[_values]], this[_index]);
+      }
+
+      getKeys(): (keyof R)[] {
+        return propertyNames;
+      }
+
+      getIndex(): number | undefined {
+        return this[_index];
+      }
+
+      getSlice(from: keyof R, to?: keyof R): unknown[] {
+        const fromIndex = propertyNames.indexOf(from);
+        if (fromIndex === -1) {
+          throw new Error(`Property ${String(from)} not found`);
+        }
+
+        if (to) {
+          const toIndex = propertyNames.indexOf(to);
+          if (toIndex === -1) {
+            throw new Error(`Property ${String(to)} not found`);
+          }
+
+          return this[_values].slice(fromIndex, toIndex);
+        } else {
+          return this[_values].slice(fromIndex);
+        }
+      }
+
+      toJSON(): R {
+        const result = {} as R;
+        for (const name of propertyNames) {
+          result[name] = (this as any)[name];
+        }
+
+        return result;
+      }
+
+      [Symbol.iterator]() {
+        return this[_values][Symbol.iterator]();
+      }
+
+      static getColumnIndex(propertyName: keyof R): number | undefined {
+        return propertyNames.indexOf(propertyName);
       }
     },
   }[className];
-
-  Object.defineProperty(DynamicClass, 'symbols', {
-    get: () => symbols,
-  });
 
   for (const [index, name] of propertyNames.entries()) {
     Object.defineProperty(DynamicClass.prototype, name, {

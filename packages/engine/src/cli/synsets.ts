@@ -1,72 +1,37 @@
 import type { CommandBuilder } from 'yargs';
 
-import compose from '../compositionRoot';
-import { GSheets2Git } from '../sync';
-import type { WordsSheet } from '../google';
+import * as subcommand from './synsets-cmd';
 
-export const command = 'synsets <subcommand> [options]';
+export const command = 'synsets <subcommand>';
 
 export const describe = 'Executes operations on synsets';
 
-export const handler = async (argv: SynsetsArgv) => {
+export const handler = async (argv: subcommand.SynsetsArgv) => {
   switch (argv.subcommand) {
-    case 'fetch': {
-      return fetchSynsets();
+    case 'pull': {
+      return subcommand.pull(argv);
     }
-    case 'repair': {
-      return repairDb();
+    case 'push': {
+      return subcommand.push(argv);
+    }
+    case 'rebuild': {
+      return subcommand.rebuild(argv);
     }
     default: {
-      throw new Error(`Unknown subcommand: ${argv.subcommand}`);
+      throw new Error(`Unknown subcommand: ${(argv as any).subcommand}`);
     }
   }
 };
 
-async function repairDb() {
-  const { fileDatabase } = await compose({ offline: true });
-  console.log('Repairing database...');
-  // eslint-disable-next-line unicorn/no-array-for-each
-  await fileDatabase.multisynsets.forEach(() => {
-    /* noop */
-  });
-}
-
-async function fetchSynsets() {
-  const { fileDatabase, googleAPIs } = await compose();
-  console.log('Fetching synsets...');
-
-  const synsetSheet = await fileDatabase.spreadsheets.findById(
-    'new_interslavic_words_list',
-  );
-
-  if (!synsetSheet) {
-    throw new Error('Cannot find the spreadsheet: new_interslavic_words_list');
-  }
-
-  const newInterslavicWordsList = googleAPIs.spreadsheet(synsetSheet.google_id);
-  const wordsSheet = await newInterslavicWordsList.getSheetByTitle('words');
-  if (!wordsSheet) {
-    throw new Error('Cannot find the sheet: words');
-  }
-
-  const sync = new GSheets2Git({
-    beta: process.env.ISV_BETA === 'true',
-    fs: fileDatabase.multisynsets,
-    gsheets: wordsSheet as WordsSheet,
-  });
-
-  await sync.execute();
-}
-
-export const builder: CommandBuilder<SynsetsArgv, any> = {
+export const builder: CommandBuilder<subcommand.SynsetsArgvAny, any> = {
   subcommand: {
-    choices: ['fetch', 'repair'],
+    choices: ['pull', 'push', 'repair'],
     description: 'Subcommand to execute',
     demandOption: true,
   },
-};
-
-export type SynsetsArgv = {
-  subcommand: 'fetch' | 'repair';
-  beta: boolean;
+  beta: {
+    type: 'boolean',
+    description: 'Use beta features',
+    default: process.env.ISV_BETA === 'true',
+  },
 };

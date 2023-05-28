@@ -39,7 +39,9 @@ export class Spreadsheet {
         new Sheet({
           spreadsheetId: this.id,
           api: this._api,
-          batch: this._batch,
+          batch: this._batch.clone({
+            sheetId: s.properties!.sheetId!,
+          }),
           properties: s.properties!,
           protectedRanges: s.protectedRanges ?? [],
         }),

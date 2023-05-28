@@ -2,7 +2,7 @@ import type { ArrayMapped } from '@interslavic/database-engine-google';
 
 import type { amends, beta } from '../../symbols';
 
-export type WordsRecord = {
+export type WordsAddLangRecord = {
   id: string | number;
   isv: string;
   addition: string;
@@ -12,26 +12,22 @@ export type WordsRecord = {
   sameInLanguages: string;
   genesis: string;
   ru: string;
-  be: string;
-  uk: string;
   pl: string;
   cs: string;
-  sk: string;
-  bg: string;
-  mk: string;
-  sr: string;
-  hr: string;
-  sl: string;
-  cu: string;
   de: string;
-  nl: string;
-  eo: string;
-  frequency: string | number;
-  intelligibility: string;
-  using_example: string;
+  csb: string;
+  dsb: string;
+  hsb: string;
+  ia: string;
+  es: string;
+  pt: string;
+  fr: string;
+  it: string;
+  he: string;
+  da: string;
 };
 
-export type WordsDTO = ArrayMapped<WordsRecord> & {
-  [amends]?: WordsDTO;
+export type WordsAddLangDTO = ArrayMapped<WordsAddLangRecord> & {
+  [amends]?: WordsAddLangDTO;
   [beta]?: boolean;
 };

@@ -37,8 +37,40 @@ export class MultilingualSynset {
     da: undefined,
     de: undefined,
   };
+  public steen?: MultilingualSynset$Steen;
 }
 
 export type MultilingualSynset$Synsets = {
   isv?: InterslavicSynset;
 } & Partial<Record<Language, Synset | undefined>>;
+
+export type MultilingualSynset$Steen = {
+  debated?: Set<
+    | 'id'
+    | 'isv'
+    | 'addition'
+    | 'partOfSpeech'
+    | 'type'
+    | 'sameInLanguages'
+    | 'genesis'
+    | 'frequency'
+    | 'en'
+    | 'ru'
+    | 'be'
+    | 'uk'
+    | 'pl'
+    | 'cs'
+    | 'sk'
+    | 'bg'
+    | 'mk'
+    | 'sr'
+    | 'hr'
+    | 'sl'
+    | 'cu'
+    | 'de'
+    | 'nl'
+    | 'eo'
+    | 'intelligibility'
+    | 'using_example'
+  >;
+};

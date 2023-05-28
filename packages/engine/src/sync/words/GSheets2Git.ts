@@ -1,77 +1,56 @@
-import type { MultilingualSynsetRepository } from '@interslavic/database-engine-fs';
+import type { MultilingualSynset } from '@interslavic/database-engine-core';
 
-import type { WordsDTO, WordsSheet } from '../../google';
-import { toMultiSynset } from '../../google';
-import { amends, amendedBy } from '../../symbols';
-import { IdSyncOperation } from '../core';
+import { mergeToSynset, toMultiSynset } from '../../google';
 
-export type GSheets2GitOptions = {
-  readonly beta: boolean;
-  readonly fs: MultilingualSynsetRepository;
-  readonly gsheets: WordsSheet;
-};
+import type { GSheetsOpOptions } from './GSheetsOp';
+import { GSheetsOp } from './GSheetsOp';
 
-export class GSheets2Git extends IdSyncOperation<number> {
-  private _gmap?: Map<number, WordsDTO>;
-  private readonly fs: MultilingualSynsetRepository;
-  private readonly gsheets: WordsSheet;
-  private readonly beta: boolean;
+export type GSheets2GitOptions = GSheetsOpOptions;
 
+export class GSheets2Git extends GSheetsOp {
   constructor(options: GSheets2GitOptions) {
-    super();
-
-    this.fs = options.fs;
-    this.gsheets = options.gsheets;
-    this.beta = options.beta;
+    super(options);
   }
 
   protected async delete(id: number): Promise<void> {
     // TODO: think about the future when lemma IDs and synset IDs diverge
-    await this.fs.deleteById(id);
+    await this.multisynsets.deleteById(id);
   }
 
   protected async getAfterIds(): Promise<number[]> {
-    return this._grecords().then((r) => [...r.keys()]);
+    const ids = await this.wordIds();
+
+    return this.selectedIds
+      ? ids.filter((id) => this.selectedIds!.has(id))
+      : ids;
   }
 
   protected async getBeforeIds(): Promise<number[]> {
-    return this.fs.keys();
+    const ids = await this.multisynsets.keys();
+
+    return this.selectedIds
+      ? ids.filter((id) => this.selectedIds!.has(id))
+      : ids;
   }
 
   protected async insert(id: number): Promise<void> {
-    const dto = await this._grecords().then((r) => r.get(id));
-    const multisynset = toMultiSynset(dto!);
-    await this.fs.insert(multisynset);
+    const multisynset = await this._createSynset(id);
+    await this.multisynsets.insert(multisynset);
   }
 
   protected async update(id: number): Promise<void> {
-    const dto = await this._grecords().then((r) => r.get(id));
-    const multisynset = toMultiSynset(dto!);
-    await this.fs.upsert(multisynset);
+    const multisynset = await this._createSynset(id);
+    await this.multisynsets.upsert(multisynset);
   }
 
-  private async _grecords(): Promise<Map<number, WordsDTO>> {
-    if (!this._gmap) {
-      const dtos = await this.gsheets.getValues();
-      const stable = dtos.filter((dto: WordsDTO) => dto.id > 0);
-      const grecords = (this._gmap = new Map<number, WordsDTO>(
-        stable.map((dto: WordsDTO) => [Number(dto.id), dto]),
-      ));
-
-      if (this.beta) {
-        const beta = dtos.filter((dto: WordsDTO) => dto.id < 0);
-        for (const record of beta) {
-          const id = (record.id = -record.id);
-          const base = grecords.get(id) as WordsDTO;
-          if (base) {
-            base[amendedBy] = record;
-            record[amends] = base;
-          }
-          grecords.set(id, record);
-        }
-      }
+  private async _createSynset(id: number): Promise<MultilingualSynset> {
+    const dto1 = await this.words().then((r) => r.get(id));
+    const dto2 = await this.wordsAdd().then((r) => r.get(id));
+    const multisynset = toMultiSynset(dto1!);
+    if (dto2) {
+      mergeToSynset(multisynset, dto2);
     }
 
-    return this._gmap;
+    return multisynset;
   }
 }

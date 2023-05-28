@@ -1,29 +1,7 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Synset #parse() should parse synset: !#: synset 1`] = `
-Synset {
-  "debatable": true,
-  "lemmas": [],
-  "verified": false,
-}
-`;
-
-exports[`Synset #parse() should parse synset: !#course: synset 1`] = `
-Synset {
-  "debatable": true,
-  "lemmas": [
-    Lemma {
-      "annotations": [],
-      "value": "course",
-    },
-  ],
-  "verified": false,
-}
-`;
-
 exports[`Synset #parse() should parse synset: !: synset 1`] = `
 Synset {
-  "debatable": false,
   "lemmas": [],
   "verified": false,
 }
@@ -31,7 +9,6 @@ Synset {
 
 exports[`Synset #parse() should parse synset: !U-Boot: synset 1`] = `
 Synset {
-  "debatable": false,
   "lemmas": [
     Lemma {
       "annotations": [],
@@ -42,17 +19,8 @@ Synset {
 }
 `;
 
-exports[`Synset #parse() should parse synset: #!: synset 1`] = `
+exports[`Synset #parse() should parse synset: !only, ĝuste nun: synset 1`] = `
 Synset {
-  "debatable": true,
-  "lemmas": [],
-  "verified": false,
-}
-`;
-
-exports[`Synset #parse() should parse synset: #!only, ĝuste nun: synset 1`] = `
-Synset {
-  "debatable": true,
   "lemmas": [
     Lemma {
       "annotations": [],
@@ -67,30 +35,8 @@ Synset {
 }
 `;
 
-exports[`Synset #parse() should parse synset: #: synset 1`] = `
-Synset {
-  "debatable": true,
-  "lemmas": [],
-  "verified": true,
-}
-`;
-
-exports[`Synset #parse() should parse synset: #co-worker: synset 1`] = `
-Synset {
-  "debatable": true,
-  "lemmas": [
-    Lemma {
-      "annotations": [],
-      "value": "co-worker",
-    },
-  ],
-  "verified": true,
-}
-`;
-
 exports[`Synset #parse() should parse synset: : synset 1`] = `
 Synset {
-  "debatable": false,
   "lemmas": [],
   "verified": true,
 }
@@ -98,7 +44,6 @@ Synset {
 
 exports[`Synset #parse() should parse synset: bring (up) to: synset 1`] = `
 Synset {
-  "debatable": false,
   "lemmas": [
     Lemma {
       "annotations": [],
@@ -111,7 +56,6 @@ Synset {
 
 exports[`Synset #parse() should parse synset: з'явитися: synset 1`] = `
 Synset {
-  "debatable": false,
   "lemmas": [
     Lemma {
       "annotations": [],
@@ -124,7 +68,6 @@ Synset {
 
 exports[`Synset #parse() should parse synset: за (напр.: по грибы, за хлебом), по: synset 1`] = `
 Synset {
-  "debatable": false,
   "lemmas": [
     Lemma {
       "annotations": [
@@ -143,7 +86,6 @@ Synset {
 
 exports[`Synset #parse() should parse synset: и; а зато (смысл2): synset 1`] = `
 Synset {
-  "debatable": false,
   "lemmas": [
     Lemma {
       "annotations": [],
@@ -162,7 +104,6 @@ Synset {
 
 exports[`Synset #parse() should parse synset: сей (устар.; местоим.): synset 1`] = `
 Synset {
-  "debatable": false,
   "lemmas": [
     Lemma {
       "annotations": [

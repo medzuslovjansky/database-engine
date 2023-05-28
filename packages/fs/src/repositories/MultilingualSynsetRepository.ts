@@ -1,3 +1,5 @@
+import { dirname } from 'node:path';
+
 import type { MultilingualSynset } from '@interslavic/database-engine-core';
 
 import { MultiFileRepository } from '../fs';
@@ -24,5 +26,11 @@ export class MultilingualSynsetRepository extends MultiFileRepository<
     });
 
     super(fileOrganizer, entitySerializer);
+  }
+
+  async deduceId(filePath: string): Promise<number | undefined> {
+    return filePath.endsWith('.xml')
+      ? this.fileOrganizer.deduceId(dirname(filePath))
+      : this.fileOrganizer.deduceId(filePath);
   }
 }

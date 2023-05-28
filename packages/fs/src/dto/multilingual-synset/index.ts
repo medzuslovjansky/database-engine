@@ -8,6 +8,7 @@ export interface MultilingualSynsetXmlDocument {
 export interface MultilingualSynsetXml {
   '@_id': string;
   synset: SynsetXml[];
+  '@_steen:debated'?: string;
 
   '@_xmlns': 'https://interslavic.fun/schemas/zonal-wordnet.xsd';
   '@_xmlns:xsi': 'http://www.w3.org/2001/XMLSchema-instance';
@@ -23,9 +24,9 @@ export interface SynsetXml {
 export type LemmaXml = {
   '#text': string;
   '@_annotation'?: string;
-} & Partial<SteenbergenXmlAttributes>;
+} & Partial<LemmaXml$Steen>;
 
-export type SteenbergenXmlAttributes = {
+export type LemmaXml$Steen = {
   '@_steen:id': string;
   '@_steen:addition': string;
   '@_steen:pos': string;

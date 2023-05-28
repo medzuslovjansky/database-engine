@@ -1,2 +1,2 @@
 export const amends: unique symbol = Symbol('amends');
-export const amendedBy: unique symbol = Symbol('amendedBy');
+export const beta: unique symbol = Symbol('beta');
