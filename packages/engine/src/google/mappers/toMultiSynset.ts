@@ -4,7 +4,7 @@ import {
   MultilingualSynset,
 } from '@interslavic/database-engine-core';
 
-import type { WordsDTO, WordsRecord } from '../dto';
+import type { WordsAddLangDTO, WordsDTO, WordsRecord } from '../dto';
 
 export function toMultiSynset(dto: WordsDTO): MultilingualSynset {
   const multilingualSynset = new MultilingualSynset();
@@ -58,6 +58,22 @@ export function toMultiSynset(dto: WordsDTO): MultilingualSynset {
   multilingualSynset.synsets.uk = maybeParseSynset(dto.uk);
 
   return multilingualSynset;
+}
+
+export function mergeToSynset(
+  multilingualSynset: MultilingualSynset,
+  dto: WordsAddLangDTO,
+): void {
+  multilingualSynset.synsets.csb = maybeParseSynset(dto.csb);
+  multilingualSynset.synsets.dsb = maybeParseSynset(dto.dsb);
+  multilingualSynset.synsets.hsb = maybeParseSynset(dto.hsb);
+  multilingualSynset.synsets.ia = maybeParseSynset(dto.ia);
+  multilingualSynset.synsets.es = maybeParseSynset(dto.es);
+  multilingualSynset.synsets.pt = maybeParseSynset(dto.pt);
+  multilingualSynset.synsets.fr = maybeParseSynset(dto.fr);
+  multilingualSynset.synsets.it = maybeParseSynset(dto.it);
+  multilingualSynset.synsets.he = maybeParseSynset(dto.he);
+  multilingualSynset.synsets.da = maybeParseSynset(dto.da);
 }
 
 function maybeParseSynset(str: string): Synset | undefined {

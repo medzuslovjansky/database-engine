@@ -1,5 +1,5 @@
 import compose from '../../compositionRoot';
-import type { WordsSheet } from '../../google';
+import type { WordsAddLangSheet, WordsSheet } from '../../google';
 
 export * from './argv';
 
@@ -17,13 +17,19 @@ export async function getGoogleGitSyncPrerequisites() {
   }
 
   const spreadsheet = googleAPIs.spreadsheet(spreadsheetConfig.google_id);
-  const sheet = await spreadsheet.getSheetByTitle('words');
-  if (!sheet) {
+  const words = await spreadsheet.getSheetByTitle('words');
+  if (!words) {
     throw new Error('Cannot find the sheet: words');
   }
 
+  const wordsAddLang = await spreadsheet.getSheetByTitle('words_add_lang');
+  if (!wordsAddLang) {
+    throw new Error('Cannot find the sheet: words_add_lang');
+  }
+
   return {
-    wordsSheet: sheet as WordsSheet,
-    fileDatabase,
+    words: words as WordsSheet,
+    wordsAddLang: wordsAddLang as WordsAddLangSheet,
+    multisynsets: fileDatabase.multisynsets,
   };
 }

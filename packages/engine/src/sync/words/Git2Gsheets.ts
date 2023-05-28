@@ -10,12 +10,12 @@ import { GSheetsOp } from './GSheetsOp';
 import { isRestrictedEdit } from './isRestrictedEdit';
 
 export type Git2GsheetsOptions = GSheetsOpOptions & {
-  readonly fs: MultilingualSynsetRepository;
+  multisynsets: MultilingualSynsetRepository;
   readonly selectedIds?: number[];
 };
 
 export class Git2Gsheets extends GSheetsOp {
-  private readonly fs: MultilingualSynsetRepository;
+  private readonly multisynsets: MultilingualSynsetRepository;
   private readonly selectedIds?: Set<number>;
 
   constructor(options: Git2GsheetsOptions) {
@@ -23,14 +23,14 @@ export class Git2Gsheets extends GSheetsOp {
 
     super(options);
 
-    this.fs = options.fs;
+    this.multisynsets = options.multisynsets;
     if (options.selectedIds) {
       this.selectedIds = new Set(options.selectedIds);
     }
   }
 
   protected async getAfterIds(): Promise<number[]> {
-    const ids = await this.fs.keys();
+    const ids = await this.multisynsets.keys();
 
     return this.selectedIds
       ? ids.filter((id) => this.selectedIds!.has(id))
@@ -38,7 +38,7 @@ export class Git2Gsheets extends GSheetsOp {
   }
 
   protected async getBeforeIds(): Promise<number[]> {
-    const ids = await this._gids();
+    const ids = await this.wordIds();
 
     return this.selectedIds
       ? ids.filter((id) => this.selectedIds!.has(id))
@@ -46,17 +46,17 @@ export class Git2Gsheets extends GSheetsOp {
   }
 
   protected async insert(id: number): Promise<void> {
-    const synset = await this.fs.findById(id);
+    const synset = await this.multisynsets.findById(id);
     const dto = this._synset2dto(synset!);
-    this.gsheets.batch.appendRows({
+    this.wordsSheet.batch.appendRows({
       values: [[...dto]],
     });
   }
 
   protected async update(id: number): Promise<void> {
-    const synset = await this.fs.findById(id);
+    const synset = await this.multisynsets.findById(id);
     const dto = this._synset2dto(synset!);
-    const gmap = await this._grecords();
+    const gmap = await this.words();
     const existing: WordsDTO = gmap.get(id)!;
     const startRowIndex = existing.getIndex() + 1;
     if (Number.isNaN(startRowIndex)) {
@@ -65,14 +65,14 @@ export class Git2Gsheets extends GSheetsOp {
 
     if (existing[beta]) {
       /* If this is a beta word, we should just update its row in the spreadsheet. */
-      this.gsheets.batch.updateRows({
+      this.wordsSheet.batch.updateRows({
         startRowIndex,
         values: [[...dto]],
       });
     } else if (isRestrictedEdit(existing, dto)) {
       /* If this is a heavy edit, we should append a new row with the new data. */
       /* Also, we should "reset" the translations in the old row. */
-      this.gsheets.batch
+      this.wordsSheet.batch
         .appendRows({
           values: [[...dto]],
         })
@@ -83,7 +83,7 @@ export class Git2Gsheets extends GSheetsOp {
         });
     } else {
       /* Light edits just change the translations */
-      this.gsheets.batch.updateRows({
+      this.wordsSheet.batch.updateRows({
         startRowIndex,
         startColumnIndex: this.ruIndex,
         values: [dto.getSlice('ru', 'frequency')],
@@ -92,9 +92,9 @@ export class Git2Gsheets extends GSheetsOp {
   }
 
   protected async delete(id: number): Promise<void> {
-    const dto = (await this._grecords().then((r) => r.get(id)))!;
+    const dto = (await this.words().then((r) => r.get(id)))!;
     if (dto[beta] && !dto[amends]) {
-      this.gsheets.batch.deleteRows({
+      this.wordsSheet.batch.deleteRows({
         startRowIndex: dto.getIndex(),
       });
     } else {
@@ -118,27 +118,27 @@ export class Git2Gsheets extends GSheetsOp {
         eo: '-',
       });
 
-      this.gsheets.batch.appendRows({
+      this.wordsSheet.batch.appendRows({
         values: [[...copy]],
       });
     }
   }
 
   protected async commit(): Promise<void> {
-    await this.gsheets.batch.flush();
+    await this.wordsSheet.batch.flush();
   }
 
   private __ruIndex?: number;
   private get ruIndex(): number {
     if (this.__ruIndex === undefined) {
-      this.__ruIndex = this.gsheets.Mapper!.getColumnIndex('ru')!;
+      this.__ruIndex = this.wordsSheet.Mapper!.getColumnIndex('ru')!;
     }
 
     return this.__ruIndex;
   }
 
   private _synset2dto(ms: MultilingualSynset): WordsDTO {
-    const Mapper = this.gsheets.Mapper as ArrayMapper<WordsDTO>;
+    const Mapper = this.wordsSheet.Mapper as ArrayMapper<WordsDTO>;
     const isv = ms.synsets.isv!;
     // TODO: this is a violation of synset vs lemma separation
     const steen = isv.lemmas[0]!.steen!;
