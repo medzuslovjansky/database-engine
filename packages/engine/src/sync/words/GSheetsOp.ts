@@ -1,3 +1,5 @@
+import type { MultilingualSynsetRepository } from '@interslavic/database-engine-fs';
+
 import { IdSyncOperation } from '../core';
 import type {
   WordsAddLangDTO,
@@ -11,22 +13,31 @@ export type GSheetsOpOptions = {
   readonly beta: boolean;
   readonly words: WordsSheet;
   readonly wordsAddLang: WordsAddLangSheet;
+  readonly selectedIds?: number[];
+  readonly multisynsets: MultilingualSynsetRepository;
 };
 
 type BetaDTO = WordsDTO | WordsAddLangDTO;
 
 export abstract class GSheetsOp extends IdSyncOperation<number> {
-  private _words?: Map<number, WordsDTO>;
-  private _wordsAdd?: Map<number, WordsAddLangDTO>;
+  private _words?: Promise<Map<number, WordsDTO>>;
+  private _wordsAdd?: Promise<Map<number, WordsAddLangDTO>>;
   protected readonly wordsSheet: WordsSheet;
   protected readonly wordsAddLangSheet: WordsAddLangSheet;
   protected readonly beta: boolean;
+  protected readonly multisynsets: MultilingualSynsetRepository;
+  protected readonly selectedIds?: Set<number>;
 
   protected constructor(options: Readonly<GSheetsOpOptions>) {
     super();
+
     this.beta = options.beta;
     this.wordsSheet = options.words;
     this.wordsAddLangSheet = options.wordsAddLang;
+    this.multisynsets = options.multisynsets;
+    if (options.selectedIds) {
+      this.selectedIds = new Set(options.selectedIds);
+    }
   }
 
   protected async wordIds(): Promise<number[]> {
@@ -35,7 +46,7 @@ export abstract class GSheetsOp extends IdSyncOperation<number> {
 
   protected async words(): Promise<Map<number, WordsDTO>> {
     if (!this._words) {
-      this._words = await this._getRecords(this.wordsSheet);
+      this._words = this._getRecords(this.wordsSheet);
     }
 
     return this._words;
@@ -43,7 +54,7 @@ export abstract class GSheetsOp extends IdSyncOperation<number> {
 
   protected async wordsAdd(): Promise<Map<number, WordsAddLangDTO>> {
     if (!this._wordsAdd) {
-      this._wordsAdd = await this._getRecords(this.wordsAddLangSheet);
+      this._wordsAdd = this._getRecords(this.wordsAddLangSheet);
     }
 
     return this._wordsAdd;

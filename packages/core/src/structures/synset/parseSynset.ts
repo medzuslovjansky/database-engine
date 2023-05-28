@@ -2,13 +2,14 @@ import { Lemma } from '../lemma';
 
 import { isVerified, stripMetacharacters } from './metacharacters';
 
-export function parseSynset(rawStr: string) {
-  const verified = isVerified(rawStr);
-  const annotations = rawStr.includes('(')
+export function parseSynset(rawString: string) {
+  const sanitized = sanitize(rawString);
+  const verified = isVerified(sanitized);
+  const annotations = sanitized.includes('(')
     ? new AnnotationHelper()
     : new NoopAnnotationHelper();
 
-  const lemmaString = annotations.stash(stripMetacharacters(rawStr).trim());
+  const lemmaString = annotations.stash(stripMetacharacters(sanitized).trim());
   const lemmas =
     lemmaString.length > 0
       ? lemmaString
@@ -20,6 +21,12 @@ export function parseSynset(rawStr: string) {
     verified,
     lemmas,
   };
+}
+
+function sanitize(str: string) {
+  // Remove 00-31 and 7F
+  // eslint-disable-next-line no-control-regex
+  return str.replace(/[\u0000-\u001F\u007F]/g, '');
 }
 
 class AnnotationHelper {

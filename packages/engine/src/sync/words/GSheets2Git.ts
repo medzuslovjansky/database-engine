@@ -1,4 +1,3 @@
-import type { MultilingualSynsetRepository } from '@interslavic/database-engine-fs';
 import type { MultilingualSynset } from '@interslavic/database-engine-core';
 
 import { mergeToSynset, toMultiSynset } from '../../google';
@@ -6,17 +5,11 @@ import { mergeToSynset, toMultiSynset } from '../../google';
 import type { GSheetsOpOptions } from './GSheetsOp';
 import { GSheetsOp } from './GSheetsOp';
 
-export type GSheets2GitOptions = GSheetsOpOptions & {
-  multisynsets: MultilingualSynsetRepository;
-};
+export type GSheets2GitOptions = GSheetsOpOptions;
 
 export class GSheets2Git extends GSheetsOp {
-  private readonly multisynsets: MultilingualSynsetRepository;
-
   constructor(options: GSheets2GitOptions) {
     super(options);
-
-    this.multisynsets = options.multisynsets;
   }
 
   protected async delete(id: number): Promise<void> {
@@ -25,11 +18,19 @@ export class GSheets2Git extends GSheetsOp {
   }
 
   protected async getAfterIds(): Promise<number[]> {
-    return this.wordIds();
+    const ids = await this.wordIds();
+
+    return this.selectedIds
+      ? ids.filter((id) => this.selectedIds!.has(id))
+      : ids;
   }
 
   protected async getBeforeIds(): Promise<number[]> {
-    return this.multisynsets.keys();
+    const ids = await this.multisynsets.keys();
+
+    return this.selectedIds
+      ? ids.filter((id) => this.selectedIds!.has(id))
+      : ids;
   }
 
   protected async insert(id: number): Promise<void> {

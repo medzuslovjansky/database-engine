@@ -1,3 +1,5 @@
+import type { MultilingualSynsetRepository } from '@interslavic/database-engine-fs';
+
 import compose from '../../compositionRoot';
 import type { WordsAddLangSheet, WordsSheet } from '../../google';
 
@@ -32,4 +34,33 @@ export async function getGoogleGitSyncPrerequisites() {
     wordsAddLang: wordsAddLang as WordsAddLangSheet,
     multisynsets: fileDatabase.multisynsets,
   };
+}
+
+export async function parseSelectedSynsets(
+  multisynsets: MultilingualSynsetRepository,
+  argv: { _: string[] },
+): Promise<undefined | number[]> {
+  // TODO: find out why need slice(1)
+  const synsetIds = await Promise.all(
+    argv._.slice(1).map(async (filePath) => {
+      const id = await multisynsets.deduceId(filePath);
+      if (id === undefined) {
+        console.warn(`Invalid filepath: ${filePath}`);
+      }
+      return id ?? Number.NaN;
+    }),
+  );
+
+  const validSynsetIds = synsetIds.filter((element) =>
+    Number.isFinite(element),
+  );
+  if (validSynsetIds.length < synsetIds.length) {
+    throw new Error('Some of used paths are invalid');
+  }
+
+  if (validSynsetIds.length > 0) {
+    return validSynsetIds;
+  }
+
+  return;
 }

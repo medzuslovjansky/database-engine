@@ -1,4 +1,3 @@
-import type { MultilingualSynsetRepository } from '@interslavic/database-engine-fs';
 import type { ArrayMapper } from '@interslavic/database-engine-google';
 import type { MultilingualSynset } from '@interslavic/database-engine-core';
 
@@ -9,23 +8,14 @@ import type { GSheetsOpOptions } from './GSheetsOp';
 import { GSheetsOp } from './GSheetsOp';
 import { isRestrictedEdit } from './isRestrictedEdit';
 
-export type Git2GsheetsOptions = GSheetsOpOptions & {
-  multisynsets: MultilingualSynsetRepository;
-  readonly selectedIds?: number[];
-};
+export type Git2GsheetsOptions = GSheetsOpOptions;
 
 export class Git2Gsheets extends GSheetsOp {
-  private readonly multisynsets: MultilingualSynsetRepository;
-  private readonly selectedIds?: Set<number>;
-
   constructor(options: Git2GsheetsOptions) {
-    if (!options.beta) throw new Error('Git2Gsheets is only for beta words');
-
     super(options);
 
-    this.multisynsets = options.multisynsets;
-    if (options.selectedIds) {
-      this.selectedIds = new Set(options.selectedIds);
+    if (!options.beta) {
+      throw new Error('Git2Gsheets is only for beta words');
     }
   }
 

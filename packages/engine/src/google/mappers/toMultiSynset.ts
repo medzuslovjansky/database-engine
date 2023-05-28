@@ -31,7 +31,7 @@ export function toMultiSynset(dto: WordsDTO): MultilingualSynset {
       addition: dto.addition || undefined,
       partOfSpeech: dto.partOfSpeech,
       type: dto.type ? Number(dto.type) : undefined,
-      sameInLanguages: dto.sameInLanguages || undefined,
+      sameInLanguages: dto.sameInLanguages?.trim() || undefined,
       genesis: dto.genesis || undefined,
       frequency: dto.frequency
         ? Number(`${dto.frequency}`.replace(',', '.'))
