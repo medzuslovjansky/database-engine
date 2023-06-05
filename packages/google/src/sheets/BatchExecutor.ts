@@ -137,6 +137,7 @@ export class BatchExecutor {
   }
 
   public updateRows(request: BatchExecutor$UpdateRowsRequest): this {
+    // eslint-disable-next-line unicorn/no-array-reduce
     const columnsCount = request.values.reduce(
       (max, row) => Math.max(max, row.length),
       0,
