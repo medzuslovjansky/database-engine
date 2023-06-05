@@ -34,4 +34,9 @@ export const builder: CommandBuilder<subcommand.SynsetsArgvAny, any> = {
     description: 'Use beta features',
     default: process.env.ISV_BETA === 'true',
   },
+  only: {
+    type: 'boolean',
+    description: 'Only selected synsets',
+    default: false,
+  },
 };
