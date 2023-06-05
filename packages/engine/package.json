@@ -1,6 +1,6 @@
 {
   "name": "@interslavic/database-engine",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/medzuslovjansky/database-engine.git",
@@ -22,19 +22,19 @@
     "test": ":"
   },
   "devDependencies": {
-    "@interslavic/eslint-config-database-engine": "^1.0.7",
-    "@interslavic/jest-config-database-engine": "^1.0.7",
-    "@interslavic/prettier-config-database-engine": "^1.0.7",
-    "@interslavic/typescript-config-database-engine": "^1.0.7",
+    "@interslavic/eslint-config-database-engine": "^1.0.8",
+    "@interslavic/jest-config-database-engine": "^1.0.8",
+    "@interslavic/prettier-config-database-engine": "^1.0.8",
+    "@interslavic/typescript-config-database-engine": "^1.0.8",
     "@types/bunyan": "^1.8.8",
     "ts-node": "^10.9.1",
     "typescript": "^4.9.5"
   },
   "dependencies": {
-    "@interslavic/database-engine-analysis": "^1.0.7",
-    "@interslavic/database-engine-core": "^1.0.7",
-    "@interslavic/database-engine-fs": "^1.0.7",
-    "@interslavic/database-engine-google": "^1.0.7",
+    "@interslavic/database-engine-analysis": "^1.0.8",
+    "@interslavic/database-engine-core": "^1.0.8",
+    "@interslavic/database-engine-fs": "^1.0.8",
+    "@interslavic/database-engine-google": "^1.0.8",
     "bunyamin": "^1.1.0",
     "bunyan": "^2.0.0",
     "dotenv": "^16.0.3",
