@@ -1,6 +1,13 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 import { difference, intersection } from 'lodash';
 
+import { log } from '../../utils';
+
+const GET_BEFORE = ['get-before'];
+const GET_AFTER = ['get-after'];
+const COMMIT = ['commit'];
+const ROLLBACK = ['rollback'];
+
 export abstract class IdSyncOperation<ID = string> {
   protected abstract getBeforeIds(): Promise<ID[]>;
   protected abstract getAfterIds(): Promise<ID[]>;
@@ -18,8 +25,16 @@ export abstract class IdSyncOperation<ID = string> {
 
     try {
       const [beforeIds, afterIds] = await Promise.all([
-        this.getBeforeIds(),
-        this.getAfterIds(),
+        log.trace.complete(
+          { cat: GET_BEFORE, tid: ['sync', 'before'] },
+          'get-before',
+          this.getBeforeIds(),
+        ),
+        log.trace.complete(
+          { cat: GET_AFTER, tid: ['sync', 'after'] },
+          'get-after',
+          this.getAfterIds(),
+        ),
       ]);
 
       await Promise.all(
@@ -32,9 +47,13 @@ export abstract class IdSyncOperation<ID = string> {
         difference(afterIds, beforeIds).map((id) => this.insert(id)),
       );
 
-      await this.commit?.();
+      await log.trace.complete({ cat: COMMIT }, 'commit', this.commit?.());
     } catch (error) {
-      await this.rollbackTransaction?.();
+      await log.trace.complete(
+        { cat: ROLLBACK, err: error },
+        'rollback',
+        this.rollbackTransaction?.(),
+      );
       throw error;
     }
   }

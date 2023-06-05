@@ -8,6 +8,7 @@ import type {
   WordsSheet,
 } from '../../google';
 import { amends, beta } from '../../symbols';
+import { log } from '../../utils';
 
 export type GSheetsOpOptions = {
   readonly beta: boolean;
@@ -63,26 +64,32 @@ export abstract class GSheetsOp extends IdSyncOperation<number> {
   private async _getRecords<DTO extends BetaDTO>(
     sheet: WordsSheet | WordsAddLangSheet,
   ): Promise<Map<number, DTO>> {
-    const dtos = (await sheet.getValues()) as unknown as DTO[];
-    const stable = dtos.filter((dto) => dto.id > 0);
-    const grecords = new Map<number, DTO>(
-      stable.map((dto) => [Number(dto.id), dto]),
-    );
+    return log.trace.complete(
+      { cat: ['gsheets'], tid: ['sync', sheet.id] },
+      `fetch ${sheet.title}`,
+      async () => {
+        const dtos = (await sheet.getValues()) as unknown as DTO[];
+        const stable = dtos.filter((dto) => dto.id > 0);
+        const grecords = new Map<number, DTO>(
+          stable.map((dto) => [Number(dto.id), dto]),
+        );
 
-    if (this.beta) {
-      const betaRecords = dtos.filter((dto) => dto.id < 0);
-      for (const record of betaRecords) {
-        record[beta] = true;
+        if (this.beta) {
+          const betaRecords = dtos.filter((dto) => dto.id < 0);
+          for (const record of betaRecords) {
+            record[beta] = true;
 
-        const id = (record.id = -record.id);
-        const base = grecords.get(id) as WordsDTO;
-        if (base) {
-          record[amends] = base;
+            const id = (record.id = -record.id);
+            const base = grecords.get(id) as WordsDTO;
+            if (base) {
+              record[amends] = base;
+            }
+            grecords.set(id, record);
+          }
         }
-        grecords.set(id, record);
-      }
-    }
 
-    return grecords;
+        return grecords;
+      },
+    );
   }
 }

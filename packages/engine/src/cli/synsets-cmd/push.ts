@@ -8,6 +8,12 @@ export async function push(argv: PushArgv) {
     await getGoogleGitSyncPrerequisites();
 
   const selectedIds = await parseSelectedSynsets(multisynsets, argv);
+  if (argv.only && !selectedIds) {
+    console.log(
+      'Skipping push because --only is used and no synsets are selected',
+    );
+    return;
+  }
 
   const sync = new Git2Gsheets({
     beta: argv.beta,

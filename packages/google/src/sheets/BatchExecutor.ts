@@ -137,12 +137,19 @@ export class BatchExecutor {
   }
 
   public updateRows(request: BatchExecutor$UpdateRowsRequest): this {
+    const columnsCount = request.values.reduce(
+      (max, row) => Math.max(max, row.length),
+      0,
+    );
+
     this.updateCells({
       fields: 'userEnteredValue',
       range: {
         sheetId: request.sheetId ?? this.sheetId,
         startRowIndex: request.startRowIndex,
         startColumnIndex: request.startColumnIndex ?? 0,
+        endRowIndex: request.startRowIndex + request.values.length,
+        endColumnIndex: (request.startColumnIndex ?? 0) + columnsCount,
       },
       rows: request.values.map((row) => ({
         values: row.map((value) => this._toCellData(value)),

@@ -8,6 +8,12 @@ export async function pull(argv: PullArgv) {
     await getGoogleGitSyncPrerequisites();
 
   const selectedIds = await parseSelectedSynsets(multisynsets, argv);
+  if (argv.only && !selectedIds) {
+    console.log(
+      'Skipping pull because --only is used and no synsets are selected',
+    );
+    return;
+  }
 
   const sync = new GSheets2Git({
     beta: argv.beta,

@@ -3,6 +3,7 @@ import type { MultilingualSynset } from '@interslavic/database-engine-core';
 
 import { amends, beta } from '../../symbols';
 import type { WordsDTO } from '../../google';
+import { log } from '../../utils';
 
 import type { GSheetsOpOptions } from './GSheetsOp';
 import { GSheetsOp } from './GSheetsOp';
@@ -115,7 +116,10 @@ export class Git2Gsheets extends GSheetsOp {
   }
 
   protected async commit(): Promise<void> {
-    await this.wordsSheet.batch.flush();
+    const data = (this.wordsSheet.batch as any).requests;
+    await log.trace.complete({ cat: ['gsheets'], data }, 'batch update', () =>
+      this.wordsSheet.batch.flush(),
+    );
   }
 
   private __ruIndex?: number;
