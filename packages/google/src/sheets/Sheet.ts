@@ -19,11 +19,20 @@ export type Sheet$GetValuesOptions = {
   range?: string;
 };
 
+export type Notes<T> = {
+  [K in keyof T]: string | undefined;
+};
+
+export type Annotated<T, M extends ArrayMapped<T> = ArrayMapped<T>> = M & {
+  getNotes(): Notes<T>;
+};
+
 export class Sheet<T extends SheetRecord = SheetRecord> {
   private readonly _api: sheets_v4.Sheets;
   private readonly _batch: BatchExecutor;
   private readonly _properties: sheets_v4.Schema$SheetProperties;
   private _arrayMapper?: ArrayMapper<T>;
+  private _noteArrayMapper?: ArrayMapper<Notes<T>>;
 
   public readonly protectedRanges: sheets_v4.Schema$ProtectedRange[];
   public readonly spreadsheetId: string;
@@ -53,21 +62,45 @@ export class Sheet<T extends SheetRecord = SheetRecord> {
     return this._batch;
   }
 
-  async getValues(): Promise<ArrayMapped<T>[]> {
+  async getValues(): Promise<Annotated<T>[]> {
     const res = await this._api.spreadsheets.get({
       ranges: [this.title],
       spreadsheetId: this.spreadsheetId,
-      fields: 'sheets(data(rowData(values)))',
+      fields: 'sheets(data(rowData(values(userEnteredValue,note))))',
     });
 
-    const sheet = res.data.sheets![0];
-    // TODO: finish this
+    const sheet = res.data.sheets![0].data![0];
+    const values = sheet.rowData.map((row) => {
+      return (
+        row.values?.map((value) => {
+          const uev = value.userEnteredValue!;
+          return uev.stringValue ?? uev.numberValue ?? uev.boolValue;
+        }) ?? []
+      );
+    });
 
-    const values = res.data.values ?? [];
-    this._ensureMapper(values);
+    const notes = sheet.rowData.map((row) => {
+      return (
+        row.values?.map((value) => {
+          return value.note;
+        }) ?? []
+      );
+    });
+
+    const Mapper = this._ensureMapper(values);
+
     values.shift();
-    // eslint-disable-next-line unicorn/no-array-callback-reference
-    return values.map(this._mapFn) as ArrayMapped<T>[];
+    notes.shift();
+    const results: Annotated<T>[] = [];
+    for (let i = 0; i < values.length; i++) {
+      const value = values[i];
+      const note = notes[i];
+      const mapped = new Mapper(value, i) as Annotated<T>;
+      const mappedNotes = new Mapper(note, i) as Notes<T>;
+      results.push(Object.assign(mapped, { getNotes: () => mappedNotes }));
+    }
+
+    return results;
   }
 
   async flush(): Promise<void> {
@@ -76,31 +109,15 @@ export class Sheet<T extends SheetRecord = SheetRecord> {
 
   private _ensureMapper([headers]: unknown[][]) {
     if (!this._arrayMapper) {
-      const mapperClassName = `${upperFirst(camelCase(this.title))}Mapper`;
+      const title = this.title;
+      const theHeaders = headers.map(String) as keyof T[];
+      const valueMapperClassName = `${upperFirst(camelCase(title))}ValueMapper`;
       this._arrayMapper = createArrayMapperClass(
-        mapperClassName,
-        headers.map(String),
+        valueMapperClassName,
+        theHeaders,
       );
     }
+
+    return this._arrayMapper;
   }
-
-  private _mapFn = (values: unknown[], index?: number) => {
-    const Mapper = this._arrayMapper!;
-    return new Mapper(values, index);
-  };
-
-  // async updateSameInLanguages(values: string[]) {
-  //   const res = await this._api.spreadsheets.values.update({
-  //     spreadsheetId: SHEET_IDs.new_interslavic_words_list,
-  //     range: 'words!Y2:Y',
-  //     includeValuesInResponse: false,
-  //     valueInputOption: 'RAW',
-  //     requestBody: {
-  //       majorDimension: 'COLUMNS',
-  //       values: [values],
-  //     },
-  //   });
-  //
-  //   console.log(`Update status: ${res.statusText}`);
-  // }
 }
