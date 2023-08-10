@@ -1,7 +1,7 @@
 import type { ArrayMapper } from '@interslavic/database-engine-google';
 import type { MultilingualSynset } from '@interslavic/database-engine-core';
 
-import { amends, beta } from '../../symbols';
+import { beta } from '../../symbols';
 import type { WordsDTO } from '../../google';
 import { log } from '../../utils';
 
@@ -54,65 +54,23 @@ export class Git2Gsheets extends GSheetsOp {
       throw new TypeError(`ID ${id} not found in the spreadsheet`);
     }
 
-    if (existing[beta]) {
-      /* If this is a beta word, we should just update its row in the spreadsheet. */
-      this.wordsSheet.batch.updateRows({
-        startRowIndex,
-        values: [[...dto]],
-      });
-    } else if (isRestrictedEdit(existing, dto)) {
-      /* If this is a heavy edit, we should append a new row with the new data. */
-      /* Also, we should "reset" the translations in the old row. */
-      this.wordsSheet.batch
-        .appendRows({
-          values: [[...dto]],
-        })
-        .updateRows({
-          startRowIndex,
-          startColumnIndex: this.ruIndex,
-          values: [dto.getSlice('ru', 'frequency').fill('-')],
-        });
-    } else {
-      /* Light edits just change the translations */
-      this.wordsSheet.batch.updateRows({
-        startRowIndex,
-        startColumnIndex: this.ruIndex,
-        values: [dto.getSlice('ru', 'frequency')],
-      });
-    }
+    this.wordsSheet.batch.updateRows({
+      startRowIndex,
+      values: [[...dto]],
+      notes: isRestrictedEdit(dto) ? [] : undefined,
+    });
   }
 
   protected async delete(id: number): Promise<void> {
     const dto = (await this.words().then((r) => r.get(id)))!;
-    if (dto[beta] && !dto[amends]) {
-      this.wordsSheet.batch.deleteRows({
-        startRowIndex: dto.getIndex(),
-      });
-    } else {
-      const copy = Object.assign(dto.getCopy(), {
-        id: -Math.abs(+dto.id),
-        isv: '!' + dto.isv,
-        ru: '-',
-        be: '-',
-        uk: '-',
-        pl: '-',
-        cs: '-',
-        sk: '-',
-        bg: '-',
-        mk: '-',
-        sr: '-',
-        hr: '-',
-        sl: '-',
-        cu: '-',
-        de: '-',
-        nl: '-',
-        eo: '-',
-      });
-
-      this.wordsSheet.batch.appendRows({
-        values: [[...copy]],
-      });
+    if (!dto.isv.startsWith('!')) {
+      dto.isv = '!' + dto.isv;
     }
+
+    this.wordsSheet.batch.updateRows({
+      startRowIndex: dto.getIndex(),
+      startColumnIndex: this.ruIndex
+    });
   }
 
   protected async commit(): Promise<void> {
@@ -120,15 +78,6 @@ export class Git2Gsheets extends GSheetsOp {
     await log.trace.complete({ cat: ['gsheets'], data }, 'batch update', () =>
       this.wordsSheet.batch.flush(),
     );
-  }
-
-  private __ruIndex?: number;
-  private get ruIndex(): number {
-    if (this.__ruIndex === undefined) {
-      this.__ruIndex = this.wordsSheet.Mapper!.getColumnIndex('ru')!;
-    }
-
-    return this.__ruIndex;
   }
 
   private _synset2dto(ms: MultilingualSynset): WordsDTO {

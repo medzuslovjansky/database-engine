@@ -7,7 +7,7 @@ import type {
   WordsDTO,
   WordsSheet,
 } from '../../google';
-import { amends, beta } from '../../symbols';
+import { beta } from '../../symbols';
 import { log } from '../../utils';
 
 export type GSheetsOpOptions = {
@@ -19,6 +19,18 @@ export type GSheetsOpOptions = {
 };
 
 type BetaDTO = WordsDTO | WordsAddLangDTO;
+
+function isBeta(dto: BetaDTO): boolean {
+  return dto.id >= 37_000;
+}
+
+function isStable(dto: BetaDTO): boolean {
+  return !isBeta(dto);
+}
+
+function all(): boolean {
+  return true;
+}
 
 export abstract class GSheetsOp extends IdSyncOperation<number> {
   private _words?: Promise<Map<number, WordsDTO>>;
@@ -69,24 +81,15 @@ export abstract class GSheetsOp extends IdSyncOperation<number> {
       `fetch ${sheet.title}`,
       async () => {
         const dtos = (await sheet.getValues()) as unknown as DTO[];
-        const stable = dtos.filter((dto) => dto.id > 0);
         const grecords = new Map<number, DTO>(
-          stable.map((dto) => [Number(dto.id), dto]),
-        );
-
-        if (this.beta) {
-          const betaRecords = dtos.filter((dto) => dto.id < 0);
-          for (const record of betaRecords) {
-            record[beta] = true;
-
-            const id = (record.id = -record.id);
-            const base = grecords.get(id) as WordsDTO;
-            if (base) {
-              record[amends] = base;
+          dtos.filter(this.beta ? all : isStable).map((dto) => {
+            if (isBeta(dto)) {
+              dto[beta] = true;
             }
-            grecords.set(id, record);
-          }
-        }
+
+            return [Number(dto.id), dto];
+          }),
+        );
 
         return grecords;
       },

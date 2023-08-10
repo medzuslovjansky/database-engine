@@ -1,6 +1,6 @@
 import type { ArrayMapped } from '@interslavic/database-engine-google';
 
-import type { amends, beta } from '../../symbols';
+import type { beta } from '../../symbols';
 
 export type WordsAddLangRecord = {
   id: string | number;
@@ -28,6 +28,5 @@ export type WordsAddLangRecord = {
 };
 
 export type WordsAddLangDTO = ArrayMapped<WordsAddLangRecord> & {
-  [amends]?: WordsAddLangDTO;
   [beta]?: boolean;
 };

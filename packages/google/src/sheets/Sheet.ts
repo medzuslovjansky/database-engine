@@ -54,10 +54,14 @@ export class Sheet<T extends SheetRecord = SheetRecord> {
   }
 
   async getValues(): Promise<ArrayMapped<T>[]> {
-    const res = await this._api.spreadsheets.values.get({
-      range: this.title,
+    const res = await this._api.spreadsheets.get({
+      ranges: [this.title],
       spreadsheetId: this.spreadsheetId,
+      fields: 'sheets(data(rowData(values)))',
     });
+
+    const sheet = res.data.sheets![0];
+    // TODO: finish this
 
     const values = res.data.values ?? [];
     this._ensureMapper(values);
