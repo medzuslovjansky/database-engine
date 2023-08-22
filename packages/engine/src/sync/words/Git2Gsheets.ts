@@ -1,15 +1,12 @@
-import type {
-  ArrayMapped,
-  ArrayMapper,
-  Notes
-} from '@interslavic/database-engine-google';
+import type { ArrayMapper } from '@interslavic/database-engine-google';
 import type { MultilingualSynset } from '@interslavic/database-engine-core';
 
-import type { WordsRecord } from '../../google';
+import type { WordsDTO, WordsRecord } from '../../google';
 import { log } from '../../utils';
 
 import type { GSheetsOpOptions } from './GSheetsOp';
 import { GSheetsOp } from './GSheetsOp';
+import { isBeta } from './utils';
 
 export type Git2GsheetsOptions = GSheetsOpOptions;
 
@@ -50,54 +47,47 @@ export class Git2Gsheets extends GSheetsOp {
     const synset = await this.multisynsets.findById(id);
     const dtoNew = this._synset2dto(synset!);
     const gmapWords = await this.words();
-    const [dtoOld, notesOld] = gmapWords.get(id)!;
+    const dtoOld = gmapWords.get(id)!;
 
     const startRowIndex = dtoOld.getIndex();
     if (Number.isNaN(startRowIndex)) {
       throw new TypeError(`ID ${id} not found in the spreadsheet`);
     }
 
-    const notes = this._createNotes(dtoOld, notesOld, dtoNew);
+    const notes = isBeta(dtoOld)
+      ? undefined
+      : [[...this._annotate(dtoOld, dtoNew)] as string[]];
 
     this.wordsSheet.batch.updateRows({
       startRowIndex,
       values: [[...dtoNew]],
-      notes: [[...notes] as string[]],
+      notes,
     });
   }
 
-  private _createNotes(
-    dtoOld: WordsRecord,
-    notesOld: ArrayMapped<Notes<WordsRecord>>,
-    dtoNew: WordsRecord,
-  ): Notes<WordsRecord> {
-    const notes = notesOld.getCopy();
-    if (dtoOld.isv !== dtoNew.isv) {
-      notes.isv ??= dtoOld.isv;
+  private _annotate(dtoOld: WordsDTO, dtoNew: WordsDTO) {
+    const keys = [
+      'isv',
+      'addition',
+      'partOfSpeech',
+      'type',
+      'en',
+      'sameInLanguages',
+    ] as const;
+
+    const notes = dtoOld.getNotes()!.getCopy();
+    for (const key of keys) {
+      if (dtoOld[key] != dtoNew[key]) {
+        notes[key] ??= `${dtoOld[key]}`;
+        dtoNew[key] = `#${dtoNew[key]}`;
+      }
     }
-    if (dtoOld.addition !== dtoNew.addition) {
-      notes.addition ??= dtoOld.addition;
-    }
-    if (dtoOld.partOfSpeech !== dtoNew.partOfSpeech) {
-      notes.partOfSpeech ??= dtoOld.partOfSpeech;
-    }
-    if (dtoOld.type != dtoNew.type) {
-      notes.type ??= `${dtoOld.type}`;
-    }
-    if (dtoOld.en !== dtoNew.en) {
-      notes.en ??= dtoOld.en;
-    }
-    if (dtoOld.sameInLanguages !== dtoNew.sameInLanguages) {
-      notes.sameInLanguages ??= dtoOld.sameInLanguages;
-    }
-    if (dtoOld.genesis !== dtoNew.genesis) {
-      notes.genesis ??= dtoOld.genesis;
-    }
+
     return notes;
   }
 
   protected async delete(id: number): Promise<void> {
-    const [dto] = (await this.words().then((r) => r.get(id)))!;
+    const dto = (await this.words().then((r) => r.get(id)))!;
     if (!dto.isv.startsWith('!')) {
       dto.isv = '!' + dto.isv;
     }
@@ -116,13 +106,13 @@ export class Git2Gsheets extends GSheetsOp {
     );
   }
 
-  private _synset2dto(ms: MultilingualSynset): ArrayMapped<WordsRecord> {
+  private _synset2dto(ms: MultilingualSynset): WordsDTO {
     const Mapper = this.wordsSheet.Mapper as ArrayMapper<WordsRecord>;
     const isv = ms.synsets.isv!;
     // TODO: this is a violation of synset vs lemma separation
     const steen = isv.lemmas[0]!.steen!;
-    const dto: ArrayMapped<WordsRecord> = new Mapper({
-      id: -Math.abs(ms.id),
+    const dto: WordsDTO = new Mapper({
+      id: isBeta(ms) ? -ms.id : ms.id,
       isv: isv.toString(),
       addition: steen.addition ?? '',
       partOfSpeech: steen.partOfSpeech ?? '',

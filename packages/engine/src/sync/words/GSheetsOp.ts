@@ -1,14 +1,17 @@
 import type { MultilingualSynsetRepository } from '@interslavic/database-engine-fs';
-import type { ArrayMapped, Notes } from '@interslavic/database-engine-google';
 
 import { IdSyncOperation } from '../core';
 import type {
+  WordsAddLangDTO,
   WordsAddLangRecord,
   WordsAddLangSheet,
+  WordsDTO,
   WordsRecord,
   WordsSheet,
 } from '../../google';
 import { log } from '../../utils';
+
+import { isBeta } from './utils';
 
 export type GSheetsOpOptions = {
   readonly beta: boolean;
@@ -20,18 +23,9 @@ export type GSheetsOpOptions = {
 
 type TableDTO = WordsRecord | WordsAddLangRecord;
 
-function isBeta(dto: TableDTO): boolean {
-  return dto.id >= 37_000;
-}
-
-type Annotated<DTO extends Record<string, any>> = [
-  ArrayMapped<DTO>,
-  Notes<DTO>,
-];
-
 export abstract class GSheetsOp extends IdSyncOperation<number> {
-  private _words?: Promise<Map<number, Annotated<WordsRecord>>>;
-  private _wordsAdd?: Promise<Map<number, Annotated<WordsAddLangRecord>>>;
+  private _words?: Promise<Map<number, WordsDTO>>;
+  private _wordsAdd?: Promise<Map<number, WordsAddLangDTO>>;
   protected readonly wordsSheet: WordsSheet;
   protected readonly wordsAddLangSheet: WordsAddLangSheet;
   protected readonly beta: boolean;
@@ -54,7 +48,7 @@ export abstract class GSheetsOp extends IdSyncOperation<number> {
     return this.words().then((r) => [...r.keys()]);
   }
 
-  protected async words(): Promise<Map<number, Annotated<WordsRecord>>> {
+  protected async words(): Promise<Map<number, WordsDTO>> {
     if (!this._words) {
       this._words = this._getRecords(this.wordsSheet);
     }
@@ -62,9 +56,7 @@ export abstract class GSheetsOp extends IdSyncOperation<number> {
     return this._words;
   }
 
-  protected async wordsAdd(): Promise<
-    Map<number, Annotated<WordsAddLangRecord>>
-  > {
+  protected async wordsAdd(): Promise<Map<number, WordsAddLangDTO>> {
     if (!this._wordsAdd) {
       this._wordsAdd = this._getRecords(this.wordsAddLangSheet);
     }
@@ -74,24 +66,16 @@ export abstract class GSheetsOp extends IdSyncOperation<number> {
 
   private async _getRecords<DTO extends TableDTO>(
     sheet: WordsSheet | WordsAddLangSheet,
-  ): Promise<Map<number, Annotated<DTO>>> {
+  ): Promise<Map<number, DTO>> {
     return log.trace.complete(
       { cat: ['gsheets'], tid: ['sync', sheet.id] },
       `fetch ${sheet.title}`,
       async () => {
         const dtos = (await sheet.getValues()) as unknown as DTO[];
-        const notes = (await sheet.getNotes()) as unknown as Notes<DTO>[];
         const grecords = new Map(
           dtos
-            .map((dto, index) => {
-              if (isBeta(dto) && !this.beta) {
-                return;
-              }
-
-              const note = notes[index];
-              return [Number(dto.id), [dto, note]];
-            })
-            .filter(Boolean) as [number, Annotated<DTO>][],
+            .filter((dto) => this.beta || !isBeta(dto))
+            .map((dto) => [Math.abs(+dto.id), dto]),
         );
 
         return grecords;

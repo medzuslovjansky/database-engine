@@ -1,3 +1,5 @@
+import type { ArrayMapped } from '@interslavic/database-engine-google';
+
 export type WordsAddLangRecord = {
   id: string | number;
   isv: string;
@@ -22,3 +24,5 @@ export type WordsAddLangRecord = {
   he: string;
   da: string;
 };
+
+export type WordsAddLangDTO = ArrayMapped<WordsAddLangRecord>;

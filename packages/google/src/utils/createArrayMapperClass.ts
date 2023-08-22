@@ -2,10 +2,12 @@
 
 const _index = Symbol('index');
 const _values = Symbol('values');
+const _notes = Symbol('notes');
 
 export type ArrayMapper<R extends Record<string, any>> = (new (
   values: any,
   index?: number,
+  notes?: unknown,
 ) => ArrayMapped<R>) & {
   getColumnIndex(propertyName: keyof R): number | undefined;
 };
@@ -18,7 +20,12 @@ export type ArrayMapped<R extends Record<string, any>> = {
     getIndex(): number;
     getColumnIndex(propertyName: keyof R): number;
     getSlice(from: keyof R, to?: keyof R): unknown[];
+    getNotes(): Notes<R> | undefined;
   };
+
+export type Notes<T> = ArrayMapped<{
+  [K in keyof T]: string | undefined;
+}>;
 
 export function createArrayMapperClass<R extends Record<string, any>>(
   className: string,
@@ -28,8 +35,9 @@ export function createArrayMapperClass<R extends Record<string, any>>(
     [className]: class {
       [_index]: number;
       [_values]: unknown[];
+      [_notes]?: Notes<R>;
 
-      constructor(values: unknown, index = Number.NaN) {
+      constructor(values: unknown, index = Number.NaN, notes?: unknown) {
         this[_index] = index;
         if (Array.isArray(values)) {
           this[_values] = values;
@@ -37,10 +45,18 @@ export function createArrayMapperClass<R extends Record<string, any>>(
           const obj = values as R;
           this[_values] = propertyNames.map((name) => obj[name]);
         }
+
+        if (notes !== undefined) {
+          this[_notes] = new (DynamicClass as any)(notes, index);
+        }
       }
 
       getCopy(): ArrayMapped<R> {
         return new (DynamicClass as any)([...this[_values]], this[_index]);
+      }
+
+      getNotes(): Notes<R> | undefined {
+        return this[_notes];
       }
 
       getKeys(): (keyof R)[] {

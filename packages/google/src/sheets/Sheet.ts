@@ -15,14 +15,6 @@ export type SheetConfig = {
   protectedRanges: sheets_v4.Schema$ProtectedRange[];
 };
 
-export type Sheet$GetValuesOptions = {
-  range?: string;
-};
-
-export type Notes<T> = ArrayMapped<{
-  [K in keyof T]: string | undefined;
-}>;
-
 export class Sheet<T extends SheetRecord = SheetRecord> {
   private readonly _api: sheets_v4.Sheets;
   private readonly _batch: BatchExecutor;
@@ -58,30 +50,34 @@ export class Sheet<T extends SheetRecord = SheetRecord> {
   }
 
   async getValues(): Promise<ArrayMapped<T>[]> {
-    const res = await this._api.spreadsheets.values.get({
-      range: this.title,
-      spreadsheetId: this.spreadsheetId,
-    });
-
-    const values = res.data.values ?? [];
-    this._ensureMapper(values);
-    values.shift();
-    return values.map(this._mapFn) as ArrayMapped<T>[];
-  }
-
-  async getNotes(): Promise<Notes<T>[]> {
     const res = await this._api.spreadsheets.get({
       ranges: [this.title],
       spreadsheetId: this.spreadsheetId,
-      fields: 'sheets(data(rowData(values(note))))',
+      fields: 'sheets(data(rowData(values(effectiveValue,note))))',
     });
 
-    const sheet = res.data.sheets![0];
-    const notes = sheet.data![0]!.rowData!.map((row) =>
-      row.values!.map((cell) => cell.note),
+    const rows =
+      res.data.sheets![0].data![0].rowData?.filter((row) => row.values) ?? [];
+    const notes = rows.map((row) =>
+      row.values!.map((cell) => cell.note ?? undefined),
     );
+    const values = rows.map((row) =>
+      row.values!.map(
+        ({ effectiveValue: v }) =>
+          v?.stringValue ?? v?.numberValue ?? v?.boolValue,
+      ),
+    );
+
+    this._ensureMapper(values);
     notes.shift();
-    return notes.map(this._mapFn) as Notes<T>[];
+    values.shift();
+
+    const Mapper = this._arrayMapper!;
+    const result = values.map((value, index) => {
+      return new Mapper(value, index, notes[index]) as ArrayMapped<T>;
+    });
+
+    return result;
   }
 
   async flush(): Promise<void> {
@@ -97,24 +93,4 @@ export class Sheet<T extends SheetRecord = SheetRecord> {
       );
     }
   }
-
-  private _mapFn = (values: unknown[], index?: number) => {
-    const Mapper = this._arrayMapper!;
-    return new Mapper(values, index);
-  };
-
-  // async updateSameInLanguages(values: string[]) {
-  //   const res = await this._api.spreadsheets.values.update({
-  //     spreadsheetId: SHEET_IDs.new_interslavic_words_list,
-  //     range: 'words!Y2:Y',
-  //     includeValuesInResponse: false,
-  //     valueInputOption: 'RAW',
-  //     requestBody: {
-  //       majorDimension: 'COLUMNS',
-  //       values: [values],
-  //     },
-  //   });
-  //
-  //   console.log(`Update status: ${res.statusText}`);
-  // }
 }
