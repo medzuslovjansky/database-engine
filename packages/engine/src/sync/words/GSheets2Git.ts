@@ -44,8 +44,8 @@ export class GSheets2Git extends GSheetsOp {
   }
 
   private async _createSynset(id: number): Promise<MultilingualSynset> {
-    const dto1 = await this.words().then((r) => r.get(id));
-    const dto2 = await this.wordsAdd().then((r) => r.get(id));
+    const [dto1] = await this.words().then((r) => r.get(id) ?? []);
+    const [dto2] = await this.wordsAdd().then((r) => r.get(id) ?? []);
     const multisynset = toMultiSynset(dto1!);
     if (dto2) {
       mergeToSynset(multisynset, dto2);

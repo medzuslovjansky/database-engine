@@ -16,6 +16,7 @@ export type ArrayMapped<R extends Record<string, any>> = {
     getCopy(): ArrayMapped<R>;
     getKeys(): (keyof R)[];
     getIndex(): number;
+    getColumnIndex(propertyName: keyof R): number;
     getSlice(from: keyof R, to?: keyof R): unknown[];
   };
 
@@ -25,7 +26,7 @@ export function createArrayMapperClass<R extends Record<string, any>>(
 ): ArrayMapper<R> {
   const DynamicClass = {
     [className]: class {
-      [_index]: number | undefined;
+      [_index]: number;
       [_values]: unknown[];
 
       constructor(values: unknown, index = Number.NaN) {
@@ -46,7 +47,7 @@ export function createArrayMapperClass<R extends Record<string, any>>(
         return propertyNames;
       }
 
-      getIndex(): number | undefined {
+      getIndex(): number {
         return this[_index];
       }
 
@@ -81,7 +82,11 @@ export function createArrayMapperClass<R extends Record<string, any>>(
         return this[_values][Symbol.iterator]();
       }
 
-      static getColumnIndex(propertyName: keyof R): number | undefined {
+      getColumnIndex(propertyName: keyof R): number {
+        return DynamicClass.getColumnIndex(propertyName);
+      }
+
+      static getColumnIndex(propertyName: keyof R): number {
         return propertyNames.indexOf(propertyName);
       }
     },

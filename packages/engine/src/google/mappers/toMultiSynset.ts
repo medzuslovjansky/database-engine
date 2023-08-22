@@ -3,10 +3,13 @@ import {
   InterslavicSynset,
   MultilingualSynset,
 } from '@interslavic/database-engine-core';
+import type { ArrayMapped } from '@interslavic/database-engine-google';
 
-import type { WordsAddLangDTO, WordsDTO, WordsRecord } from '../dto';
+import type { WordsAddLangRecord, WordsRecord } from '../dto';
 
-export function toMultiSynset(dto: WordsDTO): MultilingualSynset {
+export function toMultiSynset(
+  dto: ArrayMapped<WordsRecord>,
+): MultilingualSynset {
   const multilingualSynset = new MultilingualSynset();
 
   const debated = new Set<keyof WordsRecord>();
@@ -62,7 +65,7 @@ export function toMultiSynset(dto: WordsDTO): MultilingualSynset {
 
 export function mergeToSynset(
   multilingualSynset: MultilingualSynset,
-  dto: WordsAddLangDTO,
+  dto: WordsAddLangRecord,
 ): void {
   multilingualSynset.synsets.csb = maybeParseSynset(dto.csb);
   multilingualSynset.synsets.dsb = maybeParseSynset(dto.dsb);

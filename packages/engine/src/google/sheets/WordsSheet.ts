@@ -1,6 +1,6 @@
 import type { Sheet } from '@interslavic/database-engine-google';
 
-import type { WordsAddLangDTO, WordsDTO } from '../dto';
+import type { WordsAddLangRecord, WordsRecord } from '../dto';
 
-export type WordsSheet = Sheet<WordsDTO>;
-export type WordsAddLangSheet = Sheet<WordsAddLangDTO>;
+export type WordsSheet = Sheet<WordsRecord>;
+export type WordsAddLangSheet = Sheet<WordsAddLangRecord>;
