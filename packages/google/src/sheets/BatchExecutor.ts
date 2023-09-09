@@ -45,8 +45,15 @@ export class BatchExecutor {
     });
   }
 
+  clear(): void {
+    this.requests.splice(0, this.requests.length);
+  }
+
   async flush() {
     const requests = this.requests.splice(0, this.requests.length);
+    if (requests.length === 0) {
+      return;
+    }
 
     await this.api.spreadsheets.batchUpdate({
       spreadsheetId: this.spreadsheetId,

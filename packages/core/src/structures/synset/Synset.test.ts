@@ -231,6 +231,7 @@ describe('Synset', () => {
       ['!U-Boot', void 0],
       ['!only, ĝuste nun', void 0],
       ["з'явитися", void 0],
+      ['extra comma,', void 0],
       ['сей (устар.; местоим.)', void 0],
       ['за (напр.: по грибы, за хлебом), по', void 0],
       ['bring (up) to', void 0],
