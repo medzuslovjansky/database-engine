@@ -62,7 +62,7 @@ export class MultilingualSynsetSerializer extends XmlSerializer<
         verified: synsetXml['@_verified'] !== 'false',
         lemmas: synsetXml.lemma.map((lemmaXml) => {
           const lemma = new Lemma({
-            value: lemmaXml['#text'],
+            value: String(lemmaXml['#text'] ?? ''),
             annotations: lemmaXml['@_annotation']?.split(/\s*;\s*/),
           });
 

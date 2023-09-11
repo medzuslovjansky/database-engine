@@ -30,8 +30,8 @@ export async function getGoogleGitSyncPrerequisites() {
   }
 
   return {
-    words: words as WordsSheet,
-    wordsAddLang: wordsAddLang as WordsAddLangSheet,
+    words: words as unknown as WordsSheet,
+    wordsAddLang: wordsAddLang as unknown as WordsAddLangSheet,
     multisynsets: fileDatabase.multisynsets,
   };
 }

@@ -16,6 +16,7 @@ export type BatchExecutor$UpdateRowsRequest = {
   startRowIndex: number;
   startColumnIndex?: number;
   values: unknown[][];
+  notes?: string[][];
 };
 
 export type BatchExecutor$DeleteRowsRequest = {
@@ -44,8 +45,15 @@ export class BatchExecutor {
     });
   }
 
+  clear(): void {
+    this.requests.splice(0, this.requests.length);
+  }
+
   async flush() {
     const requests = this.requests.splice(0, this.requests.length);
+    if (requests.length === 0) {
+      return;
+    }
 
     await this.api.spreadsheets.batchUpdate({
       spreadsheetId: this.spreadsheetId,
@@ -143,8 +151,10 @@ export class BatchExecutor {
       0,
     );
 
+    const hasNotes = request.notes != null;
+
     this.updateCells({
-      fields: 'userEnteredValue',
+      fields: 'userEnteredValue' + (hasNotes ? ',note' : ''),
       range: {
         sheetId: request.sheetId ?? this.sheetId,
         startRowIndex: request.startRowIndex,
@@ -152,8 +162,10 @@ export class BatchExecutor {
         endRowIndex: request.startRowIndex + request.values.length,
         endColumnIndex: (request.startColumnIndex ?? 0) + columnsCount,
       },
-      rows: request.values.map((row) => ({
-        values: row.map((value) => this._toCellData(value)),
+      rows: request.values.map((row, rowIndex) => ({
+        values: row.map((value, colIndex) => {
+          return this._toCellData(value, request.notes?.[rowIndex]?.[colIndex]);
+        }),
       })),
     });
 
@@ -173,10 +185,23 @@ export class BatchExecutor {
     return this;
   }
 
-  private _toCellData(value: unknown): sheets_v4.Schema$CellData {
-    return typeof value === 'number'
-      ? { userEnteredValue: { numberValue: value } }
-      : { userEnteredValue: { stringValue: `${value}` } };
+  private _toCellData(
+    value: unknown,
+    note?: string,
+  ): sheets_v4.Schema$CellData {
+    if (value == null) {
+      return note == null ? {} : { note };
+    }
+
+    const userEnteredValue =
+      typeof value === 'boolean'
+        ? { boolValue: value }
+        : // eslint-disable-next-line unicorn/no-nested-ternary
+        typeof value === 'number'
+        ? { numberValue: value }
+        : { stringValue: `${value}` };
+
+    return { note, userEnteredValue };
   }
 
   // @ts-expect-error 6133

@@ -54,6 +54,34 @@ Synset {
 }
 `;
 
+exports[`Synset #parse() should parse synset: extra comma,: synset 1`] = `
+Synset {
+  "lemmas": [
+    Lemma {
+      "annotations": [],
+      "value": "extra comma",
+    },
+  ],
+  "verified": true,
+}
+`;
+
+exports[`Synset #parse() should parse synset: extra,,comma,: synset 1`] = `
+Synset {
+  "lemmas": [
+    Lemma {
+      "annotations": [],
+      "value": "extra",
+    },
+    Lemma {
+      "annotations": [],
+      "value": "comma",
+    },
+  ],
+  "verified": true,
+}
+`;
+
 exports[`Synset #parse() should parse synset: з'явитися: synset 1`] = `
 Synset {
   "lemmas": [
@@ -111,6 +139,18 @@ Synset {
         "местоим.",
       ],
       "value": "сей",
+    },
+  ],
+  "verified": true,
+}
+`;
+
+exports[`Synset #parse() should parse synset: той, що є;: synset 1`] = `
+Synset {
+  "lemmas": [
+    Lemma {
+      "annotations": [],
+      "value": "той, що є",
     },
   ],
   "verified": true,

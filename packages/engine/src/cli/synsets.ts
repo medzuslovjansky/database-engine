@@ -25,7 +25,7 @@ export const handler = async (argv: subcommand.SynsetsArgv) => {
 
 export const builder: CommandBuilder<subcommand.SynsetsArgvAny, any> = {
   subcommand: {
-    choices: ['pull', 'push', 'repair'],
+    choices: ['pull', 'push', 'rebuild'],
     description: 'Subcommand to execute',
     demandOption: true,
   },

@@ -4,7 +4,7 @@ import {
   MultilingualSynset,
 } from '@interslavic/database-engine-core';
 
-import type { WordsAddLangDTO, WordsDTO, WordsRecord } from '../dto';
+import type { WordsDTO, WordsAddLangRecord, WordsRecord } from '../dto';
 
 export function toMultiSynset(dto: WordsDTO): MultilingualSynset {
   const multilingualSynset = new MultilingualSynset();
@@ -22,12 +22,13 @@ export function toMultiSynset(dto: WordsDTO): MultilingualSynset {
     multilingualSynset.steen = { debated };
   }
 
-  multilingualSynset.id = +dto.id;
+  const id = Math.abs(+dto.id);
+  multilingualSynset.id = id;
 
   multilingualSynset.synsets.isv = InterslavicSynset.parse(dto.isv);
   for (const lemma of multilingualSynset.synsets.isv.lemmas) {
     lemma.steen = {
-      id: +dto.id,
+      id,
       addition: dto.addition || undefined,
       partOfSpeech: dto.partOfSpeech,
       type: dto.type ? Number(dto.type) : undefined,
@@ -62,7 +63,7 @@ export function toMultiSynset(dto: WordsDTO): MultilingualSynset {
 
 export function mergeToSynset(
   multilingualSynset: MultilingualSynset,
-  dto: WordsAddLangDTO,
+  dto: WordsAddLangRecord,
 ): void {
   multilingualSynset.synsets.csb = maybeParseSynset(dto.csb);
   multilingualSynset.synsets.dsb = maybeParseSynset(dto.dsb);

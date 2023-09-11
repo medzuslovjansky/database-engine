@@ -3,12 +3,15 @@ import type { MultilingualSynsetRepository } from '@interslavic/database-engine-
 import { IdSyncOperation } from '../core';
 import type {
   WordsAddLangDTO,
+  WordsAddLangRecord,
   WordsAddLangSheet,
   WordsDTO,
+  WordsRecord,
   WordsSheet,
 } from '../../google';
-import { amends, beta } from '../../symbols';
 import { log } from '../../utils';
+
+import { isBeta } from './utils';
 
 export type GSheetsOpOptions = {
   readonly beta: boolean;
@@ -18,7 +21,7 @@ export type GSheetsOpOptions = {
   readonly multisynsets: MultilingualSynsetRepository;
 };
 
-type BetaDTO = WordsDTO | WordsAddLangDTO;
+type TableDTO = WordsRecord | WordsAddLangRecord;
 
 export abstract class GSheetsOp extends IdSyncOperation<number> {
   private _words?: Promise<Map<number, WordsDTO>>;
@@ -61,7 +64,7 @@ export abstract class GSheetsOp extends IdSyncOperation<number> {
     return this._wordsAdd;
   }
 
-  private async _getRecords<DTO extends BetaDTO>(
+  private async _getRecords<DTO extends TableDTO>(
     sheet: WordsSheet | WordsAddLangSheet,
   ): Promise<Map<number, DTO>> {
     return log.trace.complete(
@@ -69,24 +72,11 @@ export abstract class GSheetsOp extends IdSyncOperation<number> {
       `fetch ${sheet.title}`,
       async () => {
         const dtos = (await sheet.getValues()) as unknown as DTO[];
-        const stable = dtos.filter((dto) => dto.id > 0);
-        const grecords = new Map<number, DTO>(
-          stable.map((dto) => [Number(dto.id), dto]),
+        const grecords = new Map(
+          dtos
+            .filter((dto) => this.beta || !isBeta(dto))
+            .map((dto) => [Math.abs(+dto.id), dto]),
         );
-
-        if (this.beta) {
-          const betaRecords = dtos.filter((dto) => dto.id < 0);
-          for (const record of betaRecords) {
-            record[beta] = true;
-
-            const id = (record.id = -record.id);
-            const base = grecords.get(id) as WordsDTO;
-            if (base) {
-              record[amends] = base;
-            }
-            grecords.set(id, record);
-          }
-        }
 
         return grecords;
       },

@@ -14,6 +14,7 @@ export function parseSynset(rawString: string) {
     lemmaString.length > 0
       ? lemmaString
           .split(lemmaString.includes(';') ? ';' : ',')
+          .filter(Boolean)
           .map((value) => Lemma.parse(annotations.unstash(value.trim())))
       : [];
 
