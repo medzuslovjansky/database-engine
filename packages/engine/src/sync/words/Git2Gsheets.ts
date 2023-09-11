@@ -1,6 +1,6 @@
 import type { ArrayMapper } from '@interslavic/database-engine-google';
 import type { MultilingualSynset } from '@interslavic/database-engine-core';
-import { isEqual, isUndefined } from 'lodash';
+import { isEqual } from 'lodash';
 
 import type {
   WordsAddLangDTO,
@@ -187,13 +187,13 @@ export class Git2Gsheets extends GSheetsOp {
     const dto = (await this.wordsAdd().then((r) => r.get(id)))!;
     if (!dto.isv.startsWith('!')) {
       dto.isv = '!' + dto.isv;
-    }
 
-    this.wordsAddLangSheet.batch.updateRows({
-      startRowIndex: dto.getIndex() + 1,
-      startColumnIndex: dto.getColumnIndex('isv'),
-      values: [[dto.isv]],
-    });
+      this.wordsAddLangSheet.batch.updateRows({
+        startRowIndex: dto.getIndex() + 1,
+        startColumnIndex: dto.getColumnIndex('isv'),
+        values: [[dto.isv]],
+      });
+    }
   }
 
   private async _updateWords(id: number): Promise<boolean> {
@@ -201,9 +201,9 @@ export class Git2Gsheets extends GSheetsOp {
     const dtoNew = this._synset2dto(synset!);
     const gmapWords = await this.words();
     const dtoOld = gmapWords.get(id)!;
-    dtoNew.frequency = dtoOld.frequency ??= '';
-    dtoNew.intelligibility = dtoOld.intelligibility ??= '';
-    dtoNew.using_example = dtoOld.using_example ??= '';
+    dtoNew.frequency = dtoOld.frequency;
+    dtoNew.intelligibility = dtoOld.intelligibility;
+    dtoNew.using_example = dtoOld.using_example;
 
     const startRowIndex = dtoOld.getIndex() + 1;
     if (Number.isNaN(startRowIndex)) {
@@ -214,16 +214,9 @@ export class Git2Gsheets extends GSheetsOp {
       return false;
     }
 
-    let notes = isBeta(dtoOld)
+    const notes = isBeta(dtoOld)
       ? undefined
       : [[...this._annotate(dtoOld, dtoNew)] as string[]];
-
-    if (notes && notes[0].every(isUndefined)) {
-      notes = undefined;
-    }
-
-    dtoNew.intelligibility = asString(dtoNew.intelligibility);
-    dtoNew.using_example = asString(dtoNew.using_example);
 
     this.wordsSheet.batch.updateRows({
       startRowIndex,

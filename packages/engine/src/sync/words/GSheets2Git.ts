@@ -35,7 +35,6 @@ export class GSheets2Git extends GSheetsOp {
 
   protected async insert(id: number): Promise<void> {
     const multisynset = await this._createSynset(id);
-    // eslint-disable-next-line unicorn/prefer-ternary
     if (multisynset.synsets.isv?.verified) {
       await this.multisynsets.insert(multisynset);
     }
