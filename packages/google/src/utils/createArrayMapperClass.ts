@@ -19,7 +19,7 @@ export type ArrayMapped<R extends Record<string, any>> = {
     getKeys(): (keyof R)[];
     getIndex(): number;
     getColumnIndex(propertyName: keyof R): number;
-    getSlice(from: keyof R, to?: keyof R): unknown[];
+    getSlice(from?: keyof R, to?: keyof R): unknown[];
     getNotes(): Notes<R> | undefined;
   };
 
@@ -67,22 +67,24 @@ export function createArrayMapperClass<R extends Record<string, any>>(
         return this[_index];
       }
 
-      getSlice(from: keyof R, to?: keyof R): unknown[] {
-        const fromIndex = propertyNames.indexOf(from);
+      getSlice(from?: keyof R, to?: keyof R): unknown[] {
+        const fromIndex = from == null ? 0 : propertyNames.indexOf(from);
         if (fromIndex === -1) {
-          throw new Error(`Property ${String(from)} not found`);
+          throw new TypeError(`Property ${String(from)} not found`);
         }
 
-        if (to) {
-          const toIndex = propertyNames.indexOf(to);
-          if (toIndex === -1) {
-            throw new Error(`Property ${String(to)} not found`);
-          }
-
-          return this[_values].slice(fromIndex, toIndex);
-        } else {
-          return this[_values].slice(fromIndex);
+        const toIndex =
+          to == null ? propertyNames.length : propertyNames.indexOf(to);
+        if (toIndex === -1) {
+          throw new TypeError(`Property ${String(to)} not found`);
         }
+
+        // eslint-disable-next-line unicorn/no-new-array
+        const result = new Array(toIndex - fromIndex);
+        for (let i = fromIndex; i < toIndex; i++) {
+          result[i - fromIndex] = this[_values][i];
+        }
+        return result;
       }
 
       toJSON(): R {

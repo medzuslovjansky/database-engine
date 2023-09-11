@@ -151,8 +151,10 @@ export class BatchExecutor {
       0,
     );
 
+    const hasNotes = request.notes != null;
+
     this.updateCells({
-      fields: 'userEnteredValue',
+      fields: 'userEnteredValue' + (hasNotes ? ',note' : ''),
       range: {
         sheetId: request.sheetId ?? this.sheetId,
         startRowIndex: request.startRowIndex,
@@ -187,9 +189,19 @@ export class BatchExecutor {
     value: unknown,
     note?: string,
   ): sheets_v4.Schema$CellData {
-    return typeof value === 'number'
-      ? { note, userEnteredValue: { numberValue: value } }
-      : { note, userEnteredValue: { stringValue: `${value}` } };
+    if (value == null) {
+      return note == null ? {} : { note };
+    }
+
+    const userEnteredValue =
+      typeof value === 'boolean'
+        ? { boolValue: value }
+        : // eslint-disable-next-line unicorn/no-nested-ternary
+        typeof value === 'number'
+        ? { numberValue: value }
+        : { stringValue: `${value}` };
+
+    return { note, userEnteredValue };
   }
 
   // @ts-expect-error 6133

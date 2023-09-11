@@ -42,7 +42,6 @@ export class Git2Gsheets extends GSheetsOp {
   }
 
   protected async insert(id: number): Promise<void> {
-    debugger;
     const synset = await this.multisynsets.findById(id);
     const dto = this._synset2dto(synset!);
     const dtoAddLang = this._synset2dtoAddLang(synset!);
@@ -63,7 +62,6 @@ export class Git2Gsheets extends GSheetsOp {
   }
 
   protected async delete(id: number): Promise<void> {
-    debugger;
     await this._deleteWords(id);
     await this._deleteWordsAddLang(id);
   }
@@ -176,13 +174,13 @@ export class Git2Gsheets extends GSheetsOp {
     const dto = (await this.words().then((r) => r.get(id)))!;
     if (!dto.isv.startsWith('!')) {
       dto.isv = '!' + dto.isv;
-    }
 
-    this.wordsSheet.batch.updateRows({
-      startRowIndex: dto.getIndex() + 1,
-      startColumnIndex: dto.getColumnIndex('isv'),
-      values: [[dto.isv]],
-    });
+      this.wordsSheet.batch.updateRows({
+        startRowIndex: dto.getIndex() + 1,
+        startColumnIndex: dto.getColumnIndex('isv'),
+        values: [[dto.isv]],
+      });
+    }
   }
 
   private async _deleteWordsAddLang(id: number): Promise<void> {
@@ -203,9 +201,9 @@ export class Git2Gsheets extends GSheetsOp {
     const dtoNew = this._synset2dto(synset!);
     const gmapWords = await this.words();
     const dtoOld = gmapWords.get(id)!;
-    dtoNew.frequency = dtoOld.frequency;
-    dtoNew.intelligibility = dtoOld.intelligibility;
-    dtoNew.using_example = dtoOld.using_example;
+    dtoNew.frequency = dtoOld.frequency ??= '';
+    dtoNew.intelligibility = dtoOld.intelligibility ??= '';
+    dtoNew.using_example = dtoOld.using_example ??= '';
 
     const startRowIndex = dtoOld.getIndex() + 1;
     if (Number.isNaN(startRowIndex)) {
@@ -274,7 +272,9 @@ export class Git2Gsheets extends GSheetsOp {
 
       if (sOld && sOld !== sNew) {
         notes[key] ??= sOld;
-        if (!sNew.startsWith('#')) {
+        if (notes[key] === sNew) {
+          notes[key] = undefined;
+        } else if (!sNew.startsWith('#')) {
           dtoNew[key] = `#${sNew}`;
         }
       }

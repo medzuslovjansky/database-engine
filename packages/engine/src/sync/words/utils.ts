@@ -1,3 +1,3 @@
 export function isBeta(dto: { readonly id: string | number }): boolean {
-  return dto.id >= 37_000;
+  return Math.abs(+dto.id) >= 37_000;
 }

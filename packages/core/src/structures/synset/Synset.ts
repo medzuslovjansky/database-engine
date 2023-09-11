@@ -144,10 +144,12 @@ export class Synset<Lemma extends LemmaBase = LemmaBase> {
 
   public toString(): string {
     const hasCommas = this.lemmas.some((l) => l.value.includes(','));
+    const jointLemmas = this.lemmas.map(String).join(hasCommas ? '; ' : ', ');
 
     return (
       (this.verified ? '' : '!') +
-      this.lemmas.map(String).join(hasCommas ? '; ' : ', ')
+      jointLemmas +
+      (this.lemmas.length === 1 && hasCommas ? ';' : '')
     );
   }
 
