@@ -9,6 +9,10 @@
     "lint:ci": "eslint .",
     "test": "jest"
   },
+  "files": [
+    "dist",
+    "src"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/medzuslovjansky/database-engine.git",
