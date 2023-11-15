@@ -4,17 +4,18 @@ import {
   MultilingualSynset,
 } from '@interslavic/database-engine-core';
 
-import type { WordsDTO, WordsAddLangRecord, WordsRecord } from '../dto';
+import type { WordsAddLangRecord, WordsRecord } from '../dto';
 
-export function toMultiSynset(dto: WordsDTO): MultilingualSynset {
+export function toMultiSynset(dto: WordsRecord): MultilingualSynset {
   const multilingualSynset = new MultilingualSynset();
 
   const debated = new Set<keyof WordsRecord>();
-  for (const key of dto.getKeys()) {
-    const value = `${dto[key]}`.trimStart();
+  const dtoAny = dto as any;
+  for (const key of Object.keys(dto)) {
+    const value = `${dtoAny[key]}`.trimStart();
     if (value.startsWith('#')) {
-      debated.add(key);
-      dto[key] = value.slice(1);
+      debated.add(key as keyof WordsRecord);
+      dtoAny[key] = value.slice(1);
     }
   }
 
