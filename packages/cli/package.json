@@ -1,0 +1,49 @@
+{
+  "name": "@interslavic/cli",
+  "version": "1.1.1",
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/medzuslovjansky/database-engine.git",
+    "directory": "packages/cli"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "bin": {
+    "isv": "cli.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "lint": "eslint . --fix",
+    "lint:ci": "eslint .",
+    "test": ":"
+  },
+  "devDependencies": {
+    "@interslavic/eslint-config-database-engine": "^1.1.1",
+    "@interslavic/jest-config-database-engine": "^1.0.8",
+    "@interslavic/prettier-config-database-engine": "^1.0.8",
+    "@interslavic/typescript-config-database-engine": "^1.1.1",
+    "@types/unist": "^3.0.2",
+    "ts-node": "^10.9.1",
+    "typescript": "^4.9.5"
+  },
+  "dependencies": {
+    "@interslavic/utils": "^2.3.2",
+    "remark": "^15.0.1",
+    "remark-parse": "^11.0.0",
+    "remark-stringify": "^11.0.0",
+    "tslib": "^2.6.2",
+    "unified": "^11.0.4",
+    "unist-util-visit": "^5.0.0",
+    "yargs": "^17.7.2"
+  },
+  "license": "GPL-3.0-or-later",
+  "prettier": "@interslavic/prettier-config-database-engine",
+  "eslintConfig": {
+    "extends": "@interslavic/database-engine"
+  },
+  "gitHead": "892bf66e8b7afaa13e5a9dd00ea6fe169ee936cb"
+}
