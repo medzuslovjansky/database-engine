@@ -12,6 +12,7 @@ import {
 
 export type CompositionRootOptions = {
   offline?: boolean;
+  rootDirectory?: string;
 };
 
 export type CompositionRoot = {
@@ -30,7 +31,8 @@ async function createCompositionRoot(
 
   const root: Partial<CompositionRoot> = {};
   const cryptoService = createCryptoService();
-  const rootDirectory = process.env.ISV_DATABASE_ROOT ?? process.cwd();
+  const rootDirectory =
+    options.rootDirectory ?? process.env.ISV_DATABASE_ROOT ?? process.cwd();
   const fileDatabase = await FileDatabase.create({
     rootDirectory,
     cryptoService,
