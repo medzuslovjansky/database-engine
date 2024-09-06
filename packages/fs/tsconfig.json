@@ -1,8 +1,7 @@
 {
-  "extends": "@interslavic/typescript-config-database-engine",
+  "extends": "@interslavic/typescript-config-cli",
+  "include": ["src"],
   "compilerOptions": {
-    "rootDir": "src",
-    "outDir": "dist",
     "types": ["node", "jest"]
   }
 }

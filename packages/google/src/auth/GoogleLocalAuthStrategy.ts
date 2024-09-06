@@ -9,10 +9,15 @@ import { CREDENTIALS_FILENAME, SCOPES, USER_TOKEN_FILENAME } from './constants';
 import type { GoogleAuthStrategy } from './GoogleAuthStrategy';
 
 export class GoogleLocalAuthStrategy implements GoogleAuthStrategy {
-  constructor(private readonly cwd = process.cwd()) {}
+  private readonly cwd: string;
+  private readonly credentialsPath: string;
+  private readonly tokenPath: string;
 
-  private readonly credentialsPath = path.join(this.cwd, CREDENTIALS_FILENAME);
-  private readonly tokenPath = path.join(this.cwd, USER_TOKEN_FILENAME);
+  constructor(cwd = process.cwd()) {
+    this.cwd = cwd;
+    this.credentialsPath = path.join(this.cwd, CREDENTIALS_FILENAME);
+    this.tokenPath = path.join(this.cwd, USER_TOKEN_FILENAME);
+  }
 
   async authorize(): Promise<Auth.AuthClient> {
     let client = await this._loadCached();

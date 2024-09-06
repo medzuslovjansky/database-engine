@@ -1,7 +1,4 @@
-import identity from 'lodash/identity';
-import upperFirst from 'lodash/upperFirst';
-import toLower from 'lodash/toLower';
-import toUpper from 'lodash/toUpper';
+import _ from 'lodash';
 
 import type { Rule } from '../../multireplacer';
 import { FunctionExecutor } from '../../multireplacer';
@@ -44,23 +41,23 @@ export const restoreCase = (rule: Rule<FlavorizationContext>) =>
   );
 
 function _toLowerCaseWithMemo(this: StringTransformer[], s: string): string {
-  const lower = toLower(s);
+  const lower = _.toLower(s);
 
   switch (s) {
     case lower: {
-      this.push(identity);
+      this.push(_.identity);
       return lower;
     }
-    case upperFirst(lower): {
-      this.push(upperFirst);
+    case _.upperFirst(lower): {
+      this.push(_.upperFirst);
       return lower;
     }
-    case toUpper(lower): {
-      this.push(toUpper);
+    case _.toUpper(lower): {
+      this.push(_.toUpper);
       return lower;
     }
     default: {
-      this.push(identity);
+      this.push(_.identity);
       return s;
     }
   }

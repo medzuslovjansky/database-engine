@@ -1,4 +1,4 @@
-import sortedUniqBy from 'lodash/sortedUniqBy';
+import _ from 'lodash';
 
 import { IntermediatesCache, RuleList } from './internal';
 import { Intermediate } from './Intermediate';
@@ -23,7 +23,7 @@ export class Multireplacer<Context = unknown> {
       }
       rule.useCache(null);
 
-      intermediates = sortedUniqBy(
+      intermediates = _.sortedUniqBy(
         nextIntermediates.sort(Intermediate.rankSorter),
         Intermediate.identity,
       );

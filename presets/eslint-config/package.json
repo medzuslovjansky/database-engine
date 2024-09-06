@@ -1,0 +1,24 @@
+{
+  "name": "@interslavic/eslint-config-cli",
+  "version": "1.2.1",
+  "private": true,
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/medzuslovjansky/database-engine.git",
+    "directory": "packages/presets/eslint-config"
+  },
+  "main": "index.js",
+  "license": "GPL-3.0-or-later",
+  "dependencies": {
+    "@typescript-eslint/eslint-plugin": "^8.4.0",
+    "@typescript-eslint/parser": "^8.4.0",
+    "eslint": "^9.9.1",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-jsdoc": "^50.2.2",
+    "eslint-plugin-prefer-arrow": "^1.2.3",
+    "eslint-plugin-prettier": "^5.2.1",
+    "eslint-plugin-unicorn": "^55.0.0",
+    "prettier": "^3.3.3"
+  }
+}

@@ -1,11 +1,12 @@
 {
-  "name": "@interslavic/typescript-config-database-engine",
-  "version": "1.2.0",
+  "name": "@interslavic/prettier-config-cli",
+  "version": "1.2.1",
   "private": true,
   "repository": {
     "type": "git",
     "url": "git+https://github.com/medzuslovjansky/database-engine.git",
     "directory": "packages/presets/prettier-config"
   },
+  "main": "index.js",
   "license": "GPL-3.0-or-later"
 }

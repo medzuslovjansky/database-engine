@@ -7,7 +7,7 @@ import type {
   InterslavicLemma,
   MultilingualSynset$Steen,
 } from '@interslavic/database-engine-core';
-import { difference, snakeCase } from 'lodash';
+import _ from 'lodash';
 import { MultilingualSynset } from '@interslavic/database-engine-core';
 import { Lemma, Synset } from '@interslavic/database-engine-core';
 
@@ -162,14 +162,14 @@ export class MultilingualSynsetSerializer extends XmlSerializer<
     entity: MultilingualSynset,
   ): Promise<void> {
     const [realname, ...symlinks] = entity.synsets
-      .isv!.lemmas.map((lemma) => snakeCase(lemma.value.normalize('NFD')))
+      .isv!.lemmas.map((lemma) => _.snakeCase(lemma.value.normalize('NFD')))
       .sort((a, b) => a.localeCompare(b));
 
     await super.serialize(join(entityPath, `${realname}.xml`), entity);
 
     const actualNames = await readdir(entityPath);
     const plannedNames = [realname, ...symlinks].map((n) => `${n}.xml`);
-    const redundantNames = difference(actualNames, plannedNames);
+    const redundantNames = _.difference(actualNames, plannedNames);
 
     await Promise.all([
       ...redundantNames.map((redundantName) => {

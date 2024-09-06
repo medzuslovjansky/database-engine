@@ -1,10 +1,8 @@
 {
-  "extends": "@interslavic/typescript-config-database-engine",
-  "compilerOptions": {
-    "rootDir": "src",
-    "outDir": "dist",
-    "types": ["node", "jest"]
-  },
+  "extends": "@interslavic/typescript-config-cli",
   "include": ["src"],
-  "exclude": ["src/sync/backup"]
+  "exclude": ["src/sync/backup"],
+  "compilerOptions": {
+    "types": ["node", "jest"]
+  }
 }

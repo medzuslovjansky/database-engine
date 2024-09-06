@@ -1,4 +1,4 @@
-import { cloneDeep } from 'lodash';
+import _ from 'lodash';
 
 import type { Spreadsheet } from '../../dto';
 import { YamlSerializer } from '../../fs';
@@ -10,7 +10,7 @@ export class SpreadsheetSerializer extends YamlSerializer<string, Spreadsheet> {
   }
 
   async serialize(entityPath: string, entity: Spreadsheet): Promise<void> {
-    const copy = cloneDeep(entity);
+    const copy = _.cloneDeep(entity);
 
     for (const p of copy.permissions ?? []) {
       p.email = this.cryptoService.encrypt(p.email);

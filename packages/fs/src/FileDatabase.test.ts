@@ -5,7 +5,7 @@ import { InterslavicSynset, Synset } from '@interslavic/database-engine-core';
 import { FileDatabase } from './FileDatabase';
 
 describe('FileDatabase', () => {
-  const rootDirectory = tempfile('');
+  const rootDirectory = tempfile({ extension: '' });
 
   let database: FileDatabase;
 

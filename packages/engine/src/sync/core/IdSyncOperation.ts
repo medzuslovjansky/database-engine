@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
-import { difference, intersection } from 'lodash';
+import _ from 'lodash';
 
 import { log } from '../../utils';
 
@@ -38,13 +38,13 @@ export abstract class IdSyncOperation<ID = string> {
       ]);
 
       await Promise.all(
-        intersection(beforeIds, afterIds).map((id) => this.update(id)),
+        _.intersection(beforeIds, afterIds).map((id) => this.update(id)),
       );
       await Promise.all(
-        difference(beforeIds, afterIds).map((id) => this.delete(id)),
+        _.difference(beforeIds, afterIds).map((id) => this.delete(id)),
       );
       await Promise.all(
-        difference(afterIds, beforeIds).map((id) => this.insert(id)),
+        _.difference(afterIds, beforeIds).map((id) => this.insert(id)),
       );
 
       await log.trace.complete({ cat: COMMIT }, 'commit', this.commit?.());

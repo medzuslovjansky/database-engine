@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import * as fse from 'fs-extra';
-import globby from 'globby';
-import { merge } from 'lodash';
+import { globby } from 'globby';
+import _ from 'lodash';
 
 import type { Entity, Repository } from '../types';
 
@@ -94,7 +94,7 @@ export class MultiFileRepository<ID, T extends Entity<ID>>
     const existing = await this.findById(id);
 
     if (existing) {
-      const updated = merge({}, existing, entity);
+      const updated = _.merge({}, existing, entity);
       await this.upsert(updated);
       return updated;
     }
