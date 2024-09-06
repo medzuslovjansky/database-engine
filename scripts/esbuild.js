@@ -5,6 +5,8 @@ import { nodeExternalsPlugin } from 'esbuild-node-externals';
 
 async function build() {
   try {
+    await fs.mkdir('dist', { recursive: true });
+
     const { metafile } = await esbuild.build({
       entryPoints: ['scripts/cli.js'],
       bundle: true,

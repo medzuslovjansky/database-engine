@@ -1,7 +1,7 @@
 {
   "name": "@interslavic/cli",
   "version": "2.0.0",
-  "description": "Interslavic CLI tool",
+  "description": "Interslavic CLI toolkit",
   "main": "dist/cli.js",
   "bin": {
     "isv": "dist/cli.js"
@@ -12,24 +12,25 @@
     "presets/*"
   ],
   "engines": {
-    "node": ">=20.0.0"
+    "node": ">=20.18.0"
   },
   "scripts": {
     "prepare": "husky install",
     "build": "node scripts/esbuild.js",
-    "semantic-release": "semantic-release",
+    "start": "node dist/cli.js",
     "test": "yarn workspaces foreach run test",
+    "semantic-release": "semantic-release",
     "upgrade-deps": "./upgrade-dependencies.sh"
   },
   "dependencies": {
     "@google-cloud/local-auth": "^3.0.1",
-    "bunyan": "^2.0.5",
     "bunyamin": "^1.6.3",
-    "lodash": "^4.17.21",
+    "bunyan": "^2.0.5",
     "dotenv": "^16.4.5",
     "fs-extra": "^11.2.0",
     "globby": "^14.0.2",
     "googleapis": "^144.0.0",
+    "lodash": "^4.17.21",
     "prettier": "^3.3.3",
     "yaml": "^2.5.1"
   },
@@ -60,5 +61,5 @@
       "main"
     ]
   },
-  "packageManager": "yarn@4.4.1"
+  "packageManager": "yarn@4.5.1"
 }
