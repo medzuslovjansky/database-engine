@@ -72,10 +72,11 @@ describe('FileDatabase', () => {
     });
 
     it('should be able to bulk update entities', async () => {
+      // eslint-disable-next-line unicorn/no-array-for-each
       await database.multisynsets.forEach((multisynset) => {
-        multisynset.synsets.isv!.lemmas.forEach((l) => {
+        for (const l of multisynset.synsets.isv!.lemmas) {
           l.steen!.partOfSpeech = 'm.';
-        });
+        }
       });
 
       const multisynset = await database.multisynsets.findById(1);

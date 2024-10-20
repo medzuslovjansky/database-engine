@@ -45,13 +45,5 @@
     "yaml": "^2.5.1"
   },
   "license": "GPL-3.0-or-later",
-  "prettier": "@interslavic/prettier-config-cli",
-  "eslintConfig": {
-    "extends": "@interslavic/database-engine",
-    "rules": {
-      "unicorn/no-array-callback-reference": "off",
-      "unicorn/no-array-for-each": "off"
-    }
-  },
-  "gitHead": "892bf66e8b7afaa13e5a9dd00ea6fe169ee936cb"
+  "prettier": "@interslavic/prettier-config-cli"
 }

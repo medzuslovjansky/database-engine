@@ -57,7 +57,7 @@ export function* flavorize(
       ignoreDiacritics: true,
       extractItems: (synset: core.Synset) => synset.lemmas(),
       extractValue: (lemma: core.Lemma) =>
-        lemma.value.replace(/(\p{Letter})\1+/gu, '$1'),
+        lemma.value.replaceAll(/(\p{Letter})\1+/gu, '$1'),
     });
 
     const isPhrase = parse.partOfSpeech(t.partOfSpeech).name === 'phrase';

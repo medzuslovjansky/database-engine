@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import * as fse from 'fs-extra';
 import { globby } from 'globby';
 import _ from 'lodash';
@@ -122,7 +121,6 @@ export class MultiFileRepository<ID, T extends Entity<ID>>
     const globPatterns = this.fileOrganizer.getPatterns();
     const allPaths = await globby(globPatterns, { onlyFiles: false });
 
-    // eslint-disable-next-line unicorn/no-array-callback-reference
     await Promise.all(allPaths.map(callback));
   }
 }

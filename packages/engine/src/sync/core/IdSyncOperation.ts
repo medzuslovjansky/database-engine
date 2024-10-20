@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-empty-function */
 import _ from 'lodash';
 
 import { log } from '../../utils';

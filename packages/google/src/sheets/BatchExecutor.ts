@@ -196,10 +196,9 @@ export class BatchExecutor {
     const userEnteredValue =
       typeof value === 'boolean'
         ? { boolValue: value }
-        : // eslint-disable-next-line unicorn/no-nested-ternary
-        typeof value === 'number'
-        ? { numberValue: value }
-        : { stringValue: `${value}` };
+        :  typeof value === 'number'
+          ? { numberValue: value }
+          : { stringValue: `${value}` };
 
     return { note, userEnteredValue };
   }

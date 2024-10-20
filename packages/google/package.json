@@ -32,13 +32,5 @@
     "lodash": "^4.17.21",
     "tslib": "^2.7.0"
   },
-  "prettier": "@interslavic/prettier-config-cli",
-  "eslintConfig": {
-    "extends": "@interslavic/database-engine",
-    "rules": {
-      "unicorn/prevent-abbreviations": "off",
-      "@typescript-eslint/no-non-null-assertion": "off"
-    }
-  },
-  "gitHead": "892bf66e8b7afaa13e5a9dd00ea6fe169ee936cb"
+  "prettier": "@interslavic/prettier-config-cli"
 }

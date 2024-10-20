@@ -1,5 +1,6 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { readdir, symlink, unlink } from 'node:fs/promises';
-import { join } from 'node:path';
+import path from 'node:path';
 
 import type {
   Language,
@@ -8,8 +9,7 @@ import type {
   MultilingualSynset$Steen,
 } from '@interslavic/database-engine-core';
 import _ from 'lodash';
-import { MultilingualSynset } from '@interslavic/database-engine-core';
-import { Lemma, Synset } from '@interslavic/database-engine-core';
+import { MultilingualSynset , Lemma, Synset } from '@interslavic/database-engine-core';
 
 import type { XmlSerializerOptions } from '../../fs';
 import { XmlSerializer } from '../../fs';
@@ -165,7 +165,7 @@ export class MultilingualSynsetSerializer extends XmlSerializer<
       .isv!.lemmas.map((lemma) => _.snakeCase(lemma.value.normalize('NFD')))
       .sort((a, b) => a.localeCompare(b));
 
-    await super.serialize(join(entityPath, `${realname}.xml`), entity);
+    await super.serialize(path.join(entityPath, `${realname}.xml`), entity);
 
     const actualNames = await readdir(entityPath);
     const plannedNames = [realname, ...symlinks].map((n) => `${n}.xml`);
@@ -173,12 +173,12 @@ export class MultilingualSynsetSerializer extends XmlSerializer<
 
     await Promise.all([
       ...redundantNames.map((redundantName) => {
-        return unlink(join(entityPath, redundantName));
+        return unlink(path.join(entityPath, redundantName));
       }),
       ...symlinks.map((symlinkName) =>
         symlink(
           `${realname}.xml`,
-          join(entityPath, `${symlinkName}.xml`),
+          path.join(entityPath, `${symlinkName}.xml`),
         ).catch((error: any) =>
           error.code === 'EEXIST' ? undefined : Promise.reject(error),
         ),
@@ -195,7 +195,7 @@ export class MultilingualSynsetSerializer extends XmlSerializer<
       );
     }
 
-    return super.deserialize(join(entityPath, file));
+    return super.deserialize(path.join(entityPath, file));
   }
 }
 
@@ -243,7 +243,7 @@ function byLanguageCode<T>(a: [string, T], b: [string, T]): number {
 
   // If both keys are custom, sort them alphabetically
   if (indexA === -1 && indexB === -1) {
-    // eslint-disable-next-line unicorn/no-nested-ternary
+
     return a[0] < b[0] ? -1 : a[0] > b[0] ? 1 : 0;
   }
 

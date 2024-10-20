@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-empty-function */
-
 export abstract class EntitySyncOperation<Before, After = Before> {
   protected abstract getBefore(): Promise<Before[]>;
   protected abstract getAfter(): Promise<After[]>;

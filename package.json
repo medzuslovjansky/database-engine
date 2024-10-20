@@ -18,9 +18,11 @@
     "prepare": "husky install",
     "build": "node scripts/esbuild.js",
     "start": "node dist/cli.js",
-    "test": "yarn workspaces foreach run test",
-    "semantic-release": "semantic-release",
-    "upgrade-deps": "./upgrade-dependencies.sh"
+    "lint": "yarn workspaces foreach -R run lint",
+    "test": "yarn test:types && yarn test:unit",
+    "test:unit": "yarn workspaces foreach -R run test",
+    "test:types": "yarn workspaces foreach -R run build",
+    "semantic-release": "semantic-release"
   },
   "dependencies": {
     "@google-cloud/local-auth": "^3.0.1",

@@ -19,7 +19,7 @@ export const lowerCase = (rule: Rule<FlavorizationContext>) =>
     rule.authorReplacement((r: FlavorizationIntermediate) => {
       const restoreFns: StringTransformer[] = [];
       caseMemory.set(r, restoreFns);
-      return [r.value.replace(BY_WORD, _toLowerCaseWithMemo.bind(restoreFns))];
+      return [r.value.replaceAll(BY_WORD, _toLowerCaseWithMemo.bind(restoreFns))];
     }),
   );
 
@@ -35,7 +35,7 @@ export const restoreCase = (rule: Rule<FlavorizationContext>) =>
       }
 
       return restoreFns
-        ? [r.value.replace(BY_WORD, _restoreCaseFromMemo.bind([...restoreFns]))]
+        ? [r.value.replaceAll(BY_WORD, _restoreCaseFromMemo.bind([...restoreFns]))]
         : [r.value];
     }),
   );
