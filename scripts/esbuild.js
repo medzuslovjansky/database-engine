@@ -3,6 +3,30 @@ import fs from 'node:fs/promises';
 import * as esbuild from 'esbuild';
 import { nodeExternalsPlugin } from 'esbuild-node-externals';
 
+const ESM_REQUIRE_SHIM = `
+await (async () => {
+  const { dirname } = await import("path");
+  const { fileURLToPath } = await import("url");
+
+  /**
+   * Shim entry-point related paths.
+   */
+  if (typeof globalThis.__filename === "undefined") {
+    globalThis.__filename = fileURLToPath(import.meta.url);
+  }
+  if (typeof globalThis.__dirname === "undefined") {
+    globalThis.__dirname = dirname(globalThis.__filename);
+  }
+  /**
+   * Shim require if needed.
+   */
+  if (typeof globalThis.require === "undefined") {
+    const { default: module } = await import("module");
+    globalThis.require = module.createRequire(import.meta.url);
+  }
+})();
+`;
+
 async function build() {
   try {
     await fs.mkdir('dist', { recursive: true });
@@ -15,7 +39,7 @@ async function build() {
       target: 'node20',
       format: 'esm',
       banner: {
-        js: '#!/usr/bin/env node',
+        js: '#!/usr/bin/env node\n\n' + ESM_REQUIRE_SHIM,
       },
       minify: false,
       sourcemap: true,

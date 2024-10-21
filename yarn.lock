@@ -942,11 +942,15 @@ __metadata:
     "@interslavic/prettier-config-cli": "workspace:*"
     "@interslavic/typescript-config-cli": "workspace:*"
     cz-conventional-changelog: "npm:^3.3.0"
+    dtrace-provider: "npm:^0.8.8"
     esbuild: "npm:^0.23.1"
     esbuild-node-externals: "npm:^1.14.0"
     husky: "npm:^9.1.5"
     semantic-release: "npm:^24.1.0"
     zx: "npm:^8.1.5"
+  dependenciesMeta:
+    dtrace-provider:
+      optional: true
   bin:
     isv: dist/cli.js
   languageName: unknown
@@ -4126,7 +4130,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"dtrace-provider@npm:~0.8":
+"dtrace-provider@npm:^0.8.8, dtrace-provider@npm:~0.8":
   version: 0.8.8
   resolution: "dtrace-provider@npm:0.8.8"
   dependencies:

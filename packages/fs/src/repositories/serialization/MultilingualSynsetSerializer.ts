@@ -38,6 +38,10 @@ export class MultilingualSynsetSerializer extends XmlSerializer<
       },
       prettier: {
         ...options.prettier,
+        plugins: [
+          '@prettier/plugin-xml',
+          ...(options.prettier?.plugins ?? []),
+        ],
         parser: 'xml',
       },
     });

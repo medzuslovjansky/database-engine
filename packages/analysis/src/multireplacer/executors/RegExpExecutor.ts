@@ -6,13 +6,16 @@ import type { Executor } from './Executor';
 type ReplacementValue = string | ((match: string, ...args: any[]) => string);
 
 export class RegExpExecutor<T> implements Executor<T> {
+  protected readonly sticky: RegExp;
+  protected readonly global: RegExp;
+
   constructor(
     protected readonly regexp: RegExp,
     protected readonly replacements: Replacement<ReplacementValue, T>[],
-  ) {}
-
-  protected readonly sticky = this._cloneRegexp('y');
-  protected readonly global = this._cloneRegexp('g');
+  ) {
+    this.sticky = this._cloneRegexp('y');
+    this.global = this._cloneRegexp('g');
+  }
 
   execute(origin: Intermediate<T>): Intermediate<T>[] {
     const lastIndices = new Map<Intermediate, number>();

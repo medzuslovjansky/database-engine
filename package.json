@@ -18,7 +18,7 @@
     "prepare": "husky install",
     "build": "node scripts/esbuild.js",
     "start": "node dist/cli.js",
-    "lint": "yarn workspaces foreach -R run lint",
+    "lint": "yarn workspaces foreach --exclude '@interslavic/cli' -R run lint",
     "test": "yarn workspaces foreach --exclude '@interslavic/cli' -R run test",
     "semantic-release": "semantic-release"
   },
@@ -41,13 +41,17 @@
     "semantic-release": "^24.1.0",
     "zx": "^8.1.5"
   },
+  "optionalDependencies": {
+    "dtrace-provider": "^0.8.8"
+  },
   "publishConfig": {
     "access": "public"
   },
   "release": {
     "branches": [
       "main"
-    ]
+    ],
+    "pkgRoot": "."
   },
   "packageManager": "yarn@4.5.1"
 }
