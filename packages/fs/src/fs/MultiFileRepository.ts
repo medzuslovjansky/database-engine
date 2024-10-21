@@ -1,5 +1,5 @@
 import * as fse from 'fs-extra';
-import { globby } from 'globby';
+import globby from 'globby';
 import _ from 'lodash';
 
 import type { Entity, Repository } from '../types';

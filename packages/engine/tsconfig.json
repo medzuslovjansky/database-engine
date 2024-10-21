@@ -1,7 +1,9 @@
 {
   "extends": "@interslavic/typescript-config-cli",
   "include": ["src"],
-  "exclude": ["src/sync/backup"],
+  "exclude": [
+    "../analysis/src/backup"
+  ],
   "compilerOptions": {
     "types": ["node", "jest"]
   }

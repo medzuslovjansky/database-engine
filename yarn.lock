@@ -932,7 +932,6 @@ __metadata:
   dependencies:
     "@commitlint/cli": "npm:^19.4.1"
     "@commitlint/config-conventional": "npm:^19.4.1"
-    "@google-cloud/local-auth": "npm:^3.0.1"
     "@interslavic/database-engine": "workspace:*"
     "@interslavic/database-engine-analysis": "workspace:*"
     "@interslavic/database-engine-core": "workspace:*"
@@ -942,20 +941,11 @@ __metadata:
     "@interslavic/jest-config-cli": "workspace:*"
     "@interslavic/prettier-config-cli": "workspace:*"
     "@interslavic/typescript-config-cli": "workspace:*"
-    bunyamin: "npm:^1.6.3"
-    bunyan: "npm:^2.0.5"
     cz-conventional-changelog: "npm:^3.3.0"
-    dotenv: "npm:^16.4.5"
     esbuild: "npm:^0.23.1"
     esbuild-node-externals: "npm:^1.14.0"
-    fs-extra: "npm:^11.2.0"
-    globby: "npm:^14.0.2"
-    googleapis: "npm:^144.0.0"
     husky: "npm:^9.1.5"
-    lodash: "npm:^4.17.21"
-    prettier: "npm:^3.3.3"
     semantic-release: "npm:^24.1.0"
-    yaml: "npm:^2.5.1"
     zx: "npm:^8.1.5"
   bin:
     isv: dist/cli.js
@@ -1020,7 +1010,7 @@ __metadata:
     csv-parse: "npm:^5.5.6"
     fast-xml-parser: "npm:~4.5.0"
     fs-extra: "npm:^11.2.0"
-    globby: "npm:^14.0.2"
+    globby: "npm:^11.1.0"
     jest: "npm:^29.7.0"
     lodash: "npm:^4.17.21"
     prettier: "npm:^3.3.3"
@@ -2837,6 +2827,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"array-union@npm:^2.1.0":
+  version: 2.1.0
+  resolution: "array-union@npm:2.1.0"
+  checksum: 10c0/429897e68110374f39b771ec47a7161fc6a8fc33e196857c0a396dc75df0b5f65e4d046674db764330b6bb66b39ef48dd7c53b6a2ee75cfb0681e0c1a7033962
+  languageName: node
+  linkType: hard
+
 "array.prototype.findlastindex@npm:^1.2.5":
   version: 1.2.5
   resolution: "array.prototype.findlastindex@npm:1.2.5"
@@ -3183,7 +3180,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"bunyan@npm:^2.0.0, bunyan@npm:^2.0.5":
+"bunyan@npm:^2.0.0":
   version: 2.0.5
   resolution: "bunyan@npm:2.0.5"
   dependencies:
@@ -4919,7 +4916,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"fast-glob@npm:^3.3.2":
+"fast-glob@npm:^3.2.9, fast-glob@npm:^3.3.2":
   version: 3.3.2
   resolution: "fast-glob@npm:3.3.2"
   dependencies:
@@ -5526,7 +5523,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"globby@npm:^14.0.0, globby@npm:^14.0.2":
+"globby@npm:^11.1.0":
+  version: 11.1.0
+  resolution: "globby@npm:11.1.0"
+  dependencies:
+    array-union: "npm:^2.1.0"
+    dir-glob: "npm:^3.0.1"
+    fast-glob: "npm:^3.2.9"
+    ignore: "npm:^5.2.0"
+    merge2: "npm:^1.4.1"
+    slash: "npm:^3.0.0"
+  checksum: 10c0/b39511b4afe4bd8a7aead3a27c4ade2b9968649abab0a6c28b1a90141b96ca68ca5db1302f7c7bd29eab66bf51e13916b8e0a3d0ac08f75e1e84a39b35691189
+  languageName: node
+  linkType: hard
+
+"globby@npm:^14.0.0":
   version: 14.0.2
   resolution: "globby@npm:14.0.2"
   dependencies:
@@ -7587,7 +7598,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"merge2@npm:^1.3.0":
+"merge2@npm:^1.3.0, merge2@npm:^1.4.1":
   version: 1.4.1
   resolution: "merge2@npm:1.4.1"
   checksum: 10c0/254a8a4605b58f450308fc474c82ac9a094848081bf4c06778200207820e5193726dc563a0d2c16468810516a5c97d9d3ea0ca6585d23c58ccfff2403e8dbbeb

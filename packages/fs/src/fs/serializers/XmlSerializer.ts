@@ -50,7 +50,7 @@ export class XmlSerializer<ID, T extends Entity<ID>>
     const raw = this.mapToSerialized(entity);
     const contents = this.builder.build(raw);
     const formatted = this.options.prettier
-      ? format(contents, this.options.prettier)
+      ? await format(contents, this.options.prettier)
       : contents;
     await writeFile(entityPath, formatted);
   }

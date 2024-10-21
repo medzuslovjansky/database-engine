@@ -12,8 +12,11 @@ export default tseslint.config(
   {
     ignores: [
       '**/jest.config.js',
+      'jest.config.js',
       'e2e/**',
     ],
+  },
+  {
     rules: {
       "quotes": ["error", "single", { "avoidEscape": true }],
       "import/no-unresolved": "off",
@@ -30,6 +33,7 @@ export default tseslint.config(
       'unicorn/no-nested-ternary': 'off',
       'unicorn/prevent-abbreviations': 'off',
       "@typescript-eslint/consistent-type-imports": "error",
+      "@typescript-eslint/no-explicit-any": "off",
       '@typescript-eslint/no-non-null-assertion': 'off',
       "@typescript-eslint/no-unused-vars": [
         "error",

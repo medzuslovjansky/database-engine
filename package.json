@@ -19,22 +19,8 @@
     "build": "node scripts/esbuild.js",
     "start": "node dist/cli.js",
     "lint": "yarn workspaces foreach -R run lint",
-    "test": "yarn test:types && yarn test:unit",
-    "test:unit": "yarn workspaces foreach -R run test",
-    "test:types": "yarn workspaces foreach -R run build",
+    "test": "yarn workspaces foreach --exclude '@interslavic/cli' -R run test",
     "semantic-release": "semantic-release"
-  },
-  "dependencies": {
-    "@google-cloud/local-auth": "^3.0.1",
-    "bunyamin": "^1.6.3",
-    "bunyan": "^2.0.5",
-    "dotenv": "^16.4.5",
-    "fs-extra": "^11.2.0",
-    "globby": "^14.0.2",
-    "googleapis": "^144.0.0",
-    "lodash": "^4.17.21",
-    "prettier": "^3.3.3",
-    "yaml": "^2.5.1"
   },
   "devDependencies": {
     "@commitlint/cli": "^19.4.1",

@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { readdir, symlink, unlink } from 'node:fs/promises';
 import path from 'node:path';
 

@@ -1,11 +1,10 @@
 import fse from 'fs-extra';
-import tempfile from 'tempfile';
 import { InterslavicSynset, Synset } from '@interslavic/database-engine-core';
 
 import { FileDatabase } from './FileDatabase';
 
 describe('FileDatabase', () => {
-  const rootDirectory = tempfile({ extension: '' });
+  const rootDirectory = fse.mkdtempSync('interslavic-database-');
 
   let database: FileDatabase;
 
