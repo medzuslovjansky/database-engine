@@ -1,4 +1,4 @@
-import identity from 'lodash/identity';
+import _ from 'lodash';
 
 import type { Predicate, PredicateGroup } from '../../multireplacer';
 import { Multireplacer, Rule } from '../../multireplacer';
@@ -29,7 +29,7 @@ export class MultireplacerBuilder {
     ) => MultireplacerRuleBuilder,
     predicateBuilderCallback: (
       p: MultireplacerPredicateBuilder,
-    ) => MultireplacerPredicateBuilder = identity,
+    ) => MultireplacerPredicateBuilder = _.identity,
   ) {
     const ruleBuilder = ruleBuilderCallback(new MultireplacerRuleBuilder());
     const predicateBuilder = predicateBuilderCallback(

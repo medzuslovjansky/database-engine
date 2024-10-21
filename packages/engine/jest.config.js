@@ -1,1 +1,1 @@
-module.exports = require('@interslavic/jest-config-database-engine');
+module.exports = require('@interslavic/jest-config-cli');

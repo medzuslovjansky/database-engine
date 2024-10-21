@@ -28,24 +28,27 @@ export interface IMultireplacerWrapper {
 }
 
 export class MultireplacerWrapper implements IMultireplacerWrapper {
+  protected readonly _stats: RuleEfficiencyReport[];
+  protected readonly _ruleIndices: Map<Rule<unknown>, number>;
+
   constructor(
     public readonly name: string,
     protected readonly multireplacer: Multireplacer<FlavorizationContext>,
-  ) {}
+  ) {
+    this._stats = [
+      ...this.multireplacer.rules,
+    ].map((r) => ({
+      rule: r.name,
+      replacements: r.replacements.map((rp) => ({
+        value: rp.value,
+        hits: 0,
+      })),
+    }));
 
-  protected readonly _stats: RuleEfficiencyReport[] = [
-    ...this.multireplacer.rules,
-  ].map((r) => ({
-    rule: r.name,
-    replacements: r.replacements.map((rp) => ({
-      value: rp.value,
-      hits: 0,
-    })),
-  }));
-
-  protected readonly _ruleIndices: Map<Rule<unknown>, number> = new Map(
-    [...this.multireplacer.rules].map((rule, index) => [rule, index]),
-  );
+    this._ruleIndices = new Map(
+      [...this.multireplacer.rules].map((rule, index) => [rule, index]),
+    );
+  }
 
   flavorize(
     arg1: string | RawFlavorizationContext,

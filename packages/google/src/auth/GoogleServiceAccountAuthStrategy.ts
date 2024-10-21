@@ -7,12 +7,14 @@ import { JWT_TOKEN_FILENAME, SCOPES } from './constants';
 import type { GoogleAuthStrategy } from './GoogleAuthStrategy';
 
 export class GoogleServiceAccountAuthStrategy implements GoogleAuthStrategy {
+  private readonly jwtTokenPath: string;
+
   constructor(
     private readonly cwd: string = process.cwd(),
     private readonly env: NodeJS.ProcessEnv = process.env,
-  ) {}
-
-  private readonly jwtTokenPath = path.join(this.cwd, JWT_TOKEN_FILENAME);
+  ) {
+    this.jwtTokenPath = path.join(this.cwd, JWT_TOKEN_FILENAME);
+  }
 
   jwtToken: string | null = null;
 

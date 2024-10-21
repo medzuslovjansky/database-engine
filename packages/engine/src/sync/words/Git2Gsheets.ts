@@ -1,6 +1,6 @@
 import type { ArrayMapper } from '@interslavic/database-engine-google';
 import type { MultilingualSynset } from '@interslavic/database-engine-core';
-import { isEqual } from 'lodash';
+import _ from 'lodash';
 
 import type {
   WordsAddLangDTO,
@@ -167,7 +167,7 @@ export class Git2Gsheets extends GSheetsOp {
   ): boolean {
     const $old = dtoOld.getSlice('isv').map(asString);
     const $new = dtoNew.getSlice('isv').map(asString);
-    return !isEqual($old, $new);
+    return !_.isEqual($old, $new);
   }
 
   private async _deleteWords(id: number): Promise<void> {

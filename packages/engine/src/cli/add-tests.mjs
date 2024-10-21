@@ -1,3 +1,5 @@
+export default { 'no': 'need' };
+
 // import 'zx/globals';
 // import vm from 'node:vm';
 // import _ from 'lodash';

@@ -1,6 +1,4 @@
-import identity from 'lodash/identity';
-import isMatch from 'lodash/isMatch';
-import pickBy from 'lodash/pickBy';
+import { identity, isMatch, pickBy }from 'lodash';
 import { parse as steenparse } from '@interslavic/steen-utils';
 import type { PartOfSpeech } from '@interslavic/steen-utils/types';
 

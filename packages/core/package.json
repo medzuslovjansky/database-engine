@@ -9,10 +9,8 @@
   "publishConfig": {
     "access": "public"
   },
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "main": "src/index.ts",
   "scripts": {
-    "start": "ts-node src/index.ts",
     "build": "tsc",
     "lint": "eslint . --fix",
     "lint:ci": "eslint .",
@@ -20,25 +18,11 @@
     "test:update": "jest -u"
   },
   "devDependencies": {
-    "@interslavic/eslint-config-database-engine": "^1.1.1",
-    "@interslavic/jest-config-database-engine": "^1.0.8",
-    "@interslavic/prettier-config-database-engine": "^1.0.8",
-    "@interslavic/typescript-config-database-engine": "^1.1.1",
-    "ts-node": "^10.9.1",
-    "typescript": "^4.9.5"
-  },
-  "dependencies": {
-    "tslib": "^2.4.0"
+    "@interslavic/eslint-config-cli": "workspace:*",
+    "@interslavic/jest-config-cli": "workspace:*",
+    "@interslavic/prettier-config-cli": "workspace:*",
+    "@interslavic/typescript-config-cli": "workspace:*"
   },
   "license": "GPL-3.0-or-later",
-  "prettier": "@interslavic/prettier-config-database-engine",
-  "eslintConfig": {
-    "extends": "@interslavic/database-engine",
-    "rules": {
-      "unicorn/prevent-abbreviations": "off",
-      "unicorn/no-nested-ternary": "off",
-      "@typescript-eslint/no-non-null-assertion": "off"
-    }
-  },
-  "gitHead": "892bf66e8b7afaa13e5a9dd00ea6fe169ee936cb"
+  "prettier": "@interslavic/prettier-config-cli"
 }

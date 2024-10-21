@@ -1,5 +1,5 @@
 import fs from 'node:fs';
-import { basename, dirname } from 'node:path';
+import path from 'node:path';
 
 import * as csv from 'csv';
 import type { Parser } from 'csv-parse';
@@ -31,7 +31,7 @@ export class CsvSerializer<ID, T extends Entity<ID>>
     collectionPath: string,
     collection: EntityCollection<ID, T>,
   ): Promise<void> {
-    await ensureDir(dirname(collectionPath));
+    await ensureDir(path.dirname(collectionPath));
 
     const raw = collection.items.map((item) => this.mapToSerialized(item));
     await new Promise((resolve, reject) => {
@@ -51,7 +51,7 @@ export class CsvSerializer<ID, T extends Entity<ID>>
     const items = raw.map((item) => this.mapToEntity(item));
 
     return {
-      id: basename(collectionPath, '.csv'),
+      id: path.basename(collectionPath, '.csv'),
       items,
     };
   }
@@ -60,7 +60,7 @@ export class CsvSerializer<ID, T extends Entity<ID>>
 export async function parseFile(
   filePath: string,
   options: ParseFileOptions = {},
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
 ): Promise<unknown[]> {
   const { delimiter = ',', silent = false } = options;
   if (silent && !fs.existsSync(filePath)) {

@@ -1,6 +1,6 @@
 import path from 'node:path';
 
-import chunk from 'lodash/chunk';
+import _ from 'lodash';
 
 import type { FileOrganizer } from './FileOrganizer';
 
@@ -13,7 +13,7 @@ export class ChunkOrganizer implements FileOrganizer<number> {
 
   buildPath(id: unknown): string {
     const padded = `${id}`.padStart(this.maxLength, '0');
-    const chunks = chunk([...padded], this.chunkSize).map((s) => s.join(''));
+    const chunks = _.chunk([...padded], this.chunkSize).map((s) => s.join(''));
     return path.join(this.rootDirectory, ...chunks);
   }
 

@@ -1,30 +1,57 @@
 {
-  "name": "@interslavic/database-engine-monorepo",
-  "version": "1.0.0",
-  "private": true,
-  "engines": {
-    "node": ">=18.0.0",
-    "npm": ">=8.0.0"
+  "name": "@interslavic/cli",
+  "version": "2.0.0",
+  "description": "Interslavic CLI toolkit",
+  "main": "dist/cli.js",
+  "bin": {
+    "isv": "dist/cli.js"
   },
-  "scripts": {
-    "postinstall": "husky install",
-    "bootstrap": "lerna bootstrap",
-    "build": "lerna run build",
-    "clean": "lerna clean",
-    "lint": "lerna run lint",
-    "lint:ci": "lerna run lint:ci",
-    "test": "lerna run test"
-  },
-  "devDependencies": {
-    "@commitlint/cli": "^17.4.2",
-    "@commitlint/config-conventional": "^17.4.2",
-    "cz-conventional-changelog": "^3.3.0",
-    "husky": "^8.0.3",
-    "lerna": "^6.5.1",
-    "zx": "^7.1.1"
-  },
+  "type": "module",
   "workspaces": [
     "packages/*",
-    "packages/presets/*"
-  ]
+    "presets/*"
+  ],
+  "engines": {
+    "node": ">=20.18.0"
+  },
+  "scripts": {
+    "prepare": "husky install",
+    "build": "node scripts/esbuild.js",
+    "start": "node dist/cli.js",
+    "lint": "yarn workspaces foreach --exclude '@interslavic/cli' -R run lint",
+    "test": "yarn workspaces foreach --exclude '@interslavic/cli' -R run test",
+    "semantic-release": "semantic-release"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^19.4.1",
+    "@commitlint/config-conventional": "^19.4.1",
+    "@interslavic/database-engine": "workspace:*",
+    "@interslavic/database-engine-analysis": "workspace:*",
+    "@interslavic/database-engine-core": "workspace:*",
+    "@interslavic/database-engine-fs": "workspace:*",
+    "@interslavic/database-engine-google": "workspace:*",
+    "@interslavic/eslint-config-cli": "workspace:*",
+    "@interslavic/jest-config-cli": "workspace:*",
+    "@interslavic/prettier-config-cli": "workspace:*",
+    "@interslavic/typescript-config-cli": "workspace:*",
+    "cz-conventional-changelog": "^3.3.0",
+    "esbuild": "^0.23.1",
+    "esbuild-node-externals": "^1.14.0",
+    "husky": "^9.1.5",
+    "semantic-release": "^24.1.0",
+    "zx": "^8.1.5"
+  },
+  "optionalDependencies": {
+    "dtrace-provider": "^0.8.8"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "release": {
+    "branches": [
+      "main"
+    ],
+    "pkgRoot": "."
+  },
+  "packageManager": "yarn@4.5.1"
 }

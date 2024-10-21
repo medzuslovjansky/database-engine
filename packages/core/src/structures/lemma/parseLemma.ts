@@ -14,7 +14,6 @@ export function parseLemma(rawStr: string) {
     annotations = str
       .slice(leftN + 1, rightN)
       .split(';')
-      // eslint-disable-next-line unicorn/no-array-callback-reference
       .map(trim);
   } else {
     value = str;

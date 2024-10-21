@@ -1,8 +1,7 @@
 {
   "name": "@interslavic/database-engine-google",
   "version": "1.1.1",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "main": "src/index.ts",
   "scripts": {
     "build": "tsc",
     "lint": "eslint . --fix",
@@ -18,28 +17,20 @@
     "access": "public"
   },
   "devDependencies": {
-    "@interslavic/eslint-config-database-engine": "^1.1.1",
-    "@interslavic/jest-config-database-engine": "^1.0.8",
-    "@interslavic/prettier-config-database-engine": "^1.0.8",
-    "@interslavic/typescript-config-database-engine": "^1.1.1",
-    "@types/lodash": "^4.14.182",
-    "typescript": "^4.9.5"
+    "@interslavic/eslint-config-cli": "workspace:*",
+    "@interslavic/jest-config-cli": "workspace:*",
+    "@interslavic/prettier-config-cli": "workspace:*",
+    "@interslavic/typescript-config-cli": "workspace:*",
+    "@types/lodash": "^4.17.7",
+    "typescript": "^5.5.4"
   },
   "dependencies": {
-    "@google-cloud/local-auth": "^2.1.1",
-    "@interslavic/database-engine-core": "^1.1.1",
-    "fs-extra": "^11.1.1",
-    "googleapis": "^118.0.0",
+    "@google-cloud/local-auth": "^3.0.1",
+    "@interslavic/database-engine-core": "workspace:*",
+    "fs-extra": "^11.2.0",
+    "googleapis": "^144.0.0",
     "lodash": "^4.17.21",
-    "tslib": "^2.4.0"
+    "tslib": "^2.7.0"
   },
-  "prettier": "@interslavic/prettier-config-database-engine",
-  "eslintConfig": {
-    "extends": "@interslavic/database-engine",
-    "rules": {
-      "unicorn/prevent-abbreviations": "off",
-      "@typescript-eslint/no-non-null-assertion": "off"
-    }
-  },
-  "gitHead": "892bf66e8b7afaa13e5a9dd00ea6fe169ee936cb"
+  "prettier": "@interslavic/prettier-config-cli"
 }

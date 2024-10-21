@@ -1,35 +1,40 @@
-name: CI
+name: CI/CD Pipeline
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
-
-  workflow_dispatch:
+    branches: [main]
 
 jobs:
-
-  main:
-    name: Default
+  ci-cd:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-
-      - name: NPM install
-        uses: bahmutov/npm-install@v1
+      - uses: actions/checkout@v4
         with:
-          useLockFile: false
-
-      - name: Bootstrap
-        run: npm run bootstrap
-
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'yarn'
+      - run: yarn install --immutable
+      - name: Hotfix for yarn bin resolution
+        run: echo "$PWD/node_modules/.bin" >> $GITHUB_PATH
       - name: Lint
-        run: npm run lint:ci
-
-      - name: Build
-        run: npm run build
-
+        run: yarn lint
       - name: Test
-        run: npm run test
+        run: yarn test
+      - name: Build
+        run: yarn build
+      - name: Smoke test
+        run: yarn start --help
+      - name: Release
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: yarn semantic-release

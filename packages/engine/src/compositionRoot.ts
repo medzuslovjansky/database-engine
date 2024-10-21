@@ -1,5 +1,5 @@
 import * as dotenv from 'dotenv';
-import findUp from 'find-up';
+import { findUp } from 'find-up';
 import {
   FileDatabase,
   NoCryptoService,

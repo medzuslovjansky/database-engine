@@ -1,4 +1,4 @@
-import upperFirst from 'lodash/upperFirst';
+import _ from 'lodash';
 
 import { Intermediate } from '../Intermediate';
 import type { Replacement } from '../Replacement';
@@ -61,9 +61,9 @@ export class MapExecutor<T> implements Executor<T> {
   private _autoCapitalizeMappings(): void {
     const kv = [...this.map.entries()];
     for (const [key, value] of kv) {
-      const capitalized = upperFirst(key);
+      const capitalized = _.upperFirst(key);
       if (!this.map.has(capitalized)) {
-        this.map.set(capitalized, upperFirst(value));
+        this.map.set(capitalized, _.upperFirst(value));
       }
     }
   }

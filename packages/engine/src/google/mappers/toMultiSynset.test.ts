@@ -1,4 +1,4 @@
-import { createArrayMapperClass } from '@interslavic/database-engine-google/dist/utils/createArrayMapperClass';
+import { createArrayMapperClass } from '@interslavic/database-engine-google/src/utils/createArrayMapperClass';
 
 import { toMultiSynset } from './toMultiSynset';
 

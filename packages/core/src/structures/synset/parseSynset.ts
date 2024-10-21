@@ -27,7 +27,7 @@ export function parseSynset(rawString: string) {
 function sanitize(str: string) {
   // Remove 00-31 and 7F
   // eslint-disable-next-line no-control-regex
-  return str.replace(/[\u0000-\u001F\u007F]/g, '');
+  return str.replaceAll(/[\u0000-\u001F\u007F]/g, '');
 }
 
 class AnnotationHelper {
@@ -35,7 +35,7 @@ class AnnotationHelper {
 
   stash(str: string): string {
     let index = 0;
-    return str.replace(/\((\(*(?:[^()]*|\([^)]*\))*\)*)\)/g, (_0, match) => {
+    return str.replaceAll(/\((\(*(?:[^()]*|\([^)]*\))*\)*)\)/g, (_0, match) => {
       const key = `ANNOTATION_${index++}`;
       this.map.set(key, `(${match})`);
       return key;
@@ -43,7 +43,7 @@ class AnnotationHelper {
   }
 
   unstash(str: string): string {
-    return str.replace(/(ANNOTATION_\d+)/g, (_0: unknown, match: string) => {
+    return str.replaceAll(/(ANNOTATION_\d+)/g, (_0: unknown, match: string) => {
       return this.map.get(match) ?? '';
     });
   }

@@ -1,4 +1,4 @@
-import prettier from 'prettier';
+import { resolveConfig, type Options as PrettierOptions } from 'prettier';
 
 import type { AggregatedRepository } from './repositories';
 import {
@@ -11,7 +11,7 @@ import type { CryptoService } from './types';
 export type FileDatabaseConfig = {
   readonly cryptoService: CryptoService;
   readonly rootDirectory: string;
-  readonly prettier?: prettier.Options & { [key: string]: unknown };
+  readonly prettier?: PrettierOptions & { [key: string]: unknown };
 };
 
 export class FileDatabase implements AggregatedRepository {
@@ -34,7 +34,7 @@ export class FileDatabase implements AggregatedRepository {
   }
 
   static async create(config: FileDatabaseConfig): Promise<FileDatabase> {
-    const prettierConfig = await prettier.resolveConfig(config.rootDirectory);
+    const prettierConfig = await resolveConfig(config.rootDirectory);
 
     return new FileDatabase({
       ...config,

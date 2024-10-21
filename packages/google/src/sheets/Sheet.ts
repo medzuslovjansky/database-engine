@@ -1,4 +1,4 @@
-import { camelCase, upperFirst } from 'lodash';
+import _ from 'lodash';
 import type { sheets_v4 } from 'googleapis';
 
 import type { ArrayMapped, ArrayMapper } from '../utils/createArrayMapperClass';
@@ -86,7 +86,7 @@ export class Sheet<T extends SheetRecord = SheetRecord> {
 
   private _ensureMapper([headers]: unknown[][]) {
     if (!this._arrayMapper) {
-      const mapperClassName = `${upperFirst(camelCase(this.title))}Mapper`;
+      const mapperClassName = `${_.upperFirst(_.camelCase(this.title))}Mapper`;
       this._arrayMapper = createArrayMapperClass(
         mapperClassName,
         headers.map(String),

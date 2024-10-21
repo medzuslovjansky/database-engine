@@ -76,7 +76,7 @@ export class Odometer<T, L> {
     let value = this.options.extractValue(item);
 
     if (this.options.ignoreNonLetters) {
-      value = value.replace(/[^\p{Letter}]/gu, '');
+      value = value.replaceAll(/[^\p{Letter}]/gu, '');
     }
 
     if (this.options.ignoreCase) {
@@ -84,7 +84,7 @@ export class Odometer<T, L> {
     }
 
     if (this.options.ignoreDiacritics) {
-      value = value.normalize('NFD').replace(/\p{Mark}/gu, '');
+      value = value.normalize('NFD').replaceAll(/\p{Mark}/gu, '');
     }
 
     return value;

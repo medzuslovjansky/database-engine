@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
 const _index = Symbol('index');
 const _values = Symbol('values');
 const _notes = Symbol('notes');
