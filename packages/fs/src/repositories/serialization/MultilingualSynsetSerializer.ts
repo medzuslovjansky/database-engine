@@ -36,14 +36,7 @@ export class MultilingualSynsetSerializer extends XmlSerializer<
           return eleName === 'synset' || eleName === 'lemma';
         },
       },
-      prettier: {
-        ...options.prettier,
-        plugins: [
-          '@prettier/plugin-xml',
-          ...(options.prettier?.plugins ?? []),
-        ],
-        parser: 'xml',
-      },
+      prettier: options.prettier,
     });
   }
 
