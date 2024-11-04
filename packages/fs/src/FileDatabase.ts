@@ -1,3 +1,5 @@
+import path from 'node:path';
+
 import { resolveConfig, type Options as PrettierOptions } from 'prettier';
 
 import type { AggregatedRepository } from './repositories';
@@ -34,7 +36,7 @@ export class FileDatabase implements AggregatedRepository {
   }
 
   static async create(config: FileDatabaseConfig): Promise<FileDatabase> {
-    const prettierConfig = await resolveConfig(config.rootDirectory);
+    const prettierConfig = await resolveConfig(path.join(config.rootDirectory, 'file.xml'));
 
     return new FileDatabase({
       ...config,
