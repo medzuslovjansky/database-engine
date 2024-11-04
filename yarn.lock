@@ -1005,7 +1005,6 @@ __metadata:
     "@interslavic/jest-config-cli": "workspace:*"
     "@interslavic/prettier-config-cli": "workspace:*"
     "@interslavic/typescript-config-cli": "workspace:*"
-    "@prettier/plugin-xml": "npm:^3.4.1"
     "@types/jest": "npm:^29.5.12"
     "@types/lodash": "npm:^4.17.7"
     "@types/node": "npm:^22.5.4"
@@ -1836,17 +1835,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@prettier/plugin-xml@npm:^3.4.1":
-  version: 3.4.1
-  resolution: "@prettier/plugin-xml@npm:3.4.1"
-  dependencies:
-    "@xml-tools/parser": "npm:^1.0.11"
-  peerDependencies:
-    prettier: ^3.0.0
-  checksum: 10c0/39bdc3d6e475ed4f804ea4dad8ad66c1e36743935eefde87bf9a68c44434695e74e52c8c6d70239de12dae141153f8979cce0b1c5c8f820693ff1f62bbe66044
-  languageName: node
-  linkType: hard
-
 "@rtsao/scc@npm:^1.1.0":
   version: 1.1.0
   resolution: "@rtsao/scc@npm:1.1.0"
@@ -2557,15 +2545,6 @@ __metadata:
     "@typescript-eslint/types": "npm:8.4.0"
     eslint-visitor-keys: "npm:^3.4.3"
   checksum: 10c0/339199b7fbb9ac83b530d03ab25f6bc5ceb688c9cd0ae460112cd14ee78ca7284a845aef5620cdf70170980123475ec875e85ebf595c60255ba3c0d6fe48c714
-  languageName: node
-  linkType: hard
-
-"@xml-tools/parser@npm:^1.0.11":
-  version: 1.0.11
-  resolution: "@xml-tools/parser@npm:1.0.11"
-  dependencies:
-    chevrotain: "npm:7.1.1"
-  checksum: 10c0/5abc75163d6b2ac8e9006a54576523513535953237463297137c5a3665ce1b9d220b77b6dbb68ab93df3fab40bbc98bbb10e90dd690fd7646fdb021323827971
   languageName: node
   linkType: hard
 
@@ -3315,15 +3294,6 @@ __metadata:
   version: 0.7.0
   resolution: "chardet@npm:0.7.0"
   checksum: 10c0/96e4731b9ec8050cbb56ab684e8c48d6c33f7826b755802d14e3ebfdc51c57afeece3ea39bc6b09acc359e4363525388b915e16640c1378053820f5e70d0f27d
-  languageName: node
-  linkType: hard
-
-"chevrotain@npm:7.1.1":
-  version: 7.1.1
-  resolution: "chevrotain@npm:7.1.1"
-  dependencies:
-    regexp-to-ast: "npm:0.5.0"
-  checksum: 10c0/3fbbb7a30fb87a4cd141a28bdfa2851f54fde4099aa92071442b47605dfc5974eee0388ec25a517087fcea4dcc1f0ce6b371bc975591346327829aa83b3c843d
   languageName: node
   linkType: hard
 
@@ -9038,13 +9008,6 @@ __metadata:
     string_decoder: "npm:^1.1.1"
     util-deprecate: "npm:^1.0.1"
   checksum: 10c0/e37be5c79c376fdd088a45fa31ea2e423e5d48854be7a22a58869b4e84d25047b193f6acb54f1012331e1bcd667ffb569c01b99d36b0bd59658fb33f513511b7
-  languageName: node
-  linkType: hard
-
-"regexp-to-ast@npm:0.5.0":
-  version: 0.5.0
-  resolution: "regexp-to-ast@npm:0.5.0"
-  checksum: 10c0/16d3c3905fb24866c3bff689ab177c1e63a7283a3cd1ba95987ef86020526f9827f5c60794197311f0e8a967889131142fe7a2e5ed3523ffe2ac9f55052e1566
   languageName: node
   linkType: hard
 
