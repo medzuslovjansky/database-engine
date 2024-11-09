@@ -1,6 +1,6 @@
 import { GSheets2Git } from '../../sync';
 
-import type { PullArgv } from './common';
+import type { PullArgv } from './argv';
 import { getGoogleGitSyncPrerequisites, parseSelectedSynsets } from './common';
 
 export async function pull(argv: PullArgv) {
@@ -16,11 +16,11 @@ export async function pull(argv: PullArgv) {
   }
 
   const sync = new GSheets2Git({
-    beta: argv.beta,
     multisynsets,
     wordsAddLang,
     words,
     selectedIds,
+    partialSync: argv.partial,
   });
 
   console.log('Fetching synsets...');

@@ -11,14 +11,13 @@ import type {
 } from '../../google';
 import { log } from '../../utils';
 
-import { isBeta } from './utils';
-
 export type GSheetsOpOptions = {
-  readonly beta: boolean;
   readonly words: WordsSheet;
   readonly wordsAddLang: WordsAddLangSheet;
   readonly selectedIds?: number[];
   readonly multisynsets: MultilingualSynsetRepository;
+  /** Disables deletion of entities */
+  readonly partialSync: boolean;
 };
 
 type TableDTO = WordsRecord | WordsAddLangRecord;
@@ -28,19 +27,20 @@ export abstract class GSheetsOp extends IdSyncOperation<number> {
   private _wordsAdd?: Promise<Map<number, WordsAddLangDTO>>;
   protected readonly wordsSheet: WordsSheet;
   protected readonly wordsAddLangSheet: WordsAddLangSheet;
-  protected readonly beta: boolean;
   protected readonly multisynsets: MultilingualSynsetRepository;
   protected readonly selectedIds?: Set<number>;
 
   protected constructor(options: Readonly<GSheetsOpOptions>) {
     super();
 
-    this.beta = options.beta;
     this.wordsSheet = options.words;
     this.wordsAddLangSheet = options.wordsAddLang;
     this.multisynsets = options.multisynsets;
     if (options.selectedIds) {
       this.selectedIds = new Set(options.selectedIds);
+    }
+    if (options.partialSync) {
+      this.delete = async () => {};
     }
   }
 
@@ -74,7 +74,6 @@ export abstract class GSheetsOp extends IdSyncOperation<number> {
         const dtos = (await sheet.getValues()) as unknown as DTO[];
         const grecords = new Map(
           dtos
-            .filter((dto) => this.beta || !isBeta(dto))
             .map((dto) => [Math.abs(+dto.id), dto]),
         );
 
