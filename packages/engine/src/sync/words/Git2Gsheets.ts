@@ -10,19 +10,23 @@ import type {
 } from '../../google';
 import { log } from '../../utils';
 
-import type { GSheetsOpOptions } from './GSheetsOp';
-import { GSheetsOp } from './GSheetsOp';
-import { isBeta } from './utils';
+import { GSheetsOp, type GSheetsOpOptions } from './GSheetsOp';
 
-export type Git2GsheetsOptions = GSheetsOpOptions;
+export type Git2GsheetsOptions = GSheetsOpOptions & {
+  readonly changeNote: string;
+};
 
 export class Git2Gsheets extends GSheetsOp {
+  private readonly changeNote: string;
+
   constructor(options: Git2GsheetsOptions) {
     super(options);
 
-    if (!options.beta) {
-      throw new Error('Git2Gsheets is only for beta words');
+    if (!options.changeNote) {
+      throw new TypeError('Change note is required — you cannot just change the dictionary without explaining why');
     }
+
+    this.changeNote = options.changeNote;
   }
 
   protected async getAfterIds(): Promise<number[]> {
@@ -46,8 +50,11 @@ export class Git2Gsheets extends GSheetsOp {
     const dto = this._synset2dto(synset!);
     const dtoAddLang = this._synset2dtoAddLang(synset!);
 
+    const notes = [[...this._annotate(null, dto)] as string[]];
+
     this.wordsSheet.batch.appendRows({
       values: [[...dto]],
+      notes,
     });
 
     this.wordsAddLangSheet.batch.appendRows({
@@ -92,7 +99,7 @@ export class Git2Gsheets extends GSheetsOp {
     const steen = isv.lemmas[0]!.steen!;
 
     const dto: WordsDTO = new Mapper({
-      id: isBeta(ms) ? -ms.id : ms.id,
+      id: ms.id,
       isv: isv.toString(),
       addition: steen.addition ?? '',
       partOfSpeech: steen.partOfSpeech ?? '',
@@ -118,7 +125,7 @@ export class Git2Gsheets extends GSheetsOp {
       frequency: steen.frequency ?? '',
       intelligibility: '',
       using_example: steen.using_example ?? '',
-    });
+    }, undefined, []);
 
     for (const key of ms.steen?.debated ?? []) {
       dto[key] = `#${dto[key]}`;
@@ -134,7 +141,7 @@ export class Git2Gsheets extends GSheetsOp {
     // TODO: this is a violation of synset vs lemma separation
     const steen = isv.lemmas[0]!.steen!;
     const dto: WordsAddLangDTO = new Mapper({
-      id: isBeta(ms) ? -ms.id : ms.id,
+      id: ms.id,
       isv: isv.toString(),
       addition: steen.addition ?? '',
       partOfSpeech: steen.partOfSpeech ?? '',
@@ -214,9 +221,7 @@ export class Git2Gsheets extends GSheetsOp {
       return false;
     }
 
-    const notes = isBeta(dtoOld)
-      ? undefined
-      : [[...this._annotate(dtoOld, dtoNew)] as string[]];
+    const notes = [[...this._annotate(dtoOld, dtoNew)] as string[]];
 
     this.wordsSheet.batch.updateRows({
       startRowIndex,
@@ -248,8 +253,10 @@ export class Git2Gsheets extends GSheetsOp {
     }
   }
 
-  private _annotate(dtoOld: WordsDTO, dtoNew: WordsDTO) {
-    const keys = [
+  private _annotate(dtoOld: WordsDTO | null, dtoNew: WordsDTO) {
+    let addedNote = false;
+
+    const allKeys = [
       'isv',
       'addition',
       'partOfSpeech',
@@ -257,17 +264,21 @@ export class Git2Gsheets extends GSheetsOp {
       'en',
       'sameInLanguages',
     ] as const;
+    const keys = dtoOld ? allKeys : ['isv'] as const;
 
-    const notes = dtoOld.getNotes()!.getCopy();
+    const notes = (dtoOld ?? dtoNew).getNotes()!.getCopy();
     for (const key of keys) {
-      const sOld = asString(dtoOld[key]);
+      const sOld = asString(dtoOld?.[key]);
       const sNew = asString(dtoNew[key]);
 
       if (sOld && sOld !== sNew) {
-        notes[key] ??= sOld;
-        if (notes[key] === sNew) {
-          notes[key] = undefined;
-        } else if (!sNew.startsWith('#')) {
+        if (!addedNote) {
+          notes[key] ??= sOld + ' → ' + sNew;
+          notes[key] += `\n\n${this.changeNote}`;
+          addedNote = true;
+        }
+
+        if (!sNew.startsWith('#') && !sNew.startsWith('!#')) {
           dtoNew[key] = `#${sNew}`;
         }
       }

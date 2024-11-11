@@ -29,10 +29,15 @@ export const builder: CommandBuilder<subcommand.SynsetsArgvAny, any> = {
     description: 'Subcommand to execute',
     demandOption: true,
   },
-  beta: {
+  note: {
+    type: 'string',
+    description: 'Note for the change',
+    default: process.env.ISV_NOTE,
+  },
+  partial: {
     type: 'boolean',
-    description: 'Use beta features',
-    default: process.env.ISV_BETA === 'true',
+    description: 'Partial sync (disable deletion)',
+    default: false,
   },
   only: {
     type: 'boolean',

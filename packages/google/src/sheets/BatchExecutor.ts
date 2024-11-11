@@ -9,6 +9,7 @@ export type BatchExecutorConfig = {
 export type BatchExecutor$AppendRowsRequest = {
   sheetId?: number;
   values: unknown[][];
+  notes?: string[][];
 };
 
 export type BatchExecutor$UpdateRowsRequest = {
@@ -133,11 +134,15 @@ export class BatchExecutor {
   }
 
   public appendRows(request: BatchExecutor$AppendRowsRequest): this {
+    const hasNotes = request.notes != null;
+
     this.appendCells({
-      fields: 'userEnteredValue',
+      fields: 'userEnteredValue' + (hasNotes ? ',note' : ''),
       sheetId: request.sheetId ?? this.sheetId,
-      rows: request.values.map((row) => ({
-        values: row.map((value) => this._toCellData(value)),
+      rows: request.values.map((row, rowIndex) => ({
+        values: row.map((value, colIndex) =>
+          this._toCellData(value, request.notes?.[rowIndex]?.[colIndex])
+        ),
       })),
     });
 

@@ -1,6 +1,6 @@
 import { Git2Gsheets } from '../../sync';
 
-import type { PushArgv } from './common';
+import type { PushArgv } from './argv';
 import { getGoogleGitSyncPrerequisites, parseSelectedSynsets } from './common';
 
 export async function push(argv: PushArgv) {
@@ -16,11 +16,12 @@ export async function push(argv: PushArgv) {
   }
 
   const sync = new Git2Gsheets({
-    beta: argv.beta,
     words,
     wordsAddLang,
     multisynsets,
     selectedIds,
+    partialSync: argv.partial,
+    changeNote: argv.note,
   });
 
   console.log('Pushing synsets...');

@@ -3,14 +3,15 @@ export type SynsetsArgvAny = PullArgv & PushArgv & RebuildArgv;
 
 export type PullArgv = {
   subcommand: 'pull';
-  beta: boolean;
+  partial: boolean;
   only: boolean;
   _: string[];
 };
 
 export type PushArgv = {
   subcommand: 'push';
-  beta: boolean;
+  partial: boolean;
+  note: string;
   only: boolean;
   _: string[];
 };
