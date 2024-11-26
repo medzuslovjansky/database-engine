@@ -44,6 +44,11 @@ export abstract class GSheetsOp extends IdSyncOperation<number> {
     }
   }
 
+  protected async beginTransaction(): Promise<void> {
+    await this.words();
+    await this.wordsAdd();
+  }
+
   protected async wordIds(): Promise<number[]> {
     return this.words().then((r) => [...r.keys()]);
   }
