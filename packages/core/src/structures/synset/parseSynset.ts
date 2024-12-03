@@ -3,7 +3,7 @@ import { Lemma } from '../lemma';
 import { isVerified, stripMetacharacters } from './metacharacters';
 
 export function parseSynset(rawString: string) {
-  const sanitized = sanitize(rawString);
+  const sanitized = sanitize(rawString || '');
   const verified = isVerified(sanitized);
   const annotations = sanitized.includes('(')
     ? new AnnotationHelper()

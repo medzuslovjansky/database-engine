@@ -39,6 +39,10 @@ export const builder: CommandBuilder<subcommand.SynsetsArgvAny, any> = {
     description: 'Partial sync (disable deletion)',
     default: false,
   },
+  source: {
+    type: 'string',
+    description: 'Custom source spreadsheet',
+  },
   only: {
     type: 'boolean',
     description: 'Only selected synsets',

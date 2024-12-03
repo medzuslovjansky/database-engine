@@ -13,7 +13,7 @@ import { log } from '../../utils';
 
 export type GSheetsOpOptions = {
   readonly words: WordsSheet;
-  readonly wordsAddLang: WordsAddLangSheet;
+  readonly wordsAddLang?: WordsAddLangSheet;
   readonly selectedIds?: number[];
   readonly multisynsets: MultilingualSynsetRepository;
   /** Disables deletion of entities */
@@ -25,8 +25,9 @@ type TableDTO = WordsRecord | WordsAddLangRecord;
 export abstract class GSheetsOp extends IdSyncOperation<number> {
   private _words?: Promise<Map<number, WordsDTO>>;
   private _wordsAdd?: Promise<Map<number, WordsAddLangDTO>>;
+  private _maxId?: Promise<number>;
   protected readonly wordsSheet: WordsSheet;
-  protected readonly wordsAddLangSheet: WordsAddLangSheet;
+  protected readonly wordsAddLangSheet?: WordsAddLangSheet;
   protected readonly multisynsets: MultilingualSynsetRepository;
   protected readonly selectedIds?: Set<number>;
 
@@ -49,6 +50,15 @@ export abstract class GSheetsOp extends IdSyncOperation<number> {
     await this.wordsAdd();
   }
 
+  protected async maxFsId(): Promise<number> {
+    if (!this._maxId) {
+      // eslint-disable-next-line unicorn/no-array-reduce
+      this._maxId = this.multisynsets.keys().then((keys) => keys.reduce((a, b) => Math.max(Math.abs(a), Math.abs(b)), 0));
+    }
+
+    return this._maxId;
+  }
+
   protected async wordIds(): Promise<number[]> {
     return this.words().then((r) => [...r.keys()]);
   }
@@ -63,7 +73,9 @@ export abstract class GSheetsOp extends IdSyncOperation<number> {
 
   protected async wordsAdd(): Promise<Map<number, WordsAddLangDTO>> {
     if (!this._wordsAdd) {
-      this._wordsAdd = this._getRecords(this.wordsAddLangSheet);
+      this._wordsAdd = this.wordsAddLangSheet
+        ? this._getRecords(this.wordsAddLangSheet)
+        : Promise.resolve(new Map());
     }
 
     return this._wordsAdd;
@@ -76,10 +88,19 @@ export abstract class GSheetsOp extends IdSyncOperation<number> {
       { cat: ['gsheets'], tid: ['sync', sheet.id] },
       `fetch ${sheet.title}`,
       async () => {
+        let maxFsId = await this.maxFsId();
         const dtos = (await sheet.getValues()) as unknown as DTO[];
         const grecords = new Map(
           dtos
-            .map((dto) => [Math.abs(+dto.id), dto]),
+            .map((dto) => {
+              let id = Math.abs(+dto.id);
+              if (Number.isNaN(id)) {
+                id = ++maxFsId;
+                dto.id = id.toString();
+              }
+
+              return [id, dto];
+            }),
         );
 
         return grecords;
