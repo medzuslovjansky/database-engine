@@ -52,6 +52,10 @@ export class Git2Gsheets extends GSheetsOp {
 
     const notes = [[...this._annotate(null, dto)] as string[]];
 
+    // We still use negative IDs for community-sourced words
+    dto.id = -Math.abs(+dto.id);
+    dtoAddLang.id = -Math.abs(+dtoAddLang.id);
+
     this.wordsSheet.batch.appendRows({
       values: [[...dto]],
       notes,
