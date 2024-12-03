@@ -5,33 +5,40 @@ import type { WordsAddLangSheet, WordsSheet } from '../../google';
 
 export * from './argv';
 
-export async function getGoogleGitSyncPrerequisites() {
+interface Overrides {
+  spreadsheetName?: string;
+  mainLanguagesSheet?: string;
+  additionalLanguagesSheet?: string;
+}
+
+export async function getGoogleGitSyncPrerequisites({
+  spreadsheetName = 'new_interslavic_words_list',
+  mainLanguagesSheet = 'words',
+  additionalLanguagesSheet = 'words_add_lang'
+}: Overrides = {}) {
   const { fileDatabase, googleAPIs } = await compose();
 
   const spreadsheetConfig = await fileDatabase.spreadsheets.findById(
-    'new_interslavic_words_list',
+    spreadsheetName,
   );
 
   if (!spreadsheetConfig) {
     throw new Error(
-      'Cannot find the spreadsheet config for "new_interslavic_words_list"',
+      `Cannot find the spreadsheet config with the name: ${spreadsheetName}`,
     );
   }
 
   const spreadsheet = googleAPIs.spreadsheet(spreadsheetConfig.google_id);
-  const words = await spreadsheet.getSheetByTitle('words');
+  const words = await spreadsheet.getSheetByTitle(mainLanguagesSheet);
   if (!words) {
-    throw new Error('Cannot find the sheet: words');
+    throw new Error(`Cannot find the sheet: ${mainLanguagesSheet}`);
   }
 
-  const wordsAddLang = await spreadsheet.getSheetByTitle('words_add_lang');
-  if (!wordsAddLang) {
-    throw new Error('Cannot find the sheet: words_add_lang');
-  }
+  const wordsAddLang = await spreadsheet.getSheetByTitle(additionalLanguagesSheet);
 
   return {
     words: words as unknown as WordsSheet,
-    wordsAddLang: wordsAddLang as unknown as WordsAddLangSheet,
+    wordsAddLang: wordsAddLang as unknown as (WordsAddLangSheet | undefined),
     multisynsets: fileDatabase.multisynsets,
   };
 }

@@ -61,7 +61,7 @@ export class Git2Gsheets extends GSheetsOp {
       notes,
     });
 
-    this.wordsAddLangSheet.batch.appendRows({
+    this.wordsAddLangSheet!.batch.appendRows({
       values: [[...dtoAddLang]],
     });
   }
@@ -79,7 +79,7 @@ export class Git2Gsheets extends GSheetsOp {
 
   protected async rollbackTransaction(): Promise<void> {
     this.wordsSheet.batch.clear();
-    this.wordsAddLangSheet.batch.clear();
+    this.wordsAddLangSheet!.batch.clear();
   }
 
   protected async commit(): Promise<void> {
@@ -91,7 +91,7 @@ export class Git2Gsheets extends GSheetsOp {
       'batch update',
       async () => {
         await this.wordsSheet.batch.flush();
-        await this.wordsAddLangSheet.batch.flush();
+        await this.wordsAddLangSheet!.batch.flush();
       },
     );
   }
@@ -139,7 +139,7 @@ export class Git2Gsheets extends GSheetsOp {
   }
 
   private _synset2dtoAddLang(ms: MultilingualSynset): WordsAddLangDTO {
-    const Mapper = this.wordsAddLangSheet
+    const Mapper = this.wordsAddLangSheet!
       .Mapper as ArrayMapper<WordsAddLangRecord>;
     const isv = ms.synsets.isv!;
     // TODO: this is a violation of synset vs lemma separation
@@ -199,7 +199,7 @@ export class Git2Gsheets extends GSheetsOp {
     if (!dto.isv.startsWith('!')) {
       dto.isv = '!' + dto.isv;
 
-      this.wordsAddLangSheet.batch.updateRows({
+      this.wordsAddLangSheet!.batch.updateRows({
         startRowIndex: dto.getIndex() + 1,
         startColumnIndex: dto.getColumnIndex('isv'),
         values: [[dto.isv]],
@@ -245,13 +245,13 @@ export class Git2Gsheets extends GSheetsOp {
     if (dtoOld) {
       if (this._hasChangesWords(dtoOld, dtoNew)) {
         const startRowIndex = dtoOld.getIndex() + 1;
-        this.wordsAddLangSheet.batch.updateRows({
+        this.wordsAddLangSheet!.batch.updateRows({
           startRowIndex,
           values: [[...dtoNew]],
         });
       }
     } else {
-      this.wordsAddLangSheet.batch.appendRows({
+      this.wordsAddLangSheet!.batch.appendRows({
         values: [[...dtoNew]],
       });
     }

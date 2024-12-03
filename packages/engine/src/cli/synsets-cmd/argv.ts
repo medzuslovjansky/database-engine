@@ -5,6 +5,7 @@ export type PullArgv = {
   subcommand: 'pull';
   partial: boolean;
   only: boolean;
+  source: string;
   _: string[];
 };
 

@@ -7,6 +7,10 @@ export async function push(argv: PushArgv) {
   const { words, wordsAddLang, multisynsets } =
     await getGoogleGitSyncPrerequisites();
 
+  if (!wordsAddLang) {
+    throw new Error('Cannot find the sheet: words_add_lang');
+  }
+
   const selectedIds = await parseSelectedSynsets(multisynsets, argv);
   if (argv.only && !selectedIds) {
     console.log(
