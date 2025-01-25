@@ -17,6 +17,9 @@ export const handler = async (argv: subcommand.SynsetsArgv) => {
     case 'rebuild': {
       return subcommand.rebuild(argv);
     }
+    case 'refine': {
+      return subcommand.refine(argv);
+    }
     default: {
       throw new Error(`Unknown subcommand: ${(argv as any).subcommand}`);
     }
@@ -25,7 +28,7 @@ export const handler = async (argv: subcommand.SynsetsArgv) => {
 
 export const builder: CommandBuilder<subcommand.SynsetsArgvAny, any> = {
   subcommand: {
-    choices: ['pull', 'push', 'rebuild'],
+    choices: ['pull', 'push', 'rebuild', 'refine'],
     description: 'Subcommand to execute',
     demandOption: true,
   },
@@ -48,4 +51,23 @@ export const builder: CommandBuilder<subcommand.SynsetsArgvAny, any> = {
     description: 'Only selected synsets',
     default: false,
   },
+  mode: {
+    type: 'string',
+    choices: ['spelling', 'translations'] as const,
+    description: 'Refinement mode (spelling or translations)',
+    implies: 'refine',
+    demandOption: true
+  },
+  lang: {
+    type: 'string',
+    description: 'Comma-separated language codes to process (default: all Slavic)',
+    implies: 'refine',
+    coerce: (arg) => arg ? arg.split(',') : undefined
+  },
+  dryRun: {
+    type: 'boolean',
+    description: 'Show changes without writing to files',
+    implies: 'refine',
+    default: false
+  }
 };

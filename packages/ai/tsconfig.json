@@ -1,0 +1,7 @@
+{
+  "extends": "@interslavic/typescript-config-cli",
+  "include": ["src"],
+  "compilerOptions": {
+    "types": ["node", "jest"]
+  }
+}

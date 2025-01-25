@@ -1,0 +1,32 @@
+{
+  "name": "@interslavic/database-engine-ai",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "clean": "rm -rf dist",
+    "dev": "tsc --watch",
+    "lint": "eslint .",
+    "test": "jest"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.18.0",
+    "@interslavic/database-engine-fs": "workspace:*",
+    "openai": "^4.28.0",
+    "zod": "^3.22.4"
+  },
+  "devDependencies": {
+    "@interslavic/eslint-config-cli": "workspace:*",
+    "@interslavic/jest-config-cli": "workspace:*",
+    "@interslavic/prettier-config-cli": "workspace:*",
+    "@interslavic/typescript-config-cli": "workspace:*",
+    "@types/node": "^20.11.24"
+  }
+}

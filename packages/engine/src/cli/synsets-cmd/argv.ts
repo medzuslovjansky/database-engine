@@ -1,5 +1,5 @@
-export type SynsetsArgv = PullArgv | PushArgv | RebuildArgv;
-export type SynsetsArgvAny = PullArgv & PushArgv & RebuildArgv;
+export type SynsetsArgv = PullArgv | PushArgv | RebuildArgv | RefineArgv;
+export type SynsetsArgvAny = PullArgv & PushArgv & RebuildArgv & RefineArgv;
 
 export type PullArgv = {
   subcommand: 'pull';
@@ -19,4 +19,13 @@ export type PushArgv = {
 
 export type RebuildArgv = {
   subcommand: 'rebuild';
+};
+
+export type RefineArgv = {
+  subcommand: 'refine';
+  mode: 'spelling' | 'translations';
+  lang?: string[];
+  dryRun: boolean;
+  only: boolean;
+  _: string[];
 };
