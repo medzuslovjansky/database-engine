@@ -978,6 +978,7 @@ __metadata:
   resolution: "@interslavic/database-engine-ai@workspace:packages/ai"
   dependencies:
     "@anthropic-ai/sdk": "npm:^0.18.0"
+    "@interslavic/database-engine-core": "workspace:*"
     "@interslavic/database-engine-fs": "workspace:*"
     "@interslavic/eslint-config-cli": "workspace:*"
     "@interslavic/jest-config-cli": "workspace:*"
@@ -1003,7 +1004,6 @@ __metadata:
     dictionary-be: "npm:^1.0.0"
     dictionary-bg: "npm:^2.0.0"
     dictionary-cs: "npm:^4.0.0"
-    dictionary-en: "npm:^4.0.0"
     dictionary-hr: "npm:^2.0.0"
     dictionary-mk: "npm:^2.0.0"
     dictionary-pl: "npm:^2.0.0"
@@ -4115,13 +4115,6 @@ __metadata:
   version: 4.0.0
   resolution: "dictionary-cs@npm:4.0.0"
   checksum: 10c0/0d8b61d7cefca471090bb92eabaadadb79960685243822ab6d734da3aa4e705032224c1ad11cc5e19d8a78725b467d7d9084a756e9b0b96afd783625f385c60e
-  languageName: node
-  linkType: hard
-
-"dictionary-en@npm:^4.0.0":
-  version: 4.0.0
-  resolution: "dictionary-en@npm:4.0.0"
-  checksum: 10c0/2d64f1c2592678c0b650220cd43ccaaadfeb6919dbb9bf855ccdeec424276d844955fb72fb5b3d8d71f2fac6169b3aec5d2854f52c262656126cbae78049f611
   languageName: node
   linkType: hard
 

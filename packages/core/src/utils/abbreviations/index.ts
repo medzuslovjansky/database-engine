@@ -1,2 +1,1 @@
 export * from './abbreviations';
-export * from './isIterable';

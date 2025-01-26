@@ -2,7 +2,6 @@
   "name": "@interslavic/database-engine-ai",
   "version": "0.0.0",
   "private": true,
-  "type": "module",
   "exports": {
     ".": {
       "import": "./dist/index.js",
@@ -18,6 +17,7 @@
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.18.0",
+    "@interslavic/database-engine-core": "workspace:*",
     "@interslavic/database-engine-fs": "workspace:*",
     "openai": "^4.28.0",
     "zod": "^3.22.4"

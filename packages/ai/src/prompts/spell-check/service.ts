@@ -1,5 +1,5 @@
 import { Language } from '@interslavic/database-engine-core';
-import { AIService } from '../../types';
+import { AIService, AICompletionRequest } from '../../types';
 import { SpellCheckRequest, SpellCheckResponse, SpellCheckResponseSchema } from './schema';
 import * as _userPrompts from './user-prompts';
 import * as _systemPrompts from './system-prompts';
@@ -10,7 +10,7 @@ const systemPrompts = _systemPrompts as Record<Language, string>;
 export class SpellCheckService {
   constructor(private aiService: AIService) {}
 
-  private getSystemPrompt(language: Language): string {
+  #getSystemPrompt(language: Language): string {
     const prompt = systemPrompts[language];
     if (!prompt) {
       throw new Error(`No system prompt found for language: ${language}`);
@@ -18,7 +18,7 @@ export class SpellCheckService {
     return prompt;
   }
 
-  private getUserPrompt(request: SpellCheckRequest): string {
+  #getUserPrompt(request: SpellCheckRequest): string {
     const promptGenerator = userPrompts[request.language];
     if (!promptGenerator) {
       throw new Error(`No user prompt generator found for language: ${request.language}`);
@@ -26,36 +26,25 @@ export class SpellCheckService {
     return promptGenerator(request);
   }
 
-  async checkSpelling(request: SpellCheckRequest): Promise<SpellCheckResponse> {
-    const userPrompt = this.getUserPrompt(request);
-    const systemPrompt = this.getSystemPrompt(request.language);
-
-    return this.aiService.complete({
-      systemPrompt,
-      userPrompt,
-      responseSchema: SpellCheckResponseSchema
-    }) as Promise<SpellCheckResponse>;
+  async checkSpelling(request: SpellCheckRequest[]): Promise<SpellCheckResponse[]> {
+    const handles = await this.aiService.complete(request.map(req => this.#toCompletionRequest(req)));
+    const results = await Promise.all(handles.map(handle => handle.value()));
+    const jsons = results.map(result => JSON.parse(result));
+    return this.#validateResults(jsons);
   }
 
-  async checkSpellingBatch(requests: SpellCheckRequest[]): Promise<void> {
-    const processor = this.aiService.createBatchProcessor<SpellCheckResponse>();
-    const prompts = requests.map(request => ({
-      systemPrompt: this.getSystemPrompt(request.language),
-      userPrompt: this.getUserPrompt(request),
+  #toCompletionRequest(request: SpellCheckRequest): AICompletionRequest {
+    return {
+      messages: [
+        { role: 'system', content: this.#getSystemPrompt(request.language) },
+        { role: 'user', content: this.#getUserPrompt(request) }
+      ],
       responseSchema: SpellCheckResponseSchema
-    }));
+    };
+  }
 
-    processor.onResult(({ request, response }) => {
-      // Here you can emit events, update UI, or handle results as they come
-      console.log('Processed:', { request, response });
-    });
-
-    processor.onError(({ request, error }) => {
-      console.error('Failed to process:', { request, error });
-    });
-
-    processor.enqueue(prompts);
-    await processor.start();
+  #validateResults(results: unknown[]): SpellCheckResponse[] {
+    return results.map(result => SpellCheckResponseSchema.parse(result));
   }
 }
 
