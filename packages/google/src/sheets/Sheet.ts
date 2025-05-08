@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import type { sheets_v4 } from 'googleapis';
+import type { sheets_v4 } from '@googleapis/sheets';
 
 import type { ArrayMapped, ArrayMapper } from '../utils/createArrayMapperClass';
 import { createArrayMapperClass } from '../utils/createArrayMapperClass';

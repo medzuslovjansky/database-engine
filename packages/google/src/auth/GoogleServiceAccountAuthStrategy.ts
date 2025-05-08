@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
-import { google } from 'googleapis';
+import { JWT } from 'google-auth-library';
 
 import { JWT_TOKEN_FILENAME, SCOPES } from './constants';
 import type { GoogleAuthStrategy } from './GoogleAuthStrategy';
@@ -25,7 +25,7 @@ export class GoogleServiceAccountAuthStrategy implements GoogleAuthStrategy {
     }
 
     const { client_email, private_key } = JSON.parse(this.jwtToken);
-    const client = new google.auth.JWT({
+    const client = new JWT({
       email: client_email,
       key: private_key,
     }).createScoped(SCOPES);

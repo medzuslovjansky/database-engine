@@ -1,4 +1,4 @@
-import type { drive_v3 } from 'googleapis';
+import type { drive_v3 } from '@googleapis/drive';
 
 type DriveDocumentCachedData = {
   mimeType?: string | null;

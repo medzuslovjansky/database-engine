@@ -41,6 +41,7 @@ async function build() {
       banner: {
         js: '#!/usr/bin/env node\n\n' + ESM_REQUIRE_SHIM,
       },
+      external: ['prettier'],
       minify: false,
       sourcemap: true,
       metafile: true,

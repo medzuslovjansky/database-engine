@@ -1,4 +1,5 @@
-import { drive_v3, sheets_v4 } from 'googleapis';
+import { drive_v3 } from '@googleapis/drive';
+import { sheets_v4 } from '@googleapis/sheets';
 
 import type { AuthClient } from './auth';
 import { Spreadsheet } from './sheets';

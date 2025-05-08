@@ -1,8 +1,8 @@
 import path from 'node:path';
 
 import fs from 'fs-extra';
-import type { Auth } from 'googleapis';
-import { google } from 'googleapis';
+import type { AuthClient } from 'google-auth-library';
+import { auth } from 'google-auth-library';
 import { authenticate } from '@google-cloud/local-auth';
 
 import { CREDENTIALS_FILENAME, SCOPES, USER_TOKEN_FILENAME } from './constants';
@@ -19,7 +19,7 @@ export class GoogleLocalAuthStrategy implements GoogleAuthStrategy {
     this.tokenPath = path.join(this.cwd, USER_TOKEN_FILENAME);
   }
 
-  async authorize(): Promise<Auth.AuthClient> {
+  async authorize(): Promise<AuthClient> {
     let client = await this._loadCached();
     if (!client) {
       client = await authenticate({
@@ -37,17 +37,17 @@ export class GoogleLocalAuthStrategy implements GoogleAuthStrategy {
     return fs.existsSync(this.tokenPath) || fs.existsSync(this.credentialsPath);
   }
 
-  private async _loadCached(): Promise<Auth.AuthClient | null> {
+  private async _loadCached(): Promise<AuthClient | null> {
     const tokenPath = this.tokenPath;
     if (fs.existsSync(tokenPath)) {
       const content = await fs.promises.readFile(tokenPath, 'utf8');
-      return google.auth.fromJSON(JSON.parse(content));
+      return auth.fromJSON(JSON.parse(content));
     }
 
     return null;
   }
 
-  private async _saveCredentials(client: Auth.AuthClient) {
+  private async _saveCredentials(client: AuthClient) {
     if (!client.credentials) {
       return;
     }

@@ -1,4 +1,4 @@
-import type { sheets_v4 } from 'googleapis';
+import type { sheets_v4 } from '@googleapis/sheets';
 
 import { Sheet } from './Sheet';
 import { BatchExecutor } from './BatchExecutor';
