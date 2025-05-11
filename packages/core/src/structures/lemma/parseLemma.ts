@@ -1,4 +1,6 @@
-export function parseLemma(rawStr: string) {
+import type { LemmaJSON } from './Lemma';
+
+export function parseLemma<T extends Record<string, unknown>>(rawStr: string): LemmaJSON<T> {
   const str = trim(rawStr);
   const leftN = str.lastIndexOf('(');
   const rightN = str.lastIndexOf(')');

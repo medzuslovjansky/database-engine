@@ -1,5 +1,5 @@
 import fse from 'fs-extra';
-import { InterslavicSynset, Synset } from '@interslavic/database-engine-core';
+import { Synset } from '@interslavic/database-engine-core';
 
 import { FileDatabase } from './FileDatabase';
 
@@ -28,8 +28,8 @@ describe('FileDatabase', () => {
     });
 
     it('should add values', async () => {
-      const isv = InterslavicSynset.parse('oko');
-      isv.lemmas[0]!.steen = {
+      const isv = Synset.parse('oko');
+      isv.lemmas[0]!.metadata = {
         id: 1,
         addition: 'očese',
         partOfSpeech: 'n.',

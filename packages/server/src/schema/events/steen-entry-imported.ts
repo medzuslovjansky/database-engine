@@ -1,0 +1,43 @@
+import { z } from 'zod';
+
+export const steenEntryImportedEventSchema = z.object({
+  id: z.number(), // required, will be Math.abs(id) in logic
+  source: z.string().optional(),
+  isv: z.string().optional(),
+  addition: z.string().optional(),
+  partOfSpeech: z.string().optional(),
+  type: z.string().optional(),
+  en: z.string().optional(),
+  sameInLanguages: z.string().optional(),
+  genesis: z.string().optional(),
+  ru: z.string().optional(),
+  be: z.string().optional(),
+  uk: z.string().optional(),
+  pl: z.string().optional(),
+  cs: z.string().optional(),
+  sk: z.string().optional(),
+  sl: z.string().optional(),
+  hr: z.string().optional(),
+  sr: z.string().optional(),
+  mk: z.string().optional(),
+  bg: z.string().optional(),
+  cu: z.string().optional(),
+  de: z.string().optional(),
+  nl: z.string().optional(),
+  eo: z.string().optional(),
+  frequency: z.string().optional(),
+  intelligibility: z.string().optional(),
+  using_example: z.string().optional(),
+  csb: z.string().optional(),
+  dsb: z.string().optional(),
+  hsb: z.string().optional(),
+  ia: z.string().optional(),
+  es: z.string().optional(),
+  pt: z.string().optional(),
+  fr: z.string().optional(),
+  it: z.string().optional(),
+  he: z.string().optional(),
+  da: z.string().optional(),
+});
+
+export type SteenEntryImportedEvent = z.infer<typeof steenEntryImportedEventSchema>;

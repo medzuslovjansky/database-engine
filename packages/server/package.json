@@ -1,0 +1,31 @@
+{
+	"name": "@interslavic/database-engine-server",
+	"version": "0.0.0",
+	"private": true,
+	"scripts": {
+		"deploy": "wrangler deploy",
+		"dev": "wrangler dev",
+		"start": "wrangler dev",
+		"test": "vitest",
+		"cf-typegen": "wrangler types",
+		"lint": "eslint . --ext .ts --fix",
+		"format": "prettier --write ."
+	},
+	"devDependencies": {
+		"@cloudflare/vitest-pool-workers": "^0.8.19",
+		"@cloudflare/workers-types": "^4.20250505.0",
+		"@interslavic/eslint-config-cli": "workspace:*",
+		"@interslavic/prettier-config-cli": "workspace:*",
+		"@types/uuid": "^10.0.0",
+		"typescript": "^5.5.2",
+		"vitest": "~3.0.7",
+		"wrangler": "^4.14.1"
+	},
+	"dependencies": {
+		"@interslavic/database-engine-core": "workspace:*",
+		"itty-router": "^5.0.18",
+		"jose": "^6.0.11",
+		"uuid": "^11.1.0",
+		"zod": "^3.24.4"
+	}
+}

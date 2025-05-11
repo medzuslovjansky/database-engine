@@ -1,17 +1,10 @@
-import { Lemma } from './Lemma';
+import { Lemma, LemmaJSON, LemmaOptions } from './Lemma';
 
-export class InterslavicLemma extends Lemma {
-  public steen?: SteenbergenLemmaMetadata;
+export type InterslavicLemma = Lemma<SteenbergenLemmaMetadata>;
 
-  public clone(): InterslavicLemma {
-    const result = super.clone() as InterslavicLemma;
-    if (this.steen) {
-      result.steen = { ...this.steen };
-    }
+export type InterslavicLemmaJSON = LemmaJSON<SteenbergenLemmaMetadata>;
 
-    return result;
-  }
-}
+export type InterslavicLemmaOptions = LemmaOptions<SteenbergenLemmaMetadata>;
 
 export type SteenbergenLemmaMetadata = {
   id: number;

@@ -1,5 +1,5 @@
 import { isIterable } from '../../utils';
-import { Lemma as LemmaBase } from '../lemma';
+import { Lemma as LemmaBase, LemmaJSON } from '../lemma';
 
 import { parseSynset } from './parseSynset';
 
@@ -10,6 +10,11 @@ export type SynsetOptions<Lemma extends LemmaBase = LemmaBase> =
 
 export type SynsetMetadata = {
   verified?: boolean;
+};
+
+export type SynsetJSON = {
+  verified: boolean;
+  lemmas: LemmaJSON[];
 };
 
 type EqualityPredicate<T> = (a: T, b: T) => boolean;
@@ -87,6 +92,11 @@ export class Synset<Lemma extends LemmaBase = LemmaBase> {
     return this.lemmas.some((l) => l.value === lemma.value);
   }
 
+  public find(value: Lemma | string): Lemma | undefined {
+    const lemma = typeof value === 'string' ? LemmaBase.parse(value) : value;
+    return this.lemmas.find((l) => l.value === lemma.value);
+  }
+
   public union(
     other: Synset,
     equals: EqualityPredicate<LemmaBase> = valueEquals,
@@ -153,8 +163,28 @@ export class Synset<Lemma extends LemmaBase = LemmaBase> {
     );
   }
 
+  public toJSON(): SynsetJSON {
+    return {
+      verified: this.verified,
+      lemmas: this.lemmas.map((l) => (l.toJSON ? l.toJSON() : { value: l.value, annotations: l.annotations })),
+    };
+  }
+
+  public static fromJSON(json: SynsetJSON): Synset {
+    return new Synset({
+      verified: json.verified,
+      lemmas: json.lemmas.map((l) => LemmaBase.fromJSON(l)),
+    });
+  }
+
   public static parse(str: string) {
     return new Synset(parseSynset(str));
+  }
+
+  public equals(other: Synset): boolean {
+    if (this.verified !== other.verified) return false;
+    if (this.lemmas.length !== other.lemmas.length) return false;
+    return this.lemmas.every((l, i) => l.equals(other.lemmas[i]));
   }
 }
 

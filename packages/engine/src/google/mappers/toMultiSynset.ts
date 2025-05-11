@@ -1,6 +1,5 @@
 import {
   Synset,
-  InterslavicSynset,
   MultilingualSynset,
 } from '@interslavic/database-engine-core';
 
@@ -25,9 +24,9 @@ export function toMultiSynset(dto: WordsDTO): MultilingualSynset {
   const id = Math.abs(+dto.id);
   multilingualSynset.id = id;
 
-  multilingualSynset.synsets.isv = InterslavicSynset.parse(dto.isv);
+  multilingualSynset.synsets.isv = Synset.parse(dto.isv);
   for (const lemma of multilingualSynset.synsets.isv.lemmas) {
-    lemma.steen = {
+    lemma.metadata = {
       id,
       addition: dto.addition || undefined,
       partOfSpeech: dto.partOfSpeech,

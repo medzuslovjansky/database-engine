@@ -1,17 +1,16 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`Synset #parse() should parse synset: !: synset 1`] = `
-Synset {
+{
   "lemmas": [],
   "verified": false,
 }
 `;
 
 exports[`Synset #parse() should parse synset: !U-Boot: synset 1`] = `
-Synset {
+{
   "lemmas": [
-    Lemma {
-      "annotations": [],
+    {
       "value": "U-Boot",
     },
   ],
@@ -20,14 +19,12 @@ Synset {
 `;
 
 exports[`Synset #parse() should parse synset: !only, ĝuste nun: synset 1`] = `
-Synset {
+{
   "lemmas": [
-    Lemma {
-      "annotations": [],
+    {
       "value": "only",
     },
-    Lemma {
-      "annotations": [],
+    {
       "value": "ĝuste nun",
     },
   ],
@@ -36,17 +33,16 @@ Synset {
 `;
 
 exports[`Synset #parse() should parse synset: : synset 1`] = `
-Synset {
+{
   "lemmas": [],
   "verified": true,
 }
 `;
 
 exports[`Synset #parse() should parse synset: bring (up) to: synset 1`] = `
-Synset {
+{
   "lemmas": [
-    Lemma {
-      "annotations": [],
+    {
       "value": "bring (up) to",
     },
   ],
@@ -55,10 +51,9 @@ Synset {
 `;
 
 exports[`Synset #parse() should parse synset: extra comma,: synset 1`] = `
-Synset {
+{
   "lemmas": [
-    Lemma {
-      "annotations": [],
+    {
       "value": "extra comma",
     },
   ],
@@ -67,14 +62,12 @@ Synset {
 `;
 
 exports[`Synset #parse() should parse synset: extra,,comma,: synset 1`] = `
-Synset {
+{
   "lemmas": [
-    Lemma {
-      "annotations": [],
+    {
       "value": "extra",
     },
-    Lemma {
-      "annotations": [],
+    {
       "value": "comma",
     },
   ],
@@ -83,10 +76,9 @@ Synset {
 `;
 
 exports[`Synset #parse() should parse synset: з'явитися: synset 1`] = `
-Synset {
+{
   "lemmas": [
-    Lemma {
-      "annotations": [],
+    {
       "value": "з'явитися",
     },
   ],
@@ -95,16 +87,15 @@ Synset {
 `;
 
 exports[`Synset #parse() should parse synset: за (напр.: по грибы, за хлебом), по: synset 1`] = `
-Synset {
+{
   "lemmas": [
-    Lemma {
+    {
       "annotations": [
         "напр.: по грибы, за хлебом",
       ],
       "value": "за",
     },
-    Lemma {
-      "annotations": [],
+    {
       "value": "по",
     },
   ],
@@ -113,13 +104,12 @@ Synset {
 `;
 
 exports[`Synset #parse() should parse synset: и; а зато (смысл2): synset 1`] = `
-Synset {
+{
   "lemmas": [
-    Lemma {
-      "annotations": [],
+    {
       "value": "и",
     },
-    Lemma {
+    {
       "annotations": [
         "смысл2",
       ],
@@ -131,9 +121,9 @@ Synset {
 `;
 
 exports[`Synset #parse() should parse synset: сей (устар.; местоим.): synset 1`] = `
-Synset {
+{
   "lemmas": [
-    Lemma {
+    {
       "annotations": [
         "устар.",
         "местоим.",
@@ -146,10 +136,9 @@ Synset {
 `;
 
 exports[`Synset #parse() should parse synset: той, що є;: synset 1`] = `
-Synset {
+{
   "lemmas": [
-    Lemma {
-      "annotations": [],
+    {
       "value": "той, що є",
     },
   ],

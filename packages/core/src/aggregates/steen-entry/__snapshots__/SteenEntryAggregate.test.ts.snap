@@ -1,0 +1,365 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`SteenEntryAggregate can be serialized 1`] = `
+{
+  "beta": false,
+  "id": 24020,
+  "steen": undefined,
+  "synsets": {
+    "be": {
+      "lemmas": [
+        {
+          "value": "абак",
+        },
+      ],
+      "verified": true,
+    },
+    "bg": {
+      "lemmas": [
+        {
+          "value": "сметало",
+        },
+        {
+          "value": "абак",
+        },
+      ],
+      "verified": true,
+    },
+    "cs": {
+      "lemmas": [
+        {
+          "value": "počítadlo",
+        },
+        {
+          "value": "abakus",
+        },
+      ],
+      "verified": true,
+    },
+    "csb": {
+      "lemmas": [
+        {
+          "value": "abakùs",
+        },
+      ],
+      "verified": true,
+    },
+    "cu": {
+      "lemmas": [],
+      "verified": false,
+    },
+    "da": {
+      "lemmas": [
+        {
+          "value": "abacus",
+        },
+      ],
+      "verified": false,
+    },
+    "de": {
+      "lemmas": [
+        {
+          "value": "Abakus",
+        },
+      ],
+      "verified": true,
+    },
+    "dsb": {
+      "lemmas": [
+        {
+          "value": "abakus",
+        },
+      ],
+      "verified": true,
+    },
+    "en": {
+      "lemmas": [
+        {
+          "value": "abacus",
+        },
+      ],
+      "verified": true,
+    },
+    "eo": {
+      "lemmas": [
+        {
+          "value": "abako",
+        },
+      ],
+      "verified": true,
+    },
+    "es": {
+      "lemmas": [
+        {
+          "value": "ábaco",
+        },
+      ],
+      "verified": true,
+    },
+    "fr": {
+      "lemmas": [
+        {
+          "value": "boulier",
+        },
+        {
+          "value": "abaque",
+        },
+      ],
+      "verified": true,
+    },
+    "he": {
+      "lemmas": [
+        {
+          "value": "אָבָּקוּס",
+        },
+        {
+          "value": "חֶשְׁבּוֹנִיָּה",
+        },
+      ],
+      "verified": true,
+    },
+    "hr": {
+      "lemmas": [
+        {
+          "value": "abakus",
+        },
+      ],
+      "verified": true,
+    },
+    "hsb": {
+      "lemmas": [
+        {
+          "value": "Abak",
+        },
+      ],
+      "verified": true,
+    },
+    "ia": {
+      "lemmas": [
+        {
+          "value": "abaco",
+        },
+      ],
+      "verified": true,
+    },
+    "isv": {
+      "lemmas": [
+        {
+          "intelligibility": "cs- pl+ uk+",
+          "metadata": {
+            "addition": undefined,
+            "frequency": 1504,
+            "genesis": "I",
+            "id": -24020,
+            "partOfSpeech": "m.",
+            "sameInLanguages": "v z j",
+            "type": 1,
+            "using_example": undefined,
+          },
+          "value": "abak",
+        },
+      ],
+      "verified": true,
+    },
+    "it": {
+      "lemmas": [
+        {
+          "value": "abaco",
+        },
+      ],
+      "verified": false,
+    },
+    "mk": {
+      "lemmas": [
+        {
+          "value": "сметалка",
+        },
+        {
+          "value": "абакус",
+        },
+      ],
+      "verified": true,
+    },
+    "nl": {
+      "lemmas": [
+        {
+          "value": "telraam",
+        },
+      ],
+      "verified": true,
+    },
+    "pl": {
+      "lemmas": [
+        {
+          "value": "abak",
+        },
+        {
+          "value": "abakus",
+        },
+      ],
+      "verified": true,
+    },
+    "pt": {
+      "lemmas": [
+        {
+          "value": "ábaco",
+        },
+      ],
+      "verified": true,
+    },
+    "ru": {
+      "lemmas": [
+        {
+          "value": "счёты",
+        },
+        {
+          "value": "абак",
+        },
+        {
+          "value": "абака",
+        },
+      ],
+      "verified": true,
+    },
+    "sk": {
+      "lemmas": [
+        {
+          "value": "počítadlo",
+        },
+        {
+          "value": "abakus",
+        },
+      ],
+      "verified": true,
+    },
+    "sl": {
+      "lemmas": [
+        {
+          "value": "abak",
+        },
+        {
+          "value": "abakus",
+        },
+      ],
+      "verified": true,
+    },
+    "sr": {
+      "lemmas": [
+        {
+          "value": "абакус",
+        },
+      ],
+      "verified": true,
+    },
+    "uk": {
+      "lemmas": [
+        {
+          "annotations": [
+            "абак",
+          ],
+          "value": "рахівниця",
+        },
+        {
+          "value": "абак",
+        },
+      ],
+      "verified": true,
+    },
+  },
+}
+`;
+
+exports[`SteenEntryAggregate importChanges twice produces two SteenEntryImported events with correct revisions 1`] = `
+[
+  {
+    "data": {
+      "frequency": 1504,
+      "genesis": "I",
+      "id": 24020,
+      "intelligibility": "pl+ cs-",
+      "part_of_speech": "m.",
+      "same_in_languages": "v z j",
+      "translations": {
+        "be": "абак",
+        "bg": "сметало, абак",
+        "cs": "počítadlo, abakus",
+        "cu": "!",
+        "de": "Abakus",
+        "en": "abacus",
+        "eo": "abako",
+        "hr": "abakus",
+        "isv": "abak",
+        "mk": "сметалка, абакус",
+        "nl": "telraam",
+        "pl": "abak, abakus",
+        "ru": "счёты, абак, абака",
+        "sk": "počítadlo, abakus",
+        "sl": "abak, abakus",
+        "sr": "абакус",
+        "uk": "рахівниця (абак), абак",
+      },
+      "type": 1,
+    },
+    "revision": 1,
+    "stream": "steen/24020",
+    "ts": 0,
+    "type": "SteenEntryImported",
+  },
+  {
+    "data": {
+      "id": -24020,
+      "translations": {
+        "csb": "abakùs",
+        "da": "!abacus",
+        "dsb": "abakus",
+        "es": "ábaco",
+        "fr": "boulier, abaque",
+        "he": "אָבָּקוּס, חֶשְׁבּוֹנִיָּה",
+        "hsb": "Abak",
+        "ia": "abaco",
+        "it": "!abaco",
+        "pt": "ábaco",
+      },
+    },
+    "revision": 2,
+    "stream": "steen/24020",
+    "ts": 0,
+    "type": "SteenEntryImported",
+  },
+]
+`;
+
+exports[`SteenEntryAggregate rateIntelligibility produces IntelligibilityRated event 1`] = `
+{
+  "data": {
+    "cognates": [
+      "абак",
+    ],
+    "comment": undefined,
+    "false_friends": undefined,
+    "helper_words": undefined,
+    "id": 24020,
+    "lemma": "abak",
+    "mark": ".",
+    "rated_by": "admin@example.com",
+    "source_language": "isv",
+    "target_language": "uk",
+  },
+  "revision": 2,
+  "stream": "steen/24020",
+  "ts": 0,
+  "type": "IntelligibilityRated",
+}
+`;
+
+exports[`SteenEntryAggregate remove produces SteenEntryRemoved event 1`] = `
+{
+  "data": {
+    "id": 24020,
+  },
+  "revision": 2,
+  "stream": "steen/24020",
+  "ts": 0,
+  "type": "SteenEntryRemoved",
+}
+`;

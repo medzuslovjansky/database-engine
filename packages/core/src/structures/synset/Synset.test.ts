@@ -199,6 +199,74 @@ describe('Synset', () => {
     });
   });
 
+  describe('.includes()', () => {
+    it('should return true if the synset includes a lemma by string', () => {
+      const synset = anEmptySynset().add(['apple', 'banana']);
+      expect(synset.includes('apple')).toBe(true);
+      expect(synset.includes('banana')).toBe(true);
+    });
+
+    it('should return false if the synset does not include the lemma by string', () => {
+      const synset = anEmptySynset().add(['apple', 'banana']);
+      expect(synset.includes('pear')).toBe(false);
+    });
+
+    it('should return true if the synset includes a lemma by Lemma instance', () => {
+      const synset = anEmptySynset().add([new Lemma({ value: 'cat' })]);
+      expect(synset.includes(new Lemma({ value: 'cat' }))).toBe(true);
+    });
+
+    it('should return false for Lemma with different value', () => {
+      const synset = anEmptySynset().add([new Lemma({ value: 'dog' })]);
+      expect(synset.includes(new Lemma({ value: 'cat' }))).toBe(false);
+    });
+
+    it('should match by value only, ignoring annotations', () => {
+      const synset = anEmptySynset().add([new Lemma({ value: 'bird', annotations: ['flying'] })]);
+      expect(synset.includes('bird')).toBe(true);
+      expect(synset.includes(new Lemma({ value: 'bird', annotations: ['other'] }))).toBe(true);
+    });
+
+    it('should return false for empty synset', () => {
+      const synset = anEmptySynset();
+      expect(synset.includes('anything')).toBe(false);
+    });
+  });
+
+  describe('.find()', () => {
+    it('should return the Lemma instance if found by string', () => {
+      const synset = anEmptySynset().add(['alpha', 'beta']);
+      const found = synset.find('alpha');
+      expect(found).toBeInstanceOf(Lemma);
+      expect(found?.value).toBe('alpha');
+    });
+
+    it('should return undefined if not found by string', () => {
+      const synset = anEmptySynset().add(['alpha', 'beta']);
+      expect(synset.find('gamma')).toBeUndefined();
+    });
+
+    it('should return the Lemma instance if found by Lemma', () => {
+      const lemma = new Lemma({ value: 'delta' });
+      const synset = anEmptySynset().add([lemma]);
+      const found = synset.find(new Lemma({ value: 'delta' }));
+      expect(found).toBeInstanceOf(Lemma);
+      expect(found?.value).toBe('delta');
+    });
+
+    it('should match by value only, ignoring annotations', () => {
+      const synset = anEmptySynset().add([new Lemma({ value: 'epsilon', annotations: ['x'] })]);
+      const found = synset.find(new Lemma({ value: 'epsilon', annotations: ['y'] }));
+      expect(found).toBeInstanceOf(Lemma);
+      expect(found?.value).toBe('epsilon');
+    });
+
+    it('should return undefined for empty synset', () => {
+      const synset = anEmptySynset();
+      expect(synset.find('anything')).toBeUndefined();
+    });
+  });
+
   describe('when stringified', () => {
     it('should prepend ! if it is not verified', () => {
       const { synset } = aComplexSynset();

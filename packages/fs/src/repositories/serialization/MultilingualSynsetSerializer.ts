@@ -84,7 +84,7 @@ export class MultilingualSynsetSerializer extends XmlSerializer<
               steen.genesis = lemmaXml['@_steen:genesis'];
             }
 
-            (lemma as InterslavicLemma).steen = steen;
+            (lemma as InterslavicLemma).metadata = steen;
           }
 
           return lemma;
@@ -129,7 +129,7 @@ export class MultilingualSynsetSerializer extends XmlSerializer<
                 '@_lang': lang === 'isv' ? 'art-x-interslv' : lang,
                 '@_verified': synset.verified ? undefined : 'false',
                 lemma: synset.lemmas.map<LemmaXml>((lemma) => {
-                  const steen = (lemma as InterslavicLemma).steen;
+                  const steen = (lemma as InterslavicLemma).metadata;
 
                   return {
                     '#text': lemma.value,
