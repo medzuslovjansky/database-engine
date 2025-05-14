@@ -21,7 +21,9 @@ export interface ProjectionRunnerOptions<
 }
 
 /**
- * Runs projections against an event store
+ * Runs projections against an event store.
+ * It orchestrates fetching events, feeding them to ProjectionProcessors,
+ * and managing the persistence of projection positions.
  * @template M ProjectionMapping type that maps projection names to event types
  * @template R EventRegistry type containing all events
  */
@@ -30,87 +32,83 @@ export class ProjectionRunner<
   R extends EventRegistry = EventRegistry
 > {
   readonly #config: ProjectionRunnerOptions<M, R>;
+  readonly #logger: Logger;
 
   constructor(options: ProjectionRunnerOptions<M, R>) {
     this.#config = options;
+    this.#logger = options.logger || {
+      log: console.log,
+      warn: console.warn,
+      error: console.error,
+    };
   }
 
   /**
-   * Run all projections against the event store
+   * Run all registered projections against the event store.
+   * This involves:
+   * 1. Fetching current positions for all projections.
+   * 2. Creating a ProjectionProcessor for each projection, initialized with its position.
+   * 3. Reading events from the event store starting from the oldest position required.
+   * 4. Feeding events to each processor.
+   * 5. Performing a final flush on all processors.
+   * 6. Updating projection positions in the projection store.
    */
   async run(): Promise<void> {
     const projections = this.#config.projectionRegistry.getAll();
-    const names = projections.map(p => p.name);
-    const positions = await this.#config.projectionStore.getPositions(names);
+    if (projections.length === 0) {
+      return;
+    }
 
-    // Create projection processors that will run in parallel
+    const names = projections.map(p => p.name);
+    const initialPositions = await this.#config.projectionStore.getPositions(names);
+
     const processors = projections.map(projection => {
       const name = projection.name;
+      const initialPosition = initialPositions[name] === undefined ? 0 : initialPositions[name];
       return new ProjectionProcessor<keyof M, M, R>({
         projection: projection as Projection<M, keyof M, R>,
-        initialPosition: positions[name] || 0,
-        logger: this.#config.logger
+        initialPosition: initialPosition!,
+        logger: this.#logger,
       });
     });
 
-    // Find the minimum position to start from
-    const minPosition = Math.min(...Object.values(positions), 0);
+    const minPosition = Math.min(...processors.map(p => p.currentLastProcessedEventId), 0);
 
-    // Read all events from the minimum position
-    for await (const batch of this.#config.eventStore.readAll(minPosition)) {
-      // Process events in order but projections in parallel
-      await Promise.all(
-        processors.map(async processor => {
-          for (const event of batch) {
-            if (processor.shouldProcessEvent(event)) {
-              await processor.processEvent(event);
-            }
-          }
-        })
-      );
+    let eventCount = 0;
+    for await (const eventBatch of this.#config.eventStore.readAll(minPosition)) {
+      if (eventBatch.length === 0) continue;
+      eventCount += eventBatch.length;
+
+      for (const event of eventBatch) {
+        // Feed each event to all processors. Each processor will decide if it should handle it.
+        await Promise.all(processors.map(processor => processor.processEvent(event)));
+      }
     }
 
-    // Persist final positions
-    const finalPositions = this.#collectPositions(processors);
-    await this.#config.projectionStore.updatePositions(finalPositions);
+    await Promise.all(processors.map(processor => processor.finalFlush()));
   }
 
   /**
-   * Collect current positions from all processors
-   * @param processors The projection processors to collect positions from
-   * @returns A record of projection names to positions
-   */
-  #collectPositions(processors: Array<ProjectionProcessor<keyof M, M, R>>): Record<keyof M, number> {
-    const positions: Partial<Record<keyof M, number>> = {};
-    for (const processor of processors) {
-      positions[processor.name] = processor.lastProcessedId;
-    }
-    return positions as Record<keyof M, number>;
-  }
-
-  /**
-   * Reset all projections
+   * Reset all projections.
+   * This involves resetting the internal state of each projection and their
+   * persisted positions in the ProjectionStore.
    */
   async resetAll(): Promise<void> {
     const projections = this.#config.projectionRegistry.getAll();
+    if (projections.length === 0) {
+      return;
+    }
 
-    // Reset all projections in parallel
-    await Promise.all(projections.map(async (projection) => {
-      await projection.reset();
-    }));
-
-    // Reset all positions in the store
-    const names = projections.map(p => p.name) as Array<string & keyof M>;
-    await this.#config.projectionStore.resetPositions(names);
+    await Promise.all(projections.map(projection => projection.reset()));
   }
 
   /**
-   * Reset a specific projection
-   * @param name The name of the projection to reset
+   * Reset a specific projection by name.
+   * @param name The name of the projection to reset.
    */
   async resetProjection(name: string & keyof M): Promise<void> {
     const projection = this.#config.projectionRegistry.get(name);
+    // Projection is responsible for resetting its own persisted state.
     await projection.reset();
-    await this.#config.projectionStore.resetPositions([name]);
   }
 }

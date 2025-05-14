@@ -2,7 +2,6 @@ import type { StreamIdentifier } from './primitives';
 
 export type EventRegistry = Record<string, any>;
 export type CommandRegistry = Record<string, any>;
-export type OutboxRegistry = Record<string, any>;
 export type ProjectionMapping<R extends EventRegistry = EventRegistry> = Record<string, keyof R>;
 
 export interface Logger {
