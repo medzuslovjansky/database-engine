@@ -17,6 +17,9 @@
     "test": "jest",
     "test:update": "jest -u"
   },
+  "dependencies": {
+    "@interslavic/database-engine-eventstore": "workspace:*"
+  },
   "devDependencies": {
     "@interslavic/eslint-config-cli": "workspace:*",
     "@interslavic/jest-config-cli": "workspace:*",

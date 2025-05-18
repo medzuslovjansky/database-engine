@@ -1,6 +1,6 @@
 import type { IntelligibilityRecord, SteenWordsRecord } from '@core/structures';
 import { SteenEntryAggregate } from './SteenEntryAggregate';
-import { EventEnvelope } from '@core/index';
+import type { SteenEntryEvent } from './events/types';
 
 // Sample data based on the provided tables
 const record1: SteenWordsRecord = {
@@ -59,6 +59,7 @@ const record3: IntelligibilityRecord = {
   id: 24020,
   lemma: 'abak',
   ratedBy: 'admin@example.com',
+  sourceLanguage: 'isv',
   targetLanguage: 'uk',
   mark: '.',
   cognates: ['абак'],
@@ -66,7 +67,7 @@ const record3: IntelligibilityRecord = {
 
 describe('SteenEntryAggregate', () => {
   test('importChanges twice produces two SteenEntryImported events with correct revisions', () => {
-    const aggregate = new SteenEntryAggregate();
+    const aggregate = new SteenEntryAggregate(record1.id);
     aggregate.importChanges(record1);
     aggregate.importChanges(record2);
     const events = aggregate.pullEvents().map(resetTime);
@@ -74,7 +75,7 @@ describe('SteenEntryAggregate', () => {
   });
 
   test('remove produces SteenEntryRemoved event', () => {
-    const aggregate = new SteenEntryAggregate();
+    const aggregate = new SteenEntryAggregate(record1.id);
     aggregate.importChanges(record1);
     aggregate.remove();
     const [, removed] = aggregate.pullEvents().map(resetTime);
@@ -82,7 +83,7 @@ describe('SteenEntryAggregate', () => {
   });
 
   test('rateIntelligibility produces IntelligibilityRated event', () => {
-    const aggregate = new SteenEntryAggregate();
+    const aggregate = new SteenEntryAggregate(record1.id);
     aggregate.importChanges(record1);
     aggregate.rateIntelligibility(record3);
     const [, rated] = aggregate.pullEvents().map(resetTime);
@@ -90,7 +91,7 @@ describe('SteenEntryAggregate', () => {
   });
 
   test('can be serialized', () => {
-    const aggregate = new SteenEntryAggregate();
+    const aggregate = new SteenEntryAggregate(record1.id);
     aggregate.importChanges(record1);
     aggregate.importChanges(record2);
     aggregate.rateIntelligibility(record3);
@@ -99,6 +100,6 @@ describe('SteenEntryAggregate', () => {
   });
 });
 
-function resetTime<T>(event: EventEnvelope<T>): EventEnvelope<T> {
+function resetTime<T extends SteenEntryEvent>(event: T): T {
   return { ...event, ts: 0 };
 }

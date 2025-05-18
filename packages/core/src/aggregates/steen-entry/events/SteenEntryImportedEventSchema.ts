@@ -14,6 +14,6 @@ export const SteenEntryImportedEventSchema = z.object({
   using_example: z.string().optional(),
 });
 
-export type SteenEntryImportedEvent = z.infer<
+export type SteenEntryImportedPayload = z.infer<
   typeof SteenEntryImportedEventSchema
 >;

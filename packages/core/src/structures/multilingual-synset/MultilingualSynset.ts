@@ -52,8 +52,8 @@ export class MultilingualSynset {
 
   public toJSON(): MultilingualSynsetJSON {
     return {
-      id: Math.abs(this.id),
-      beta: this.id < 0,
+      id: this.id,
+      beta: this.beta,
       synsets: Object.fromEntries(
         Object.entries(this.synsets)
           .filter(([, v]) => v !== undefined)

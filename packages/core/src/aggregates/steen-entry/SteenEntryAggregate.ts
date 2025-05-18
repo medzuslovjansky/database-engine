@@ -1,22 +1,31 @@
-import { Language } from '@core/constants';
-import { IntelligibilityVectorV1, IntelligibilityRecord, InterslavicLemma, MultilingualSynset, MultilingualSynsetJSON, SteenWordsRecord, Synset } from '@core/structures';
+import type { Language } from '@core/constants';
+import type { IntelligibilityRecord, InterslavicLemma, MultilingualSynsetJSON, SteenWordsRecord} from '@core/structures';
+import { IntelligibilityVectorV1, MultilingualSynset, Synset } from '@core/structures';
+import { AggregateRoot, StreamIdentifier } from '@interslavic/database-engine-eventstore';
 
-import { AggregateRoot } from '../AggregateRoot';
-import { EventEnvelope } from '../EventEnvelope';
-import type { SteenEntryEvent, SteenEntryEventRegistry, SteenEntryImportedEvent, SteenEntryRemovedEvent, IntelligibilityRatedEvent } from './events/types';
+import type {
+  SteenEntryEvent,
+  SteenEntryImportedPayload,
+  IntelligibilityRatedPayload
+} from './events/types';
 
-export class SteenEntryAggregate extends AggregateRoot<SteenEntryEventRegistry> {
-  state = new MultilingualSynset();
+export class SteenEntryAggregate extends AggregateRoot<MultilingualSynset, SteenEntryEvent> {
+  constructor(id: number | StreamIdentifier) {
+    const streamId = typeof id === 'number'
+      ? StreamIdentifier.fromString(`steen/${id}`)
+      : id;
+    super(streamId, 0, new MultilingualSynset());
+  }
 
-  protected apply(e: EventEnvelope<SteenEntryEvent>): void {
+  protected doApply(e: SteenEntryEvent): void {
     switch (e.type) {
-      case 'SteenEntryImported': return this.applyImport(e.data as SteenEntryImportedEvent);
-      case 'SteenEntryRemoved': return this.applyRemove(e.data as SteenEntryRemovedEvent);
-      case 'IntelligibilityRated': return this.applyIntelligibility(e.data as IntelligibilityRatedEvent);
+      case 'SteenEntryImported': { return this.applyImport(e.data); }
+      case 'SteenEntryRemoved': { return this.applyRemove(e.data); }
+      case 'IntelligibilityRated': { return this.applyIntelligibility(e.data); }
     }
   }
 
-  protected applyImport(event: SteenEntryImportedEvent): void {
+  protected applyImport(event: SteenEntryImportedPayload): void {
     this.state.id = Math.abs(event.id);
     this.state.beta = event.id < 0;
 
@@ -37,7 +46,7 @@ export class SteenEntryAggregate extends AggregateRoot<SteenEntryEventRegistry> 
         id: event.id ?? metadata?.id,
         partOfSpeech: event.part_of_speech ?? metadata?.partOfSpeech ?? '',
         addition: event.additional_info ?? metadata?.addition,
-        type: event.type != null ? event.type : metadata?.type,
+        type: event.type == null ? metadata?.type : event.type,
         sameInLanguages: event.same_in_languages ?? metadata?.sameInLanguages,
         genesis: event.genesis ?? metadata?.genesis,
         frequency: event.frequency ?? metadata?.frequency,
@@ -50,24 +59,20 @@ export class SteenEntryAggregate extends AggregateRoot<SteenEntryEventRegistry> 
     }
   }
 
-  protected applyRemove(_event: SteenEntryRemovedEvent): void {
+  protected applyRemove(_event: SteenEntryImportedPayload): void {
     this.state.steen = undefined;
     for (const language of Object.keys(this.state.synsets)) {
       this.state.synsets[language as Language] = undefined;
     }
   }
 
-  protected applyIntelligibility(event: IntelligibilityRatedEvent): void {
+  protected applyIntelligibility(event: IntelligibilityRatedPayload): void {
     if (event.source_language !== 'isv') return;
     const lemma = this.state.synsets.isv!.find(event.lemma);
     if (!lemma) return;
 
     lemma.intelligibility ??= IntelligibilityVectorV1.empty();
     lemma.intelligibility.update(event.target_language, event.mark);
-  }
-
-  protected getStreamName(): string {
-    return `steen/${this.state.id}`;
   }
 
   public importChanges(record: SteenWordsRecord): void {
@@ -77,7 +82,7 @@ export class SteenEntryAggregate extends AggregateRoot<SteenEntryEventRegistry> 
       throw new Error(`Cannot import changes for a different entry: |${id}| !== |${this.state.id}|`);
     }
 
-    const event: SteenEntryImportedEvent = { id };
+    const event: SteenEntryImportedPayload = { id };
 
     if (!this.state.id) {
       this.state.id = id;
@@ -89,14 +94,13 @@ export class SteenEntryAggregate extends AggregateRoot<SteenEntryEventRegistry> 
       const t = String(translation);
       event.translations ??= {};
       const existingSynset = this.state.synsets[language as Language];
-      if (!existingSynset) {
-        if (t) {
+      if (existingSynset) {
+        const newSynset = Synset.parse(t);
+        if (!existingSynset.equals(newSynset)) {
           event.translations[language] = t;
         }
       } else {
-        const newSynset = Synset.parse(t);
-        if (language === 'isv') { debugger; }
-        if (!existingSynset.equals(newSynset)) {
+        if (t) {
           event.translations[language] = t;
         }
       }
@@ -146,7 +150,7 @@ export class SteenEntryAggregate extends AggregateRoot<SteenEntryEventRegistry> 
       id: record.id,
       lemma: record.lemma,
       rated_by: record.ratedBy,
-      source_language: 'isv',
+      source_language: record.sourceLanguage,
       target_language: record.targetLanguage,
       mark: record.mark,
       cognates: record.cognates,

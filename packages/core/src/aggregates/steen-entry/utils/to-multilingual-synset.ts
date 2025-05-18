@@ -1,9 +1,8 @@
-import { MultilingualSynset } from '../../../structures/multilingual-synset/MultilingualSynset';
-import { Synset } from '../../../structures/synset';
-import type { SteenEntryImportedEvent } from '../events/SteenEntryImportedEventSchema';
+import { MultilingualSynset, Synset } from '../../../structures';
+import type { SteenEntryImportedPayload } from '../events';
 import type { Language } from '../../../constants';
 
-export function fromSteenEntryImportedEvent(event: SteenEntryImportedEvent): MultilingualSynset {
+export function fromSteenEntryImportedEvent(event: SteenEntryImportedPayload): MultilingualSynset {
   const multi = new MultilingualSynset();
   multi.id = Math.abs(event.id);
   multi.beta = event.id < 0;
@@ -29,7 +28,7 @@ export function fromSteenEntryImportedEvent(event: SteenEntryImportedEvent): Mul
           id: eventCopy.id,
           partOfSpeech: eventCopy.partOfSpeech ?? '',
           addition: eventCopy.addition,
-          type: eventCopy.type != null ? Number(eventCopy.type) : undefined,
+          type: eventCopy.type == null ? undefined : Number(eventCopy.type),
           sameInLanguages: eventCopy.sameInLanguages,
           genesis: eventCopy.genesis,
           frequency: eventCopy.frequency ? Number(eventCopy.frequency) : undefined,

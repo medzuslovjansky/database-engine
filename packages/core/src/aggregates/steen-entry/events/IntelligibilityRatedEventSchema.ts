@@ -14,6 +14,6 @@ export const IntelligibilityRatedEventSchema = z.object({
   comment: z.string().optional(),
 });
 
-export type IntelligibilityRatedEvent = z.infer<
+export type IntelligibilityRatedPayload = z.infer<
   typeof IntelligibilityRatedEventSchema
 >;

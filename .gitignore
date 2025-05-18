@@ -124,3 +124,6 @@ dist
 .env
 credentials.json
 *.secret.*
+
+# Mac
+.DS_Store

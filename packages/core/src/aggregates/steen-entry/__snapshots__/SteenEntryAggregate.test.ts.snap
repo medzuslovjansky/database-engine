@@ -2,7 +2,7 @@
 
 exports[`SteenEntryAggregate can be serialized 1`] = `
 {
-  "beta": false,
+  "beta": true,
   "id": 24020,
   "steen": undefined,
   "synsets": {
@@ -301,7 +301,10 @@ exports[`SteenEntryAggregate importChanges twice produces two SteenEntryImported
       "type": 1,
     },
     "revision": 1,
-    "stream": "steen/24020",
+    "stream": StreamIdentifier {
+      "id": "24020",
+      "prefix": "steen",
+    },
     "ts": 0,
     "type": "SteenEntryImported",
   },
@@ -322,7 +325,10 @@ exports[`SteenEntryAggregate importChanges twice produces two SteenEntryImported
       },
     },
     "revision": 2,
-    "stream": "steen/24020",
+    "stream": StreamIdentifier {
+      "id": "24020",
+      "prefix": "steen",
+    },
     "ts": 0,
     "type": "SteenEntryImported",
   },
@@ -346,7 +352,10 @@ exports[`SteenEntryAggregate rateIntelligibility produces IntelligibilityRated e
     "target_language": "uk",
   },
   "revision": 2,
-  "stream": "steen/24020",
+  "stream": StreamIdentifier {
+    "id": "24020",
+    "prefix": "steen",
+  },
   "ts": 0,
   "type": "IntelligibilityRated",
 }
@@ -358,7 +367,10 @@ exports[`SteenEntryAggregate remove produces SteenEntryRemoved event 1`] = `
     "id": 24020,
   },
   "revision": 2,
-  "stream": "steen/24020",
+  "stream": StreamIdentifier {
+    "id": "24020",
+    "prefix": "steen",
+  },
   "ts": 0,
   "type": "SteenEntryRemoved",
 }

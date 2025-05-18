@@ -4,6 +4,7 @@ export interface IntelligibilityRecord {
   id: number;
   lemma: string;
   ratedBy: string;
+  sourceLanguage: string;
   targetLanguage: string;
   mark: IntelligibilityMark;
   cognates?: string[];

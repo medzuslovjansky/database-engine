@@ -4,6 +4,6 @@ export const SteenEntryRemovedEventSchema = z.object({
   id: z.number(),
 });
 
-export type SteenEntryRemovedEvent = z.infer<
+export type SteenEntryRemovedPayload = z.infer<
   typeof SteenEntryRemovedEventSchema
 >;

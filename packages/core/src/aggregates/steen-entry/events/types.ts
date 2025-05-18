@@ -1,15 +1,18 @@
-import type { SteenEntryImportedEvent } from './SteenEntryImportedEventSchema';
-import type { SteenEntryRemovedEvent } from './SteenEntryRemovedEventSchema';
-import type { IntelligibilityRatedEvent } from './IntelligibilityRatedEventSchema';
+import type { Event } from '@interslavic/database-engine-eventstore';
 
-export interface SteenEntryEventRegistry {
-  SteenEntryImported: SteenEntryImportedEvent;
-  SteenEntryRemoved: SteenEntryRemovedEvent;
-  IntelligibilityRated: IntelligibilityRatedEvent;
-}
+import type { SteenEntryImportedPayload } from './SteenEntryImportedEventSchema';
+import type { SteenEntryRemovedPayload } from './SteenEntryRemovedEventSchema';
+import type { IntelligibilityRatedPayload } from './IntelligibilityRatedEventSchema';
 
-export type SteenEntryEventType = keyof SteenEntryEventRegistry;
+export type SteenEntryImportedEvent = Event<'SteenEntryImported', SteenEntryImportedPayload>
+export type SteenEntryRemovedEvent = Event<'SteenEntryRemoved', SteenEntryRemovedPayload>
+export type IntelligibilityRatedEvent = Event<'IntelligibilityRated', IntelligibilityRatedPayload>
 
-export type SteenEntryEvent = SteenEntryEventRegistry[SteenEntryEventType];
+export type SteenEntryEvent =
+  | SteenEntryImportedEvent
+  | SteenEntryRemovedEvent
+  | IntelligibilityRatedEvent;
 
-export { SteenEntryImportedEvent, SteenEntryRemovedEvent, IntelligibilityRatedEvent };
+export type { SteenEntryImportedPayload } from './SteenEntryImportedEventSchema';
+export type { SteenEntryRemovedPayload } from './SteenEntryRemovedEventSchema';
+export type { IntelligibilityRatedPayload } from './IntelligibilityRatedEventSchema';
