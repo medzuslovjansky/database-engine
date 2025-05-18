@@ -1,7 +1,6 @@
 import type { StreamIdentifier } from '../primitives';
-import type { AggregateState } from '../types';
 
-export interface SnapshotEnvelope<S extends AggregateState = AggregateState> {
+export interface Snapshot<S = unknown> {
   stream: StreamIdentifier;
   revision: number;
   ts: number;

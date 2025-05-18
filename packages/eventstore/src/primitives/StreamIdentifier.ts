@@ -1,3 +1,5 @@
+import { EmptyIdError, EmptyAggregateTypeError, InvalidStreamIdFormatError } from "../errors";
+
 /**
  * Immutable stream ID that encapsulates the aggregate type and instance ID
  * Prevents string manipulation errors and enforces consistent stream naming
@@ -20,12 +22,9 @@ export class StreamIdentifier {
    * @param id - The unique instance ID
    */
   constructor(prefix: string, id: string) {
-    if (!prefix) {
-      throw new Error('Aggregate type cannot be empty');
-    }
-    if (!id) {
-      throw new Error('ID cannot be empty');
-    }
+    if (!prefix) throw new EmptyAggregateTypeError();
+    if (!id) throw new EmptyIdError();
+
     this.prefix = prefix;
     this.id = id;
   }
@@ -38,9 +37,7 @@ export class StreamIdentifier {
    */
   public static fromString(streamId: string): StreamIdentifier {
     const parts = streamId.split('/');
-    if (parts.length !== 2) {
-      throw new Error(`Invalid stream ID format: ${streamId}. Expected "prefix/id"`);
-    }
+    if (parts.length !== 2) throw new InvalidStreamIdFormatError(streamId);
     return new StreamIdentifier(parts[0], parts[1]);
   }
 

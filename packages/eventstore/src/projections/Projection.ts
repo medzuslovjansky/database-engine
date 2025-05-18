@@ -1,19 +1,14 @@
-import type {EventEnvelope} from '../envelopes';
-import type {ProjectionMapping, EventRegistry} from '../types';
+import type { Event } from '../envelopes';
 
 /**
- * Interface for projections that handle events
- * @template N Name of the projection (must be a key in M)
- * @template M ProjectionMapping that defines which event types each projection handles
- * @template R EventRegistry containing all event types
+ * Interface for projections that handle a specific union of event types.
+ * @template E - The specific Event union this projection handles (e.g., CounterEvent | UserEvent).
  */
-export interface Projection<
-  M extends ProjectionMapping<R>,
-  N extends keyof M,
-  R extends EventRegistry = EventRegistry
-> {
-  /** The name of the projection */
-  readonly name: N;
+export interface Projection<E extends Event = Event> {
+  /**
+   * The unique name of the projection, used for registration and retrieval.
+   */
+  readonly name: string;
 
   /**
    * Reset the projection state.
@@ -44,15 +39,9 @@ export interface Projection<
   flush(): Promise<number>;
 
   /**
-   * Determine if an event should be handled by this projection
-   * @param event The event to check
-   * @returns True if the event should be handled by this projection, false otherwise
+   * Handle a specific event relevant to this projection.
+   * This method is called only if `shouldHandle` returns true for the event.
+   * @param event The event to handle (type-narrowed to E).
    */
-  shouldHandle(event: EventEnvelope<R>): boolean;
-
-  /**
-   * Handle an event
-   * @param event The event to handle
-   */
-  handle(event: EventEnvelope<R>): void;
+  handle(event: E): void;
 }

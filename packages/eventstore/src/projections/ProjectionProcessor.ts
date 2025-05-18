@@ -1,202 +1,271 @@
-import type { EventEnvelope } from '../envelopes';
-import type { EventRegistry, ProjectionMapping, Logger } from '../types';
+import type { CommittedEvent } from '../envelopes';
+import { ProjectionProcessingError, ProjectionFlushError } from '../errors';
 
 import type { Projection } from './Projection';
+import type { ProjectionLoggerFacade } from './ProjectionLoggerFacade';
 
 /**
  * Configuration for ProjectionProcessor
  */
-export interface ProjectionProcessorConfig<
-  N extends keyof M,
-  M extends ProjectionMapping<R>,
-  R extends EventRegistry = EventRegistry
-> {
-  projection: Projection<M, N, R>;
+export interface ProjectionProcessorConfig {
+  projection: Projection;
   initialPosition: number;
-  logger?: Logger;
+  loggerFacade: ProjectionLoggerFacade; // Changed from logger: Logger
 }
 
 /**
- * Handles processing events for a single projection, managing its lifecycle,
- * event sequencing, and flushing mechanics.
- * @template N Name of the projection
- * @template M ProjectionMapping type that maps projection names to event types
- * @template R EventRegistry containing all events
+ * Handles processing events for a single projection using a state machine.
+ * States: CATCHING_UP -> PROCESSING -> FAILED
  */
-export class ProjectionProcessor<
-  N extends keyof M,
-  M extends ProjectionMapping<R>,
-  R extends EventRegistry = EventRegistry
-> {
-  readonly #projection: Projection<M, N, R>;
-  readonly #logger: Logger;
+export class ProjectionProcessor {
+  readonly #projection: Projection;
+  readonly #loggerFacade: ProjectionLoggerFacade;
 
   #currentLastProcessedEventId: number;
-  #eventsPendingFlush: Array<EventEnvelope<R>> = [];
-  #isFlushing = false;
-  #hasFailed = false;
+  #eventsPendingFlush: CommittedEvent[] = [];
+  #hasFailed = false; // Public getter, private setter through #transitionToFailed
+  #failureError?: Error; // Store the error that caused the failure
 
-  constructor(config: ProjectionProcessorConfig<N, M, R>) {
-    this.#projection = config.projection;
+  // Dynamically assigned method for current state's event processing logic
+  public processEvents: (events: CommittedEvent[]) => Promise<void>;
+
+  constructor(config: ProjectionProcessorConfig) {
     this.#currentLastProcessedEventId = config.initialPosition;
-    // Ensure projection name is stringified for the logger context
-    const projectionNameStr = String(config.projection.name);
-    this.#logger = config.logger || {
-      log: (...args) => console.log(`[${projectionNameStr}]`, ...args),
-      warn: (...args) => console.warn(`[${projectionNameStr}]`, ...args),
-      error: (...args) => console.error(`[${projectionNameStr}]`, ...args),
-    };
+    this.#loggerFacade = config.loggerFacade; // Changed
+    this.#projection = config.projection;
+
+    // Initial state
+    this.processEvents = this.#processEventsCatchingUp;
+    this.#loggerFacade.initialized(
+      this.name,
+      this.#currentLastProcessedEventId,
+      'CATCHING_UP'
+    );
   }
 
-  /**
-   * Gets the name of the projection being processed.
-   */
-  get name(): N {
+  get name(): string {
     return this.#projection.name;
   }
 
-  /**
-   * Gets the ID of the last event that was successfully processed and flushed.
-   */
   get currentLastProcessedEventId(): number {
     return this.#currentLastProcessedEventId;
   }
 
-  /**
-   * Indicates whether the projection processor has encountered an unrecoverable error
-   * during the current run and has stopped processing events.
-   */
   get hasFailed(): boolean {
     return this.#hasFailed;
   }
 
-  /**
-   * Determines if an event should be preliminarily accepted for processing.
-   * This checks if the processor has failed, if the event has an ID, if it's not too old,
-   * and if the projection itself should handle this type of event.
-   * @param event The event to check.
-   * @returns True if the event might be processed, false otherwise.
-   */
-  private shouldAcceptEvent(event: EventEnvelope<R>): boolean {
-    if (this.#hasFailed) {
-      return false;
-    }
-    if (event.id === undefined) {
-      this.#logger.warn(`Event ${String(event.type)} has no ID, skipping.`);
-      return false;
-    }
-    // Event is older than or same as the last successfully flushed event ID
-    if (event.id <= this.#currentLastProcessedEventId) {
-      return false;
-    }
-    if (!this.#projection.shouldHandle(event)) {
-      return false;
-    }
-    return true;
+  get failureError(): Error | undefined {
+    return this.#failureError;
   }
 
-  /**
-   * Processes a single event.
-   * This involves sequence validation, calling the projection's handle method,
-   * and triggering a flush if the projection indicates it's ready.
-   * @param event The event to process.
-   */
-  async processEvent(event: EventEnvelope<R>): Promise<void> {
-    if (!this.shouldAcceptEvent(event)) {
+  #transitionToFailed(error?: Error): void {
+    if (this.#hasFailed) return; // Already failed, no need to log/clear again
+
+    this.#loggerFacade.transitionedToFailed(this.name);
+    this.#hasFailed = true;
+    this.#failureError = error;
+    this.#eventsPendingFlush = []; // Clear pending events
+    this.processEvents = this.#processEventsFailed; // Set to no-op processor
+  }
+
+  async #processEventsCatchingUp(events: CommittedEvent[]): Promise<void> {
+    if (this.#hasFailed || events.length === 0) {
       return;
     }
 
-    // Strict "x+1" event ID sequence validation
-    const expectedNextEventId =
-      this.#eventsPendingFlush.length > 0
-        ? this.#eventsPendingFlush[this.#eventsPendingFlush.length - 1].id! + 1
-        : this.#currentLastProcessedEventId + 1;
+    let firstRelevantEventIndex = -1;
+    let firstRelevantEventId: number | undefined;
 
-    if (event.id! !== expectedNextEventId) {
-      this.#logger.error(
-        `Critical: Out-of-sequence event. Expected ID ${expectedNextEventId}, got ${event.id}. Halting projection.`
+    for (let i = 0; i < events.length; i++) {
+      const event = events[i];
+      if (event.id > this.#currentLastProcessedEventId) {
+        const expectedEventId = this.#currentLastProcessedEventId + 1;
+        if (event.id !== expectedEventId) {
+          const error = new ProjectionProcessingError(
+            this.name,
+            event.id,
+            `Catch-up gap detected: Expected event ID ${expectedEventId} after ${this.#currentLastProcessedEventId}, but received ${event.id}`
+          );
+          this.#loggerFacade.catchUpGapDetected(
+            this.name,
+            expectedEventId,
+            this.#currentLastProcessedEventId,
+            event.id
+          );
+          this.#transitionToFailed(error);
+          throw error;
+        }
+        firstRelevantEventIndex = i;
+        firstRelevantEventId = event.id;
+        break;
+      }
+      // Event is old or current, skip it in CATCHING_UP phase
+    }
+
+    if (firstRelevantEventIndex !== -1) {
+      this.#loggerFacade.catchUpComplete(
+        this.name,
+        this.#currentLastProcessedEventId,
+        'PROCESSING',
+        firstRelevantEventId
       );
-      this.#hasFailed = true;
-      this.#eventsPendingFlush = []; // Clear pending work as state is suspect
+      this.processEvents = this.#processEventsProcessing;
+      const eventsToProcess = events.slice(firstRelevantEventIndex);
+      if (eventsToProcess.length > 0) {
+        // Directly call the new state's processing logic for the remaining events in this batch
+        return this.#processEventsProcessing(eventsToProcess);
+      }
+    } else if (events.length > 0) {
+      // All events in this batch were old or current, still catching up.
+    }
+    // If no relevant events found or batch was empty, just return.
+    // No flush needed as CATCHING_UP doesn't add to #eventsPendingFlush.
+  }
+
+  async #processEventsProcessing(events: CommittedEvent[]): Promise<void> {
+    if (this.#hasFailed || events.length === 0) {
       return;
     }
 
-    try {
-      // The type assertion `as EventEnvelope<R, M[N]>` ensures that the projection's
-      // handle method receives the event typed to the specific event types it expects.
-      this.#projection.handle(event as EventEnvelope<R, M[N]>);
-      this.#eventsPendingFlush.push(event);
-    } catch (error) {
-      this.#logger.error(
-        `Error in .handle() for event ${event.id} (type: ${String(event.type)}):`,
-        error
+    const expectedInitialEventIdForBatch = this.#currentLastProcessedEventId + 1;
+
+    if (events[0].id !== expectedInitialEventIdForBatch) {
+      const error = new ProjectionProcessingError(
+        this.name,
+        events[0].id,
+        `Batch out of order: Expected event ID ${expectedInitialEventIdForBatch} after ${this.#currentLastProcessedEventId}, but received ${events[0].id}`
       );
-      this.#hasFailed = true;
-      this.#eventsPendingFlush = []; // Clear potentially corrupted pending work
-      return;
+      this.#loggerFacade.processingBatchOutOfOrder(
+        this.name,
+        expectedInitialEventIdForBatch,
+        this.#currentLastProcessedEventId,
+        events[0].id
+      );
+      this.#transitionToFailed(error);
+      throw error;
     }
 
-    if (this.#projection.shouldFlush()) {
+    for (let i = 0; i < events.length; i++) {
+      const event = events[i];
+
+      // Validate event ID against the last flushed ID + events already pending in this cycle
+      const expectedEventIdConsideringPending =
+        (this.#eventsPendingFlush.length > 0
+            ? this.#eventsPendingFlush[this.#eventsPendingFlush.length -1].id
+            : this.#currentLastProcessedEventId)
+        + 1;
+
+      if (event.id !== expectedEventIdConsideringPending) {
+        const error = new ProjectionProcessingError(
+          this.name,
+          event.id,
+          `Event out of order: Expected event ID ${expectedEventIdConsideringPending}, but received ${event.id}`
+        );
+        this.#loggerFacade.processingEventOutOfOrder(
+          this.name,
+          event.id,
+          expectedEventIdConsideringPending,
+          this.#currentLastProcessedEventId,
+          this.#eventsPendingFlush.map(e=>e.id)
+        );
+        this.#transitionToFailed(error);
+        throw error;
+      }
+
+      try {
+        this.#projection.handle(event);
+        this.#eventsPendingFlush.push(event);
+
+        if (this.#projection.shouldFlush()) {
+          await this.#executeFlush();
+          if (this.#hasFailed) {
+            throw this.#failureError!;
+          }
+        }
+      } catch (error) {
+        const projectionError = new ProjectionProcessingError(
+          this.name,
+          event.id,
+          error
+        );
+        this.#loggerFacade.failedToProcessEvent(
+          this.name,
+          event.id,
+          String(event.type),
+          error
+        );
+        this.#transitionToFailed(projectionError);
+        throw projectionError;
+      }
+    }
+
+    // After processing all events in the batch, if not failed and there are pending events, flush them.
+    if (!this.#hasFailed && this.#eventsPendingFlush.length > 0) {
       await this.#executeFlush();
+      if (this.#hasFailed) {
+        throw this.#failureError!;
+      }
     }
   }
 
-  /**
-   * Executes the flush operation for the accumulated events.
-   * This calls the projection's flush method and updates the processor's state
-   * based on the outcome.
-   */
+  async #processEventsFailed(_events: CommittedEvent[]): Promise<void> {
+    // No-op state. Failure already logged when transitioning.
+    if (this.#failureError) {
+      throw this.#failureError;
+    }
+    return Promise.resolve();
+  }
+
   async #executeFlush(): Promise<void> {
-    if (this.#isFlushing || this.#hasFailed || this.#eventsPendingFlush.length === 0) {
+    if (this.#hasFailed || this.#eventsPendingFlush.length === 0) {
       return;
     }
 
-    this.#isFlushing = true;
-    // Create a snapshot of events to attempt flushing for this specific operation.
-    const eventsInThisFlushAttempt = [...this.#eventsPendingFlush];
+    const eventsToFlush = [...this.#eventsPendingFlush];
 
     try {
       const flushedToEventId = await this.#projection.flush();
-      const lastEventIdInAttempt = eventsInThisFlushAttempt[eventsInThisFlushAttempt.length - 1].id!;
+      const lastEventIdInFlushedSet = eventsToFlush[eventsToFlush.length - 1].id!;
 
-      if (flushedToEventId !== lastEventIdInAttempt) {
-        this.#logger.error(
-          `Critical: Projection reported flushedEventId ${flushedToEventId}, but the last event in the flushed batch was ${lastEventIdInAttempt}. Halting due to inconsistent state.`
+      if (flushedToEventId !== lastEventIdInFlushedSet) {
+        const error = new ProjectionFlushError(
+          this.name,
+          lastEventIdInFlushedSet,
+          new Error(`Flush mismatch: Projection reported flushing to event ID ${flushedToEventId}, but expected ${lastEventIdInFlushedSet}`)
         );
-        this.#hasFailed = true;
-        this.#eventsPendingFlush = []; // Clear all pending events, state is untrustworthy.
+        this.#loggerFacade.flushMismatch(
+          this.name,
+          flushedToEventId,
+          lastEventIdInFlushedSet
+        );
+        this.#transitionToFailed(error);
+        throw error;
       } else {
         this.#currentLastProcessedEventId = flushedToEventId;
-        // Remove the successfully flushed events from the primary pending queue.
-        // This ensures that if new events were added while awaiting flush, they are preserved.
-        this.#eventsPendingFlush.splice(0, eventsInThisFlushAttempt.length);
-        this.#logger.log(`Successfully flushed up to event ${flushedToEventId}. ${this.#eventsPendingFlush.length} events remain pending.`);
+        const flushedCount = eventsToFlush.length;
+        this.#eventsPendingFlush.splice(0, flushedCount);
+        this.#loggerFacade.flushedSuccessfully(
+          this.name,
+          flushedCount,
+          this.#currentLastProcessedEventId,
+          this.#eventsPendingFlush.length
+        );
       }
     } catch (error) {
-      const lastEventIdInAttempt = eventsInThisFlushAttempt[eventsInThisFlushAttempt.length - 1].id!;
-      this.#logger.error(
-        `Error in .flush() attempting to flush events up to ${lastEventIdInAttempt}:`,
+      const lastEventIdInAttempt = eventsToFlush.length > 0 ? eventsToFlush[eventsToFlush.length - 1].id! : this.#currentLastProcessedEventId;
+      const flushError = new ProjectionFlushError(
+        this.name,
+        lastEventIdInAttempt,
         error
       );
-      this.#hasFailed = true;
-      // If flush fails, the projection is responsible for its internal rollback.
-      // #currentLastProcessedEventId is NOT updated.
-      // For this run, the processor is failed. Clear pending events for this processor's current run.
-      this.#eventsPendingFlush = [];
-    } finally {
-      this.#isFlushing = false;
-    }
-  }
-
-  /**
-   * Performs a final flush attempt for any pending events if the processor
-   * has not failed and is not already flushing.
-   * This is typically called at the end of an event processing cycle.
-   */
-  async finalFlush(): Promise<void> {
-    if (this.#eventsPendingFlush.length > 0 && !this.#hasFailed && !this.#isFlushing) {
-      this.#logger.log(`Performing final flush of ${this.#eventsPendingFlush.length} pending events.`);
-      await this.#executeFlush();
+      this.#loggerFacade.failedToExecuteFlush(
+        this.name,
+        lastEventIdInAttempt,
+        error
+      );
+      this.#transitionToFailed(flushError);
+      throw flushError;
     }
   }
 }

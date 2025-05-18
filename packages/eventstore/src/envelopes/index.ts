@@ -1,2 +1,2 @@
-export * from './EventEnvelope';
-export * from './SnapshotEnvelope';
+export * from './Event';
+export * from './Snapshot';

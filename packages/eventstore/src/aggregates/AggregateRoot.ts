@@ -1,15 +1,16 @@
-import type { EventEnvelope } from '../envelopes';
-import type { StreamIdentifier } from '../primitives';
-import type { EventRegistry, AggregateState } from '../types';
+import type { Event } from '../envelopes';
+import { AggregateApplyError, InvalidEventRevisionError } from '../errors';
+import { StreamIdentifier } from '../primitives';
 
-export abstract class AggregateRoot<S extends AggregateState = AggregateState, R extends EventRegistry = EventRegistry> {
+export abstract class AggregateRoot<S = unknown, E extends Event = Event> {
   #stream: StreamIdentifier;
   #state: S;
   #revision = 0;
-  #uncommitted: EventEnvelope<R>[] = [];
+  #uncommitted: E[] = [];
+  #error: unknown;
 
-  protected constructor(stream: StreamIdentifier, revision: number, state: S) {
-    this.#stream = stream;
+  protected constructor(stream: StreamIdentifier | string, revision: number, state: S) {
+    this.#stream = typeof stream === 'string' ? StreamIdentifier.fromString(stream) : stream;
     this.#revision = revision;
     this.#state = state;
   }
@@ -30,40 +31,55 @@ export abstract class AggregateRoot<S extends AggregateState = AggregateState, R
     this.#state = state;
   }
 
-  pullEvents(): EventEnvelope<R>[] {
+  pullEvents(): E[] {
     const events = this.#uncommitted;
     this.#uncommitted = [];
     return events;
   }
 
   /**
-   * Type-safe raise method: provide event type and payload, and the envelope is created internally.
+   * Type-safe raise method: provide event type string and payload.
+   * The event constructed will conform to a member of the union type E.
    */
-  protected raise<K extends keyof R>(
-    type: K,
-    data: R[K],
+  protected raise<T extends E['type']>(
+    type: T,
+    data: Extract<E, { type: T }>['data']
   ): void {
-    const envelope: EventEnvelope<R, K> = {
+    const envelope = {
       type,
       data,
       stream: this.stream,
       ts: Date.now(),
-      revision: ++this.#revision,
-    };
+      revision: this.#revision + 1,
+    } as Event as E;
+
     this.apply(envelope);
     this.#uncommitted.push(envelope);
   }
 
-  loadFromHistory(events: Iterable<EventEnvelope<R>>): void {
-    for (const event of events) {
-      if (this.#revision + 1 !== event.revision) {
-        throw new Error(`Invalid event revision: expected ${this.#revision + 1}, got ${event.revision}`);
-      }
+  apply(event: E): void {
+    if (this.#error) {
+      throw new AggregateApplyError(this.stream, event, this.#error);
+    }
 
-      this.apply(event);
+    if (this.#revision + 1 !== event.revision) {
+      throw new InvalidEventRevisionError(this.#revision + 1, event.revision);
+    }
+
+    try {
+      this.doApply(event);
       this.#revision++;
+    } catch (error) {
+      this.#error = error;
+      throw error;
     }
   }
 
-  protected abstract apply(event: EventEnvelope<R>): void;
+  applyBatch(events: Iterable<E>): void {
+    for (const event of events) {
+      this.apply(event);
+    }
+  }
+
+  protected abstract doApply(event: E): void;
 }

@@ -1,48 +1,41 @@
+import type { Event } from '../envelopes';
+import { DuplicateProjectionRegistrationError } from '../errors';
+
 import type { Projection } from './Projection';
-import type { EventRegistry, ProjectionMapping } from '../types';
 
 /**
- * Registry for projections that provides type-safe access by projection name
- * @template M ProjectionMapping type that maps projection names to event types
- * @template R EventRegistry type containing all events
+ * Registry for projections. Projections are stored by their unique string name.
  */
-export class ProjectionRegistry<
-  M extends ProjectionMapping<R> = ProjectionMapping<EventRegistry>,
-  R extends EventRegistry = EventRegistry
-> {
-  // Since we've defined M as ProjectionMapping<string, R>, all its keys are strings
-  #projections = new Map<keyof M, Projection<M, keyof M, R>>();
+export class ProjectionRegistry {
+  #projections = new Map<string, Projection>();
 
   /**
-   * Register a projection with the registry
-   * @param projection The projection to register
+   * Register a projection with the registry.
+   * @param projection The projection instance to register. Its `name` property will be used as the key.
    */
-  register(projection: Projection<M, keyof M, R>): void {
+  register(projection: Projection): void {
     const name = projection.name;
     if (this.#projections.has(name)) {
-      throw new Error(`Duplicate projection registration: ${String(name)}`);
+      throw new DuplicateProjectionRegistrationError(name);
     }
     this.#projections.set(name, projection);
   }
 
   /**
-   * Get a projection by name
-   * @param name The name of the projection to get
-   * @returns The projection
+   * Get a projection by its unique name.
+   * @param name The name of the projection to retrieve.
+   * @returns The projection instance if found, otherwise undefined.
+   * The caller should use the `shouldHandle` method on the projection to safely process events.
    */
-  get<N extends keyof M>(name: N): Projection<M, N, R> {
-    const projection = this.#projections.get(name) as Projection<M, N, R>;
-    if (!projection) {
-      throw new Error(`Unknown projection: ${String(name)}`);
-    }
-    return projection;
+  get<E extends Event>(name: string): Projection<E> | undefined {
+    return this.#projections.get(name) as Projection<E> | undefined;
   }
 
   /**
-   * Get all registered projections
-   * @returns Array of all projections
+   * Get all registered projections.
+   * @returns An array of all projection instances.
    */
-  getAll(): Array<Projection<M, keyof M, R>> {
-    return [...this.#projections.values()];
+  getAll<E extends Event>(): Array<Projection<E>> {
+    return [...this.#projections.values()] as Array<Projection<E>>;
   }
 }
