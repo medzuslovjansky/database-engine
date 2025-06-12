@@ -2,6 +2,7 @@ import type { D1Database } from '@cloudflare/workers-types';
 import type { AuthProviderType } from '@auth/schema';
 import type { PATTokenDetailed, PATTokenRepository } from '@auth/pat';
 import type { DateTimeProvider } from '@auth/core';
+
 import type { D1UnitOfWork } from '../D1UnitOfWork';
 
 export interface D1PATTokenRepositoryConfig {

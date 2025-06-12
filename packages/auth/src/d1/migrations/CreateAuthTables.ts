@@ -1,5 +1,6 @@
 import type { D1Database } from '@cloudflare/workers-types';
-import { D1MigrationDefinition } from './types';
+
+import type { D1MigrationDefinition } from './types';
 
 export const CreateAuthTables: D1MigrationDefinition = {
   name: '001_create_auth_tables',

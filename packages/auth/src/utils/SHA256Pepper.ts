@@ -1,4 +1,5 @@
-import crypto from 'crypto';
+import crypto from 'node:crypto';
+
 import type { Pepper } from '@auth/core';
 
 export interface SHA256PepperOptions {

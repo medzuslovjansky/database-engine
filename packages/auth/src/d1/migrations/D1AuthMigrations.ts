@@ -1,7 +1,8 @@
 import type { D1Database } from '@cloudflare/workers-types';
+
 import { CreateAuthTables } from './CreateAuthTables';
-import { D1MigrationRecordDTO } from './schema';
-import { D1MigrationDefinition } from './types';
+import type { D1MigrationRecordDTO } from './schema';
+import type { D1MigrationDefinition } from './types';
 
 export interface D1AuthMigrationsConfig {
   db: D1Database;

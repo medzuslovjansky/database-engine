@@ -11,6 +11,7 @@ export interface AuthProviderLinkRepository {
   findUserIdByProviderId(providerType: AuthProviderType, providerId: string): Promise<string | null>;
   findLinksByUserId(userId: string): Promise<AuthProviderLinkDTO[]>;
   link(providerType: AuthProviderType, providerId: string, userId: string): Promise<void>;
+  loginByProviderId(providerType: AuthProviderType, providerId: string): Promise<string>;
   unlink(providerType: AuthProviderType, providerId: string): Promise<void>;
   deleteByProviderId(providerType: AuthProviderType, providerId: string): Promise<void>;
   deleteByUserId(userId: string): Promise<void>;

@@ -1,12 +1,15 @@
-import crypto from 'crypto';
+import crypto from 'node:crypto';
+
 import type {
   AuthProvider,
-  HttpLikeRequest,
   AuthProviderLinkRepository,
+  HttpLikeRequest,
   Pepper,
+  UserProfileRepository,
 } from '@auth/core';
 import type { UserProfileDTO } from '@auth/schema';
-import type { D1PATTokenRepository } from '../d1/repositories/D1PATTokenRepository';
+
+import type { PATTokenRepository } from './core';
 import type { PATTokenPrivateDTO, PATTokenDetailed } from './schema';
 
 export interface PATAuthProvider extends AuthProvider<HttpLikeRequest> {
@@ -17,19 +20,22 @@ export interface PATAuthProvider extends AuthProvider<HttpLikeRequest> {
 
 export interface PATAuthProviderConfig {
   readonly authProviderLinkRepository: AuthProviderLinkRepository;
-  readonly patTokenRepository: D1PATTokenRepository;
+  readonly userProfileRepository: UserProfileRepository;
+  readonly patTokenRepository: PATTokenRepository;
   readonly pepper: Pepper;
 }
 
 export class PATAuthProviderImpl implements PATAuthProvider {
   private readonly authProviderLinkRepository: AuthProviderLinkRepository;
-  private readonly patTokenRepository: D1PATTokenRepository;
+  private readonly userProfileRepository: UserProfileRepository;
+  private readonly patTokenRepository: PATTokenRepository;
   private readonly pepper: Pepper;
 
   constructor(config: Readonly<PATAuthProviderConfig>) {
     this.authProviderLinkRepository = config.authProviderLinkRepository;
     this.patTokenRepository = config.patTokenRepository;
     this.pepper = config.pepper;
+    this.userProfileRepository = config.userProfileRepository;
   }
 
   canHandle(request: unknown): request is HttpLikeRequest {
@@ -46,13 +52,12 @@ export class PATAuthProviderImpl implements PATAuthProvider {
     const pepperedTokenHash = this.pepper.pepper(rawToken);
 
     // Look up user by the peppered token hash (which is stored as provider_id)
-    const userId = await this.authProviderLinkRepository.findUserIdByProviderId('pat', pepperedTokenHash);
-    if (!userId) {
-      throw new Error('Invalid token');
-    }
+    const userId = await this.authProviderLinkRepository.loginByProviderId('pat', pepperedTokenHash);
 
-    // Update last login in auth_providers
-    await this.authProviderLinkRepository.login('pat', pepperedTokenHash);
+    const userProfile = await this.userProfileRepository.findById(userId);
+    if (!userProfile) {
+      throw new Error('User not found');
+    }
 
     return userProfile;
   }
@@ -92,7 +97,7 @@ export class PATAuthProviderImpl implements PATAuthProvider {
     };
   }
 
-  async deleteToken(userId: string, tokenId: string): Promise<void> {
+  async deleteToken(_userId: string, tokenId: string): Promise<void> {
     const pepperedTokenHash = this.pepper.pepper(tokenId);
     await Promise.all([
       this.authProviderLinkRepository.deleteByProviderId('pat', pepperedTokenHash),

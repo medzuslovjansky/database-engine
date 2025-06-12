@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { AuthProviderLinkSchema } from '@auth/core';
+import { AuthProviderLinkSchema } from '@auth/schema';
 
 export const PATTokenSchema = z.object({
   id: z.string(),

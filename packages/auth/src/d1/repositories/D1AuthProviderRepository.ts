@@ -12,7 +12,7 @@ export interface D1AuthProviderRepositoryConfig {
 }
 
 export class D1AuthProviderLinkRepository implements AuthProviderLinkRepository {
-  constructor(private readonly config: D1AuthProviderRepositoryConfig) { }
+  constructor(private readonly config: D1AuthProviderRepositoryConfig) {}
 
   async findUserIdByProviderId(providerType: AuthProviderType, providerId: string): Promise<string | null> {
     const query = `SELECT user_id FROM ${this.config.tableName} \
@@ -46,6 +46,16 @@ export class D1AuthProviderLinkRepository implements AuthProviderLinkRepository 
       this.config.dateTimeProvider.nowUnix()
     );
     this.config.unitOfWork.addStatement(statement);
+  }
+
+  async loginByProviderId(providerType: AuthProviderType, providerId: string): Promise<string> {
+    const userId = await this.findUserIdByProviderId(providerType, providerId);
+      // TODO: touch last login at
+    if (!userId) {
+      throw new Error('User not found');
+    }
+
+    return userId;
   }
 
   async unlink(providerType: AuthProviderType, providerId: string): Promise<void> {
