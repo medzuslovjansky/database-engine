@@ -6,33 +6,38 @@ import {
   type Event,
   type StreamPointer,
 } from '@interslavic/database-engine-eventstore';
+
 import type { D1UnitOfWork } from './D1UnitOfWork';
 
 export interface D1EventStoreOptions {
   db: D1Database;
   tableName?: string;
+  batchSize?: number;
 }
 
-const DEFAULT_EVENTS_TABLE_NAME = 'events';
+const DEFAULT_EVENTS_TABLE_NAME = 'Events';
 
 // Data Access Object type for events from D1
 interface CommittedEventDAO {
   id: number;
-  stream_prefix: string;
-  stream_id: string;
+  stream: string;
   revision: number;
   type: string;
   ts: number;
   data: string | null; // JSON string or null
 }
 
+// TODO: DDL this, add indices
+
 export class D1EventStore implements EventStore {
   private readonly db: D1Database;
   private readonly tableName: string;
+  private readonly batchSize: number;
 
   constructor(options: Readonly<D1EventStoreOptions>) {
     this.db = options.db;
     this.tableName = options.tableName ?? DEFAULT_EVENTS_TABLE_NAME;
+    this.batchSize = options.batchSize ?? 50;
   }
 
   public static async createTable(
@@ -41,13 +46,12 @@ export class D1EventStore implements EventStore {
   ): Promise<D1ExecResult> {
     const sql = `CREATE TABLE IF NOT EXISTS ${tableName} (\
 id INTEGER PRIMARY KEY AUTOINCREMENT,\
-stream_prefix TEXT NOT NULL,\
-stream_id TEXT NOT NULL,\
+stream TEXT NOT NULL,\
 revision INTEGER NOT NULL,\
 type TEXT NOT NULL,\
 ts INTEGER NOT NULL,\
 data TEXT,\
-UNIQUE (stream_prefix, stream_id, revision)\
+UNIQUE (stream, revision)\
 );`;
     return db.exec(sql);
   }
@@ -64,30 +68,37 @@ UNIQUE (stream_prefix, stream_id, revision)\
   private mapDaoToCommittedEvent(dao: CommittedEventDAO): CommittedEvent {
     return {
       id: dao.id,
-      stream: new StreamIdentifier(dao.stream_prefix, dao.stream_id),
+      stream: StreamIdentifier.fromString(dao.stream),
       revision: dao.revision,
       type: dao.type,
       ts: dao.ts,
-      data: dao.data ? JSON.parse(dao.data) : undefined,
+      data: dao.data,
     };
   }
 
   async *readStream(pointer: StreamPointer): AsyncIterable<CommittedEvent[]> {
-    const stream = typeof pointer.stream === 'string' ? StreamIdentifier.fromString(pointer.stream) : pointer.stream;
+    const stream = typeof pointer.stream === 'string' ? pointer.stream : pointer.stream.toString();
     const revision = pointer.revision ?? 0;
-
-    const query = `
-      SELECT id, stream_prefix, stream_id, revision, type, ts, data
-      FROM ${this.tableName}
-      WHERE stream_prefix = ?1 AND stream_id = ?2 AND revision > ?3
-      ORDER BY revision ASC;
-    `;
-
-    const stmt = this.db.prepare(query).bind(stream.prefix, stream.id, revision);
-    const d1Result: D1Result<CommittedEventDAO> = await stmt.all();
-
-    if (d1Result.results) {
-      yield d1Result.results.map(this.mapDaoToCommittedEvent.bind(this));
+    const batchSize = this.batchSize;
+    let lastRevision = revision;
+    while (true) {
+      const query = `
+        SELECT id, stream, revision, type, ts, data
+        FROM ${this.tableName}
+        WHERE stream = ?1 AND revision > ?2
+        ORDER BY revision ASC
+        LIMIT ?3;
+      `;
+      const stmt = this.db.prepare(query).bind(stream, lastRevision, batchSize);
+      const d1Result: D1Result<CommittedEventDAO> = await stmt.all();
+      const events = d1Result.results?.map(this.mapDaoToCommittedEvent.bind(this)) ?? [];
+      if (events.length > 0) {
+        lastRevision = events.at(-1)!.revision;
+        yield events;
+      }
+      if (events.length < batchSize) {
+        break;
+      }
     }
   }
 
@@ -106,30 +117,26 @@ UNIQUE (stream_prefix, stream_id, revision)\
     }
   }
 
-  async *readAll(fromId?: number): AsyncIterable<CommittedEvent[]> {
-    const BATCH_SIZE = 100;
-    let lastSeenId = fromId ?? 0;
-
+  async *readAll(fromId = 0): AsyncIterable<CommittedEvent[]> {
+    const batchSize = this.batchSize;
+    let lastSeenId = fromId;
     while (true) {
       const query = `
-        SELECT id, stream_prefix, stream_id, revision, type, ts, data
+        SELECT id, stream, revision, type, ts, data
         FROM ${this.tableName}
         WHERE id > ?1
         ORDER BY id ASC
         LIMIT ?2;
       `;
-      const stmt = this.db.prepare(query).bind(lastSeenId, BATCH_SIZE);
+      const stmt = this.db.prepare(query).bind(lastSeenId, batchSize);
       const d1Result: D1Result<CommittedEventDAO> = await stmt.all();
-
       const events = d1Result.results?.map(this.mapDaoToCommittedEvent.bind(this)) ?? [];
       if (events.length === 0) {
         break;
       }
-
       yield events;
-      lastSeenId = events[events.length - 1].id!;
-
-      if (events.length < BATCH_SIZE) {
+      lastSeenId = events.at(-1)!.id;
+      if (events.length < batchSize) {
         break;
       }
     }
@@ -145,12 +152,11 @@ UNIQUE (stream_prefix, stream_id, revision)\
     }
     const statements = events.map(event => {
       const query = `
-        INSERT INTO ${this.tableName} (stream_prefix, stream_id, revision, type, ts, data)
-        VALUES (?1, ?2, ?3, ?4, ?5, ?6);
+        INSERT INTO ${this.tableName} (stream, revision, type, ts, data)
+        VALUES (?1, ?2, ?3, ?4, ?5);
       `;
       return this.db.prepare(query).bind(
-        event.stream.prefix,
-        event.stream.id,
+        String(event.stream),
         event.revision,
         event.type,
         event.ts,

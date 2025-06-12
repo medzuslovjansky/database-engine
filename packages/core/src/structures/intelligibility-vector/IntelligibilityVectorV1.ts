@@ -1,15 +1,23 @@
 import { IntelligibilityMark } from '@core/primitives';
 
-type IntelligibilityValue = {
-  value: number;
-  mark?: IntelligibilityMark;
+const MARK_TO_VALUE: Record<IntelligibilityMark, number> = {
+  '.': 1,
+  'n': 0,
+  't': 0.25,
+  'f': 0.25,
+  'r': 0.3,
+  'a': 0.3,
+  'z': 0.3,
+  'k': 0.7,
+  'm': 0.7,
+  '?': 0.5,
 };
 
 export class IntelligibilityVectorV1 {
-  private _intelligibility: Map<string, IntelligibilityValue>;
+  private _intelligibility: Map<string, IntelligibilityMark>;
 
-  private constructor(map?: Map<string, IntelligibilityValue>) {
-    this._intelligibility = new Map(map);
+  private constructor(map?: Map<string, IntelligibilityMark>) {
+    this._intelligibility = map ? new Map(map) : new Map();
   }
 
   public update(language: string, mark?: IntelligibilityMark): void {
@@ -17,51 +25,23 @@ export class IntelligibilityVectorV1 {
       this._intelligibility.delete(language);
       return;
     }
+    this._intelligibility.set(language, mark);
+  }
 
-    // Convert mark to a value between 0 and 1
-    let value: number;
-
-    switch (mark) {
-      case '.': // Fully intelligible
-        value = 1;
-        break;
-      case 'n': // Not intelligible
-        value = 0;
-        break;
-      case 't': // Difficult
-      case 'f': // False friend
-        value = 0.25;
-        break;
-      case 'r': // Rare
-      case 'a': // Archaic
-      case 'z': // Obsolete
-        value = 0.3;
-        break;
-      case 'k': // Contextual
-      case 'm': // Intuitive
-        value = 0.7;
-        break;
-      case '?': // Unmarked
-      default:
-        value = 0.5;
-        break;
-    }
-
-    this._intelligibility.set(language, {
-      value,
-      mark,
-    });
+  public getMark(language: string): IntelligibilityMark | undefined {
+    return this._intelligibility.get(language);
   }
 
   public getValue(language: string): number | undefined {
-    return this._intelligibility.get(language)?.value;
+    const mark = this._intelligibility.get(language);
+    return mark ? MARK_TO_VALUE[mark] : undefined;
   }
 
   public equals(other: IntelligibilityVectorV1 | undefined): boolean {
     if (!other) return false;
     if (this._intelligibility.size !== other._intelligibility.size) return false;
-    for (const [lang, data] of this._intelligibility.entries()) {
-      if (!IntelligibilityVectorV1._areValuesEqual(data, other._intelligibility.get(lang))) return false;
+    for (const [lang, mark] of this._intelligibility.entries()) {
+      if (other._intelligibility.get(lang) !== mark) return false;
     }
     return true;
   }
@@ -74,23 +54,16 @@ export class IntelligibilityVectorV1 {
     if (this._intelligibility.size === 0) {
       return '';
     }
-
     const parts: string[] = [];
-
-    for (const [lang, data] of [...this._intelligibility.entries()].sort()) {
+    for (const [lang, mark] of [...this._intelligibility.entries()].sort()) {
       let symbol: string;
-
-      if (data.value === 1) {
-        symbol = '+';
-      } else if (data.value === 0) {
-        symbol = '-';
-      } else {
-        symbol = '~';
+      switch (mark) {
+        case '.': symbol = '+'; break;
+        case 'n': symbol = '-'; break;
+        case 't': case 'f': case 'r': case 'a': case 'z': case 'k': case 'm': case '?': default: symbol = '~'; break;
       }
-
       parts.push(`${lang}${symbol}`);
     }
-
     return parts.join(' ');
   }
 
@@ -106,27 +79,24 @@ export class IntelligibilityVectorV1 {
     const vector = new IntelligibilityVectorV1();
     // Parse format like "ru+ bg- pl~"
     const parts = str.trim().split(/\s+/);
-
     for (const part of parts) {
       if (!part) continue;
-
       const match = part.match(/^([a-z]{2,4})([\+\-\~])$/);
       if (match) {
         const [, lang, symbol] = match;
-        const value = symbol === '+' ? 1 : symbol === '-' ? 0 : 0.5;
-        vector._intelligibility.set(lang, { value });
+        let mark: IntelligibilityMark;
+        switch (symbol) {
+          case '+': mark = '.'; break;
+          case '-': mark = 'n'; break;
+          case '~': default: mark = '?'; break;
+        }
+        vector._intelligibility.set(lang, mark);
       }
     }
-
     return vector;
   }
 
   public toJSON(): string {
     return this.toString();
-  }
-
-  private static _areValuesEqual(a: IntelligibilityValue | undefined, b: IntelligibilityValue | undefined): boolean {
-    if (!a || !b) return a === b;
-    return a.value === b.value && a.mark === b.mark;
   }
 }

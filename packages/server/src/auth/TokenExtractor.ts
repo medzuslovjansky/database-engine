@@ -1,4 +1,4 @@
-import { GoogleJwtPayload } from './GoogleJwtPayload';
+import type { GoogleJwtPayload } from './GoogleJwtPayload';
 
 /**
  * Responsible for extracting and decoding tokens from Authorization headers

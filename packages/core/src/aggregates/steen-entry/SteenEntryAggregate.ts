@@ -12,7 +12,7 @@ import type {
 export class SteenEntryAggregate extends AggregateRoot<MultilingualSynset, SteenEntryEvent> {
   constructor(id: number | StreamIdentifier) {
     const streamId = typeof id === 'number'
-      ? StreamIdentifier.fromString(`steen/${id}`)
+      ? StreamIdentifier.fromString(`steen/${Math.abs(id)}`)
       : id;
     super(streamId, 0, new MultilingualSynset());
   }

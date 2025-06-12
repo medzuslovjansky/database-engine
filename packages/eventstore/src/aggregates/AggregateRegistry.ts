@@ -5,8 +5,8 @@ import { AggregateRegistrationNotFoundError, DuplicateAggregateRegistrationError
 import type { AggregateRoot } from './AggregateRoot';
 import type { AggregateRegistration } from './AggregateFactory';
 
-const defaultSerializer = (s: unknown) => JSON.stringify(s);
-const defaultDeserializer = (s: unknown) => JSON.parse(String(s));
+const defaultSerializer = <T>(s: T) => s;
+const defaultDeserializer = <T>(s: T) => s;
 
 export class AggregateRegistry {
   #registrations: Map<string, AggregateRegistration<any>> = new Map();
@@ -39,7 +39,7 @@ export class AggregateRegistry {
   deserialize<S>(stream: StreamIdentifier, serialized: unknown): S {
     const registration = this.#getRegistrationForStream(stream);
     const deserialize = registration.deserialize ?? defaultDeserializer;
-    return deserialize(serialized);
+    return deserialize(serialized) as S;
   }
 
   #getRegistrationForStream({ prefix }: StreamIdentifier): AggregateRegistration {

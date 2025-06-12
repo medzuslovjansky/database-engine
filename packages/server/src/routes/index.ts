@@ -7,7 +7,7 @@ import { registerSystemRoutes } from './system';
 
 // Helper function to add routes to a router
 export function registerRoutes(router: ReturnType<typeof IttyRouter>) {
-	registerAuthRoutes(router);
+  registerAuthRoutes(router);
   registerRootRoutes(router);
   registerSynsetsRoutes(router);
   registerUserRoutes(router);

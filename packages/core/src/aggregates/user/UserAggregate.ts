@@ -2,20 +2,12 @@ import {
   AggregateRoot,
   StreamIdentifier
 } from '@interslavic/database-engine-eventstore';
-import {
-  DisplayNameChangedEventData,
-  RoleAssignedEventData,
-  RoleUnassignedEventData,
-  UserCreatedEventData,
-  UserEvent
-} from './events';
+import type {UserRole} from '@core/primitives';
 
-const ADMIN_ROLE = 'admin';
+import type {UserEvent} from './events';
 
 export interface UserState {
   id: string;
-  email: string;
-  displayName: string;
   roles: Set<string>;
 }
 
@@ -26,8 +18,6 @@ export class UserAggregate extends AggregateRoot<UserState, UserEvent> {
       0,
       {
         id: userId,
-        email: '',
-        displayName: '',
         roles: new Set<string>()
       }
     );
@@ -36,92 +26,110 @@ export class UserAggregate extends AggregateRoot<UserState, UserEvent> {
   protected doApply(event: UserEvent): void {
     switch (event.type) {
       case 'UserCreated': {
-        const { email, display_name, roles } = event.data;
-        this.state.email = email;
-        this.state.displayName = display_name;
-        this.state.roles = new Set(roles);
-        break;
-      }
-      case 'DisplayNameChanged': {
-        this.state.displayName = event.data.new_display_name;
+        this.state.id = event.data.user_id;
         break;
       }
       case 'RoleAssigned': {
-        this.state.roles.add(event.data.role);
+        const key = this.#toKey(event.data.role, event.data.language);
+        this.state.roles.add(key);
         break;
       }
       case 'RoleUnassigned': {
-        this.state.roles.delete(event.data.role);
+        const key = this.#toKey(event.data.role, event.data.language);
+        this.state.roles.delete(key);
         break;
       }
     }
   }
 
   // --- Business methods that raise events ---
-  public initializeUser(email: string, displayName: string, initialRoles: string[] = []): void {
+  public initializeUser(): void {
     if (this.revision > 0) {
       throw new Error('User already initialized. Cannot call initializeUser again.');
     }
-    const eventData: UserCreatedEventData = {
-      user_id: this.state.id,
-      email,
-      display_name: displayName,
-      roles: initialRoles,
-    };
-    this.raise('UserCreated', eventData);
+
+    this.raise('UserCreated', { user_id: this.state.id });
   }
 
-  public changeDisplayName(newDisplayName: string): void {
-    if (!newDisplayName || newDisplayName.trim() === '') {
-      throw new Error('Display name cannot be empty.');
-    }
-    if (this.state.displayName === newDisplayName) {
-      return; // No change
-    }
-    const eventData: DisplayNameChangedEventData = {
-      user_id: this.state.id,
-      new_display_name: newDisplayName,
-    };
-    this.raise('DisplayNameChanged', eventData);
-  }
+  public assignRole(issuerId: string, role: UserRole, language?: string): void {
+    const key = this.#toKey(role, language);
 
-  public assignRole(role: string, issuerId: string): void {
-    if (!role || role.trim() === '') {
-      throw new Error('Role cannot be empty.');
+    if (this.state.roles.has(key)) {
+      throw new Error(`Cannot assign "${key}" role again.`);
     }
-    if (this.state.roles.has(role)) {
-      return; // Role already assigned
-    }
-    const eventData: RoleAssignedEventData = {
+
+    this.raise('RoleAssigned', {
       issuer_id: issuerId,
       user_id: this.state.id,
       role,
-    };
-    this.raise('RoleAssigned', eventData);
+      language,
+    });
   }
 
-  public unassignRole(role: string, unassignedByUserId: string): void {
-    if (!role || role.trim() === '') {
-      throw new Error('Role cannot be empty.');
-    }
+  public unassignRole(issuerId: string, role: UserRole, language?: string): void {
+    const key = this.#toKey(role, language);
     if (!this.state.roles.has(role)) {
-      return; // Role not currently assigned
+      throw new Error(`Could not find role "${key}" to unassign.`);
     }
-    const eventData: RoleUnassignedEventData = {
-      issuer_id: unassignedByUserId,
+
+    if (this.state.roles.has('admin') && role !== 'admin') {
+      throw new Error(`Cannot unassign "${role}" role from admin.`);
+    }
+
+    this.raise('RoleUnassigned', {
+      issuer_id: issuerId,
       user_id: this.state.id,
       role,
-    };
-    this.raise('RoleUnassigned', eventData);
+      language,
+    });
   }
 
   // --- Permission-checking methods (queries on current state) ---
-  public hasRole(role: string): boolean {
-    return this.state.roles.has(role);
+  public hasRole(role: UserRole, language?: string): boolean {
+    if (this.state.roles.has('admin')) {
+      return true;
+    }
+
+    if (role === 'editor' && this.hasRole('speaker', language)) {
+      return true;
+    }
+
+    const key = this.#toKey(role, language);
+    return this.state.roles.has(role) || this.state.roles.has(key);
   }
 
-  public canManageOtherUserRoles(): boolean {
-    // Example: Only users with ADMIN_ROLE can manage other users' roles.
-    return this.state.roles.has(ADMIN_ROLE);
+  public canManageRole(role: UserRole, language?: string): boolean {
+    if (role === 'speaker' && !language) {
+      return false;
+    }
+
+    if (this.hasRole('admin')) {
+      return true;
+    }
+
+    if (role === 'speaker') {
+      return this.hasRole('curator', language);
+    }
+
+    return false;
+  }
+
+  toJSON() {
+    return {
+      ...this.state,
+      roles: [...this.state.roles],
+    };
+  }
+
+  static parseSnapshotData(data: string): UserState {
+    const parsedData = JSON.parse(data);
+    return {
+      ...parsedData,
+      roles: new Set(parsedData.roles),
+    };
+  }
+
+  #toKey(role: UserRole, language?: string): string {
+    return language ? `${role}:${language}` : role;
   }
 }

@@ -71,11 +71,12 @@ export function registerAuthRoutes(router: ReturnType<typeof Router>) {
     // Store code_verifier in a secure, HTTP-only cookie for the callback
     const pkceCookie = serializeCookie('pkce_verifier', code_verifier, {
       httpOnly: true,
-      secure: isProd, // only secure in prod
-      path: isProd ? '/api/auth/google/callback' : '/api/auth/',
-      sameSite: isProd ? 'Strict' : 'Lax',
+      path: '/api/auth/google/callback',
       maxAge: 300,
+      secure: isProd, // only secure in prod
+      sameSite: isProd ? 'Strict' : 'Lax',
     });
+
     const params = new URLSearchParams({
       client_id: env.GOOGLE_CLIENT_ID,
       redirect_uri,
@@ -86,6 +87,7 @@ export function registerAuthRoutes(router: ReturnType<typeof Router>) {
       code_challenge,
       code_challenge_method: 'S256',
     });
+
     const redirectResponse = Response.redirect(`https://accounts.google.com/o/oauth2/v2/auth?${params.toString()}`, 302);
     const headers = new Headers(redirectResponse.headers);
     headers.set('Set-Cookie', pkceCookie);

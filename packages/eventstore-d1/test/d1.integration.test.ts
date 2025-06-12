@@ -11,10 +11,7 @@ import {
   type AggregateRepositoryOptions,
 } from '@interslavic/database-engine-eventstore';
 
-// Placeholder imports - these modules will be created later
-import { D1EventStore } from '../src/D1EventStore'; // To be created
-import { D1SnapshotStore } from '../src/D1SnapshotStore'; // To be created
-import { D1PlatformUnitOfWork } from '../src/D1PlatformUnitOfWork'; // To be created
+import { D1EventStore, D1EventStoreUnitOfWork, D1SnapshotStore, D1UnitOfWork } from '../src';
 
 // Define a simple aggregate for testing
 interface TestState {
@@ -51,18 +48,22 @@ class TestAggregate extends AggregateRoot<TestState, TestEvent> {
 
   protected doApply(event: TestEvent): void {
     switch (event.type) {
-      case 'Created':
+      case 'Created': {
         this.state = { ...this.state, id: event.data.id, value: event.data.initialValue, history: [`Created with ${event.data.initialValue}`] };
         break;
-      case 'ValueUpdated':
+      }
+      case 'ValueUpdated': {
         this.state = { ...this.state, value: event.data.newValue, history: [...this.state.history, `Value updated to ${event.data.newValue}`] };
         break;
-      case 'HistoryAppended':
+      }
+      case 'HistoryAppended': {
         this.state = { ...this.state, history: [...this.state.history, event.data.entry] };
         break;
-      default:
+      }
+      default: {
         // Ensure exhaustiveness if needed, or throw for unknown event
         break;
+      }
     }
   }
 }
@@ -81,12 +82,11 @@ describe('D1 EventStore End-to-End Integration Suite', () => {
   // platformUoW will be created per test or operation where needed, wrapping a D1PlatformUnitOfWork
 
   beforeAll(async () => {
-    // @ts-ignore - __MINIFLARE_DB__ is globally available from vitest.setup.ts
     db = globalThis.__MINIFLARE_DB__;
 
     // Instantiate stores (actual classes will be created later)
     // For now, these are just illustrative of what we will need.
-    d1EventStore = new D1EventStore({ db, tableName: EVENTS_TABLE_NAME });
+    d1EventStore = new D1EventStore({ db, tableName: EVENTS_TABLE_NAME, batchSize: 1 });
     d1SnapshotStore = new D1SnapshotStore({ db, tableName: SNAPSHOTS_TABLE_NAME });
 
     // Create tables. These static methods will be part of the D1Store implementations.
@@ -97,8 +97,8 @@ describe('D1 EventStore End-to-End Integration Suite', () => {
     aggregateRegistry.register<TestState>({
       prefix: 'test',
       factory: (streamId, revision, state) => new TestAggregate(streamId, revision, state!),
-      serialize: (state) => JSON.stringify(state),
-      deserialize: (serialized) => JSON.parse(serialized as string),
+      serialize: x => x,
+      deserialize: x => x as TestState,
     });
   });
 
@@ -109,8 +109,8 @@ describe('D1 EventStore End-to-End Integration Suite', () => {
 
     // Re-initialize the repository for each test to ensure clean state and UoW
     // The PlatformUnitOfWork will be created on-demand when saving aggregates.
-    const platformUoWFactory = () => new D1PlatformUnitOfWork({
-        db,
+    const platformUoWFactory = () => new D1EventStoreUnitOfWork({
+        d1UnitOfWork: new D1UnitOfWork({ db }),
         eventStore: d1EventStore, // The same d1EventStore instance
         snapshotStore: d1SnapshotStore, // The same d1SnapshotStore instance
     });
@@ -128,12 +128,17 @@ describe('D1 EventStore End-to-End Integration Suite', () => {
 
   it('should save a new aggregate and its events, then load it back correctly', async () => {
     const aggId = 'agg1';
-    let testAgg = TestAggregate.create(aggId, 10);
+    const testAgg = TestAggregate.create(aggId, 10);
     testAgg.updateValue(20);
     testAgg.appendHistory('First update done'); // 3 events total: Created, ValueUpdated, HistoryAppended
 
     // Create a UoW for this specific save operation
-    const uowForSave = new D1PlatformUnitOfWork({ db, eventStore: d1EventStore, snapshotStore: d1SnapshotStore });
+    const uowForSave = new D1EventStoreUnitOfWork({
+      d1UnitOfWork: new D1UnitOfWork({ db }),
+      eventStore: d1EventStore,
+      snapshotStore: d1SnapshotStore
+    });
+
     await aggregateRepository.save(testAgg); // This should use the UoW provided in repo options or handle its own
     await uowForSave.commit(); // This commit assumes AggregateRepository.save() stages to the UoW passed to it, or one it creates.
                                // Let's refine this part once AggregateRepository and D1PlatformUnitOfWork interaction is clearer.
@@ -145,7 +150,7 @@ describe('D1 EventStore End-to-End Integration Suite', () => {
     // So we need to commit *that* unit of work.
 
     // Let's get the UoW that was configured into the repository
-    const repoUoW = (aggregateRepository as any).config.unitOfWork as D1PlatformUnitOfWork;
+    const repoUoW = (aggregateRepository as any).config.unitOfWork as D1EventStoreUnitOfWork;
     await repoUoW.commit();
 
 
@@ -201,7 +206,7 @@ describe('D1 EventStore End-to-End Integration Suite', () => {
   // Add a new test specifically for snapshot loading
   it('should load an aggregate from snapshot and apply newer events', async () => {
     const aggId = 'agg2';
-    let testAgg = TestAggregate.create(aggId, 100);
+    const testAgg = TestAggregate.create(aggId, 100);
 
     // Add first batch of events (will create a snapshot after 2 events)
     testAgg.updateValue(200);
@@ -211,7 +216,7 @@ describe('D1 EventStore End-to-End Integration Suite', () => {
     await aggregateRepository.save(testAgg);
 
     // Get and commit the repository's UoW
-    const repoUoW = (aggregateRepository as any).config.unitOfWork as D1PlatformUnitOfWork;
+    const repoUoW = (aggregateRepository as any).config.unitOfWork as D1EventStoreUnitOfWork;
     await repoUoW.commit();
 
     // Verify snapshot was created
@@ -262,11 +267,11 @@ describe('D1 EventStore End-to-End Integration Suite', () => {
   it('should fail with concurrency error when saving an aggregate with outdated revision', async () => {
     // Create a new aggregate for this test
     const aggId = 'concurrency-test';
-    let testAgg = TestAggregate.create(aggId, 50);
+    const testAgg = TestAggregate.create(aggId, 50);
 
     // Save the initial state (revision 1 after Created event)
     await aggregateRepository.save(testAgg);
-    const repoUoW = (aggregateRepository as any).config.unitOfWork as D1PlatformUnitOfWork;
+    const repoUoW = (aggregateRepository as any).config.unitOfWork as D1EventStoreUnitOfWork;
     await repoUoW.commit();
 
     // Load the same aggregate twice (both at revision 1)
@@ -291,7 +296,7 @@ describe('D1 EventStore End-to-End Integration Suite', () => {
       eventsAfterFirstSave.push(...batch);
     }
     console.log('Events in database:', eventsAfterFirstSave.length);
-    console.log('Last event type:', eventsAfterFirstSave[eventsAfterFirstSave.length - 1].type);
+    console.log('Last event type:', eventsAfterFirstSave.at(-1)!.type);
 
     // Now try to modify and save the second aggregate (should fail due to revision conflict)
     aggregate2.updateValue(200);  // This change would be lost if allowed to save
@@ -321,11 +326,11 @@ describe('D1 EventStore End-to-End Integration Suite', () => {
 
     console.log('\n==== FINAL DATABASE STATE ====');
     console.log('Total events in stream:', finalEvents.length);
-    console.log('Final revision in DB:', finalEvents[finalEvents.length - 1].revision);
+    console.log('Final revision in DB:', finalEvents.at(-1)!.revision);
 
     // Verify we still have only the events from the first save
     expect(finalEvents.length).toBe(eventsAfterFirstSave.length);
-    expect(finalEvents[finalEvents.length - 1].data).not.toEqual({ newValue: 200 });
+    expect(finalEvents.at(-1)!.data).not.toEqual({ newValue: 200 });
   });
 
   // More tests to come:

@@ -1,34 +1,32 @@
-import type { D1Database } from '@cloudflare/workers-types';
 import type {
   Event,
   Snapshot,
   UnitOfWork as PlatformDomainUnitOfWork, // Aliased to be explicit
 } from '@interslavic/database-engine-eventstore';
+
 import type { D1EventStore } from './D1EventStore';
 import type { D1SnapshotStore } from './D1SnapshotStore';
-import { D1UnitOfWork } from './D1UnitOfWork'; // The low-level D1 batcher
+import type { D1UnitOfWork } from './D1UnitOfWork'; // The low-level D1 batcher
 
-export interface D1PlatformUnitOfWorkOptions {
-  db: D1Database;
+export interface D1EventStoreUnitOfWorkOptions {
   eventStore: D1EventStore;
   snapshotStore: D1SnapshotStore;
-  /** Optional: if not provided, a new D1UnitOfWork will be created internally. */
-  d1UnitOfWork?: D1UnitOfWork;
+  d1UnitOfWork: D1UnitOfWork;
 }
 
 /**
  * Implements the domain-level UnitOfWork for D1, coordinating D1EventStore and D1SnapshotStore.
  * It uses the low-level D1UnitOfWork to batch database operations.
  */
-export class D1PlatformUnitOfWork implements PlatformDomainUnitOfWork {
+export class D1EventStoreUnitOfWork implements PlatformDomainUnitOfWork {
   private readonly eventStore: D1EventStore;
   private readonly snapshotStore: D1SnapshotStore;
   private readonly d1InternalUoW: D1UnitOfWork; // The low-level D1 statement batcher
 
-  constructor(options: Readonly<D1PlatformUnitOfWorkOptions>) {
+  constructor(options: Readonly<D1EventStoreUnitOfWorkOptions>) {
     this.eventStore = options.eventStore;
     this.snapshotStore = options.snapshotStore;
-    this.d1InternalUoW = options.d1UnitOfWork || new D1UnitOfWork({ db: options.db });
+    this.d1InternalUoW = options.d1UnitOfWork;
   }
 
   stageEvents(events: Event[]): void {

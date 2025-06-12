@@ -1,10 +1,11 @@
 import type { IntelligibilityRecord, SteenWordsRecord } from '@core/structures';
+
 import { SteenEntryAggregate } from './SteenEntryAggregate';
 import type { SteenEntryEvent } from './events/types';
 
 // Sample data based on the provided tables
 const record1: SteenWordsRecord = {
-  id: 24020,
+  id: 24_020,
   isv: 'abak',
   partOfSpeech: 'm.',
   type: 1,
@@ -32,7 +33,7 @@ const record1: SteenWordsRecord = {
 };
 
 const record2: SteenWordsRecord = {
-  id: -24020,
+  id: -24_020,
   isv: 'abak',
   partOfSpeech: 'm.',
   type: 1,
@@ -56,7 +57,7 @@ const record2: SteenWordsRecord = {
 };
 
 const record3: IntelligibilityRecord = {
-  id: 24020,
+  id: 24_020,
   lemma: 'abak',
   ratedBy: 'admin@example.com',
   sourceLanguage: 'isv',

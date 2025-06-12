@@ -15,7 +15,6 @@ import { AutoRouter } from 'itty-router';
 import { registerRoutes } from '@app/routes';
 import { errorResponse } from '@app/utils';
 import { Projections } from '@app/projections';
-import { Synset } from '@interslavic/database-engine-core';
 
 // Create a router with middleware
 const router = AutoRouter();
@@ -30,10 +29,3 @@ export default {
 		return router.fetch(request, env, ctx);
 	},
 } satisfies ExportedHandler<Env>;
-
-// Monorepo import demonstration (no effect on worker)
-function _demoMonorepoCoreImport() {
-	// Demonstrate using Synset static method
-	const syn = Synset.parse('demo');
-	return syn.toString();
-}
