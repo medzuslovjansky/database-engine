@@ -17,7 +17,7 @@ export const UserProfileSchema = z.object({
   display_name: z.string().optional(),
   avatar_url: z.string().optional(),
   email: z.string().optional(),
-  last_login_at: z.date().optional(),
+  last_login_at: z.number().optional(),
   provider_link: AuthProviderLinkSchema.optional()
 });
 export type UserProfileDTO = z.infer<typeof UserProfileSchema>;

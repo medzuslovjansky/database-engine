@@ -1,5 +1,17 @@
 import type { D1Database } from '@cloudflare/workers-types';
-import { D1Consts, D1UnitOfWork, D1PATTokenRepository, D1UserProfileRepository, D1AuthProviderLinkRepository, D1AuthMigrations } from '@auth/d1';
+import {
+  D1Consts,
+  D1UnitOfWork,
+  D1AuthMigrations,
+  // Queries
+  D1UserProfileQuery,
+  D1AuthProviderLinkQuery,
+  D1PATTokenQuery,
+  // Stagers
+  D1UserProfileStager,
+  D1AuthProviderLinkStager,
+  D1PATTokenStager
+} from '@auth/d1';
 import { PATAuthProviderImpl } from '@auth/pat';
 import { DefaultDateTimeProvider, SHA256Pepper } from '@auth/utils';
 
@@ -13,47 +25,56 @@ export interface D1AuthCompositionRootConfig {
 export function createAuthCompositionRoot(config: D1AuthCompositionRootConfig) {
   const pepper = new SHA256Pepper({ secret: config.tokenPepper });
   const dateTimeProvider = new DefaultDateTimeProvider();
-  const unitOfWork = new D1UnitOfWork({ db: config.db });
+  const d1UnitOfWork = new D1UnitOfWork({ db: config.db });
 
   const migrations = new D1AuthMigrations({
     db: config.db,
     migrationsTableName: D1Consts.MIGRATIONS_TABLE_NAME,
   });
 
-  const tokenRepository = new D1PATTokenRepository({
+  // Create query instances (read-only, no UoW dependency)
+  const userProfileQuery = new D1UserProfileQuery({
     db: config.db,
-    unitOfWork,
-    dateTimeProvider,
-    tokensTableName: D1Consts.PAT_TOKENS_TABLE_NAME,
-    providersTableName: D1Consts.AUTH_PROVIDERS_TABLE_NAME
-  });
-
-  const userProfileRepository = new D1UserProfileRepository({
-    db: config.db,
-    unitOfWork,
-    dateTimeProvider,
     tableName: D1Consts.USER_PROFILES_TABLE_NAME
   });
 
-  const authProviderLinkRepository = new D1AuthProviderLinkRepository({
+  const authProviderLinkQuery = new D1AuthProviderLinkQuery({
     db: config.db,
-    unitOfWork,
-    dateTimeProvider,
     tableName: D1Consts.AUTH_PROVIDERS_TABLE_NAME
   });
 
-  const patTokenRepository = new D1PATTokenRepository({
+  const patTokenQuery = new D1PATTokenQuery({
     db: config.db,
-    unitOfWork,
-    dateTimeProvider,
     tokensTableName: D1Consts.PAT_TOKENS_TABLE_NAME,
     providersTableName: D1Consts.AUTH_PROVIDERS_TABLE_NAME
   });
 
+  // Create stager factory functions
+  const userProfileStagerFactory = D1UserProfileStager.createFactory({
+    db: config.db,
+    tableName: D1Consts.USER_PROFILES_TABLE_NAME,
+    dateTimeProvider
+  });
+
+  const authProviderLinkStagerFactory = D1AuthProviderLinkStager.createFactory({
+    db: config.db,
+    tableName: D1Consts.AUTH_PROVIDERS_TABLE_NAME,
+    dateTimeProvider
+  });
+
+  const patTokenStagerFactory = D1PATTokenStager.createFactory({
+    db: config.db,
+    tableName: D1Consts.PAT_TOKENS_TABLE_NAME
+  });
+
   const patAuthProvider = new PATAuthProviderImpl({
-    authProviderLinkRepository,
-    userProfileRepository,
-    patTokenRepository,
+    authProviderLinkQuery,
+    userProfileQuery,
+    patTokenQuery,
+    userProfileStagerFactory,
+    authProviderLinkStagerFactory,
+    patTokenStagerFactory,
+    createUnitOfWork: () => new D1UnitOfWork({ db: config.db }),
     pepper
   });
 
@@ -62,11 +83,16 @@ export function createAuthCompositionRoot(config: D1AuthCompositionRootConfig) {
 
   return {
     migrations,
-    unitOfWork,
+    unitOfWork: d1UnitOfWork,
     authService,
     patAuthProvider,
-    userProfileRepository,
-    tokenRepository,
-    authProviderLinkRepository,
+    pepper,
+    // Stager factories for external use
+    userProfileStagerFactory,
+    userProfileQuery,
+    authProviderLinkStagerFactory,
+    authProviderLinkQuery,
+    patTokenStagerFactory,
+    patTokenQuery,
   };
 }

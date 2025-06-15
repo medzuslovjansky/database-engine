@@ -1,7 +1,8 @@
 import type { PATTokenDetailed } from './schema';
 
-export interface PATTokenRepository {
-  createToken(tokenId: string, name: string): Promise<void>;
-  deleteToken(tokenId: string): Promise<void>;
+
+
+// Read-only query interface
+export interface PATTokenQuery {
   listTokens(userId: string): Promise<PATTokenDetailed[]>;
 }

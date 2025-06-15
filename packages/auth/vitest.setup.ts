@@ -1,5 +1,6 @@
 import { beforeAll, afterAll } from 'vitest';
 import { Miniflare } from 'miniflare';
+
 import { D1AuthMigrations } from './src/d1/migrations';
 
 let mf: Miniflare;

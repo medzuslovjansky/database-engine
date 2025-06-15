@@ -16,12 +16,12 @@ export class AuthService {
         try {
           return await provider.authenticate(request);
         } catch (error) {
-          // TODO: Log error if needed, but return null for failed authentication
           console.error('Authentication failed:', error);
-          return null;
+          throw new Error('Authentication failed', { cause: error });
         }
       }
     }
-    return null; // No matching provider found
+
+    return null;
   }
 }

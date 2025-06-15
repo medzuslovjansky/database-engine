@@ -6,14 +6,14 @@ export class DefaultDateTimeProvider implements DateTimeProvider {
   }
 
   nowUnix(): number {
-    return Math.floor(Date.now() / 1000);
+    return Date.now();
   }
 
   fromUnix(timestamp: number): Date {
-    return new Date(timestamp * 1000);
+    return new Date(timestamp);
   }
 
   toUnix(date: Date): number {
-    return Math.floor(date.getTime() / 1000);
+    return date.getTime();
   }
 }

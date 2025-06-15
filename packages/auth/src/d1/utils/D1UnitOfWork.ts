@@ -1,4 +1,5 @@
 import type { D1Database, D1PreparedStatement } from '@cloudflare/workers-types';
+import type { UnitOfWork } from '@auth/core';
 
 export interface D1UnitOfWorkOptions {
   db: D1Database;
@@ -8,7 +9,7 @@ export interface D1UnitOfWorkOptions {
  * A low-level utility to batch D1PreparedStatements for execution.
  * This is D1-specific and focused on auth operations.
  */
-export class D1UnitOfWork {
+export class D1UnitOfWork implements UnitOfWork {
   private readonly db: D1Database;
   private statements: D1PreparedStatement[] = [];
 
@@ -25,15 +26,12 @@ export class D1UnitOfWork {
   }
 
   async commit(): Promise<void> {
-    if (this.statements.length === 0) {
+    const statements = this.statements.splice(0);
+    if (statements.length === 0) {
       return;
     }
-    try {
-      // D1Result from batch is an array of D1Result per statement
-      await this.db.batch(this.statements);
-    } finally {
-      this.statements = []; // Clear statements regardless of success or failure
-    }
+
+    await this.db.batch(statements);
   }
 
   getPendingStatementCount(): number {
