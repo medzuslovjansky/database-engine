@@ -1,0 +1,10 @@
+{
+  "extends": "@interslavic/typescript-config-cli",
+  "compilerOptions": {
+    "types": ["vitest/globals", "node"],
+    "baseUrl": "src",
+    "paths": {
+      "@db-d1/*": ["*"]
+    }
+  },
+}

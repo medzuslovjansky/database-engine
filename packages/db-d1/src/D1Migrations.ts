@@ -1,38 +1,45 @@
 import type { D1Database } from '@cloudflare/workers-types';
 
-import { CreateAuthTables } from './CreateAuthTables';
+import { MIGRATIONS_TABLE_NAME } from './consts';
 import type { D1MigrationRecordDTO } from './schema';
 import type { D1MigrationDefinition } from './types';
 
-export interface D1AuthMigrationsConfig {
+export interface D1MigrationsConfig {
   db: D1Database;
-  migrationsTableName: string;
+  logger?: D1MigrationsLogger;
+  tableName?: string;
+  migrations: D1MigrationDefinition[];
+}
+
+export interface D1MigrationsLogger {
+  runningMigration(name: string): void;
+  rollingBackMigration(name: string): void;
 }
 
 /**
  * Sophisticated migration system that tracks applied migrations in a database table
  */
-export class D1AuthMigrations {
-  private readonly config: D1AuthMigrationsConfig;
+export class D1Migrations {
+  private readonly config: D1MigrationsConfig;
 
-  // List of all migrations in order
-  private readonly migrations: D1MigrationDefinition[] = [CreateAuthTables];
-
-  constructor(config: D1AuthMigrationsConfig) {
-    this.config = config;
+  constructor(config: D1MigrationsConfig) {
+    this.config = {
+      tableName: MIGRATIONS_TABLE_NAME,
+      ...config,
+    }
   }
 
   /**
    * Initialize the migrations table if it doesn't exist
    */
   private async ensureMigrationsTable(): Promise<void> {
-    await this.config.db.exec(`CREATE TABLE IF NOT EXISTS ${this.config.migrationsTableName} \
+    await this.config.db.exec(`CREATE TABLE IF NOT EXISTS ${this.config.tableName} \
       (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL UNIQUE, \
        applied_at INTEGER NOT NULL, batch INTEGER NOT NULL)`);
     await this.config.db.exec(`CREATE INDEX IF NOT EXISTS idx_migrations_name \
-      ON ${this.config.migrationsTableName}(name)`);
+      ON ${this.config.tableName}(name)`);
     await this.config.db.exec(`CREATE INDEX IF NOT EXISTS idx_migrations_batch \
-      ON ${this.config.migrationsTableName}(batch)`);
+      ON ${this.config.tableName}(batch)`);
   }
 
   /**
@@ -42,7 +49,7 @@ export class D1AuthMigrations {
     await this.ensureMigrationsTable();
 
     const result = await this.config.db.prepare(`SELECT id, name, applied_at, batch \
-      FROM ${this.config.migrationsTableName} ORDER BY id ASC`).all<D1MigrationRecordDTO>();
+      FROM ${this.config.tableName} ORDER BY id ASC`).all<D1MigrationRecordDTO>();
 
     return result.results;
   }
@@ -54,7 +61,7 @@ export class D1AuthMigrations {
     const applied = await this.getAppliedMigrations();
     const appliedNames = new Set(applied.map(m => m.name));
 
-    return this.migrations.filter(migration => !appliedNames.has(migration.name));
+    return this.config.migrations.filter(migration => !appliedNames.has(migration.name));
   }
 
   /**
@@ -62,7 +69,7 @@ export class D1AuthMigrations {
    */
   private async getNextBatch(): Promise<number> {
     const result = await this.config.db.prepare(`SELECT COALESCE(MAX(batch), 0) + 1 as next_batch \
-      FROM ${this.config.migrationsTableName}`).first() as { next_batch: number } | null;
+      FROM ${this.config.tableName}`).first() as { next_batch: number } | null;
 
     return result?.next_batch || 1;
   }
@@ -71,7 +78,7 @@ export class D1AuthMigrations {
    * Record a migration as applied
    */
   private async recordMigration(name: string, batch: number): Promise<void> {
-    await this.config.db.prepare(`INSERT INTO ${this.config.migrationsTableName} \
+    await this.config.db.prepare(`INSERT INTO ${this.config.tableName} \
       (name, applied_at, batch) VALUES (?1, ?2, ?3)`).bind(name, Date.now(), batch).run();
   }
 
@@ -79,7 +86,7 @@ export class D1AuthMigrations {
    * Remove a migration record
    */
   private async removeMigrationRecord(name: string): Promise<void> {
-    await this.config.db.prepare(`DELETE FROM ${this.config.migrationsTableName} \
+    await this.config.db.prepare(`DELETE FROM ${this.config.tableName} \
       WHERE name = ?1`).bind(name).run();
   }
 
@@ -90,14 +97,15 @@ export class D1AuthMigrations {
     const pending = await this.getPendingMigrations();
 
     if (pending.length === 0) {
-      return { applied: [], skipped: this.migrations.map(m => m.name) };
+      return { applied: [], skipped: this.config.migrations.map(m => m.name) };
     }
 
     const batch = await this.getNextBatch();
     const applied: string[] = [];
 
     for (const migration of pending) {
-      console.log(`Running migration: ${migration.name}`);
+      this.config.logger?.runningMigration(migration.name);
+      // console.log(`Running migration: ${migration.name}`);
       await migration.up(this.config.db);
       await this.recordMigration(migration.name, batch);
       applied.push(migration.name);
@@ -105,7 +113,7 @@ export class D1AuthMigrations {
 
     return {
       applied,
-      skipped: this.migrations.filter(m => !applied.includes(m.name)).map(m => m.name)
+      skipped: this.config.migrations.filter(m => !applied.includes(m.name)).map(m => m.name)
     };
   }
 
@@ -128,9 +136,10 @@ export class D1AuthMigrations {
     const rolledBack: string[] = [];
 
     for (const record of migrationsToRollback) {
-      const migration = this.migrations.find(m => m.name === record.name);
+      const migration = this.config.migrations.find(m => m.name === record.name);
       if (migration) {
-        console.log(`Rolling back migration: ${migration.name}`);
+        this.config.logger?.rollingBackMigration(migration.name);
+        // console.log(`Rolling back migration: ${migration.name}`);
         await migration.down(this.config.db);
         await this.removeMigrationRecord(record.name);
         rolledBack.push(migration.name);
@@ -178,7 +187,7 @@ export class D1AuthMigrations {
     const pending = await this.getPendingMigrations();
 
     return {
-      total: this.migrations.length,
+      total: this.config.migrations.length,
       applied: applied.length,
       pending: pending.length,
       appliedMigrations: applied,

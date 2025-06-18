@@ -1,4 +1,4 @@
-import type { D1Database, D1ExecResult, D1Result } from '@cloudflare/workers-types';
+import type { D1Database, D1Result } from '@cloudflare/workers-types';
 import {
   StreamIdentifier,
   type EventStore,
@@ -27,8 +27,6 @@ interface CommittedEventDAO {
   data: string | null; // JSON string or null
 }
 
-// TODO: DDL this, add indices
-
 export class D1EventStore implements EventStore {
   private readonly db: D1Database;
   private readonly tableName: string;
@@ -38,30 +36,6 @@ export class D1EventStore implements EventStore {
     this.db = options.db;
     this.tableName = options.tableName ?? DEFAULT_EVENTS_TABLE_NAME;
     this.batchSize = options.batchSize ?? 50;
-  }
-
-  public static async createTable(
-    db: D1Database,
-    tableName: string = DEFAULT_EVENTS_TABLE_NAME,
-  ): Promise<D1ExecResult> {
-    const sql = `CREATE TABLE IF NOT EXISTS ${tableName} (\
-id INTEGER PRIMARY KEY AUTOINCREMENT,\
-stream TEXT NOT NULL,\
-revision INTEGER NOT NULL,\
-type TEXT NOT NULL,\
-ts INTEGER NOT NULL,\
-data TEXT,\
-UNIQUE (stream, revision)\
-);`;
-    return db.exec(sql);
-  }
-
-  public static async dropTable(
-    db: D1Database,
-    tableName: string = DEFAULT_EVENTS_TABLE_NAME,
-  ): Promise<D1ExecResult> {
-    const sql = `DROP TABLE IF EXISTS ${tableName}`;
-    return db.exec(sql);
   }
 
   // Helper to map raw DB result to CommittedEvent

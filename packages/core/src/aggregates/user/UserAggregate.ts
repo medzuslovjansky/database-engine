@@ -11,15 +11,19 @@ export interface UserState {
   roles: Set<string>;
 }
 
+function defaultUserState(userId: string): UserState {
+  return {
+    id: userId,
+    roles: new Set<string>()
+  };
+}
+
 export class UserAggregate extends AggregateRoot<UserState, UserEvent> {
-  constructor(userId: string) {
+  constructor(userId: string, revision = 0, state: UserState = defaultUserState(userId)) {
     super(
       StreamIdentifier.fromString(`users/${userId}`),
-      0,
-      {
-        id: userId,
-        roles: new Set<string>()
-      }
+      revision,
+      state
     );
   }
 
@@ -131,5 +135,10 @@ export class UserAggregate extends AggregateRoot<UserState, UserEvent> {
 
   #toKey(role: UserRole, language?: string): string {
     return language ? `${role}:${language}` : role;
+  }
+
+  // Static factory method for aggregate registry
+  static factory(streamId: StreamIdentifier, revision: number, state?: UserState): UserAggregate {
+    return new UserAggregate(streamId.id, revision, state);
   }
 }

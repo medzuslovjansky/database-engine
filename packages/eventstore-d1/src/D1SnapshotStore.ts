@@ -1,4 +1,4 @@
-import type { D1Database, D1ExecResult } from '@cloudflare/workers-types';
+import type { D1Database } from '@cloudflare/workers-types';
 import {
   StreamIdentifier,
   type SnapshotStore,
@@ -22,8 +22,6 @@ interface SnapshotDAO {
   data: string;
 }
 
-// TODO: DDL this, add indices
-
 export class D1SnapshotStore implements SnapshotStore {
   private readonly db: D1Database;
   private readonly tableName: string;
@@ -31,27 +29,6 @@ export class D1SnapshotStore implements SnapshotStore {
   constructor(options: Readonly<D1SnapshotStoreOptions>) {
     this.db = options.db;
     this.tableName = options.tableName ?? DEFAULT_SNAPSHOTS_TABLE_NAME;
-  }
-
-  public static async createTable(
-    db: D1Database,
-    tableName: string = DEFAULT_SNAPSHOTS_TABLE_NAME,
-  ): Promise<D1ExecResult> {
-    const sql = `CREATE TABLE IF NOT EXISTS ${tableName} (\
-stream TEXT PRIMARY KEY,\
-revision INTEGER NOT NULL,\
-ts INTEGER NOT NULL,\
-data TEXT NOT NULL\
-);`;
-    return db.exec(sql);
-  }
-
-  public static async dropTable(
-    db: D1Database,
-    tableName: string = DEFAULT_SNAPSHOTS_TABLE_NAME,
-  ): Promise<D1ExecResult> {
-    const sql = `DROP TABLE IF EXISTS ${tableName}`;
-    return db.exec(sql);
   }
 
   private mapDaoToSnapshot<S>(dao: SnapshotDAO): Snapshot<S> {

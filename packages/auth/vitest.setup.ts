@@ -1,7 +1,6 @@
 import { beforeAll, afterAll } from 'vitest';
 import { Miniflare } from 'miniflare';
-
-import { D1AuthMigrations } from './src/d1/migrations';
+import { D1AuthMigrations } from '@auth/d1';
 
 let mf: Miniflare;
 
@@ -13,11 +12,7 @@ beforeAll(async () => {
   });
   const db = await mf.getD1Database('DB');
 
-  // Run migrations to set up the auth tables
-  const migrations = new D1AuthMigrations({
-    db,
-    migrationsTableName: 'migrations'
-  });
+  const migrations = new D1AuthMigrations({ db });
   await migrations.up();
 
   globalThis.__MINIFLARE_DB__ = db;

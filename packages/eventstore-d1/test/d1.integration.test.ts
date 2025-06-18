@@ -1,5 +1,6 @@
-import { describe, it, expect, beforeAll, beforeEach } from 'vitest';
+import { describe, it, expect, beforeAll, beforeEach, vi } from 'vitest';
 import type { D1Database } from '@cloudflare/workers-types';
+import type { D1MigrationsLogger } from '@interslavic/database-engine-db-d1';
 import {
   AggregateRepository,
   AggregateRegistry,
@@ -11,7 +12,7 @@ import {
   type AggregateRepositoryOptions,
 } from '@interslavic/database-engine-eventstore';
 
-import { D1EventStore, D1EventStoreUnitOfWork, D1SnapshotStore, D1UnitOfWork } from '../src';
+import { D1EventStore, D1EventStoreUnitOfWork, D1SnapshotStore, D1UnitOfWork, D1EventStoreMigrations } from '../src';
 
 // Define a simple aggregate for testing
 interface TestState {
@@ -68,13 +69,15 @@ class TestAggregate extends AggregateRoot<TestState, TestEvent> {
   }
 }
 
-const EVENTS_TABLE_NAME = 'e2e_events';
-const SNAPSHOTS_TABLE_NAME = 'e2e_snapshots';
+const EVENTS_TABLE_NAME = 'Events';
+const SNAPSHOTS_TABLE_NAME = 'Snapshots';
 
 describe('D1 EventStore End-to-End Integration Suite', () => {
   let db: D1Database;
   let aggregateRepository: AggregateRepository;
   let aggregateRegistry: AggregateRegistry;
+  let migrations: D1EventStoreMigrations;
+  let logger: D1MigrationsLogger;
 
   // D1 Stores and UoW instances - will be initialized in beforeAll/beforeEach
   let d1EventStore: D1EventStore;
@@ -84,21 +87,27 @@ describe('D1 EventStore End-to-End Integration Suite', () => {
   beforeAll(async () => {
     db = globalThis.__MINIFLARE_DB__;
 
+    // Create logger mock
+    logger = {
+      runningMigration: vi.fn(),
+      rollingBackMigration: vi.fn(),
+    };
+
     // Instantiate stores (actual classes will be created later)
     // For now, these are just illustrative of what we will need.
     d1EventStore = new D1EventStore({ db, tableName: EVENTS_TABLE_NAME, batchSize: 1 });
     d1SnapshotStore = new D1SnapshotStore({ db, tableName: SNAPSHOTS_TABLE_NAME });
 
-    // Create tables. These static methods will be part of the D1Store implementations.
-    await D1EventStore.createTable(db, EVENTS_TABLE_NAME);
-    await D1SnapshotStore.createTable(db, SNAPSHOTS_TABLE_NAME);
+    // Create migration system and run migrations
+    migrations = new D1EventStoreMigrations({ db, logger });
+    await migrations.up();
 
     aggregateRegistry = new AggregateRegistry();
     aggregateRegistry.register<TestState>({
       prefix: 'test',
       factory: (streamId, revision, state) => new TestAggregate(streamId, revision, state!),
-      serialize: x => x,
-      deserialize: x => x as TestState,
+      serialize: (state) => JSON.stringify(state),
+      deserialize: (json) => JSON.parse(json) as TestState,
     });
   });
 

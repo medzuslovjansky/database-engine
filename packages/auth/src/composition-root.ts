@@ -29,7 +29,7 @@ export function createAuthCompositionRoot(config: D1AuthCompositionRootConfig) {
 
   const migrations = new D1AuthMigrations({
     db: config.db,
-    migrationsTableName: D1Consts.MIGRATIONS_TABLE_NAME,
+    tableName: D1Consts.MIGRATIONS_TABLE_NAME,
   });
 
   // Create query instances (read-only, no UoW dependency)

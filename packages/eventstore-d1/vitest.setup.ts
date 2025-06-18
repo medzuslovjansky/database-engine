@@ -1,6 +1,7 @@
-import { beforeAll, afterAll } from 'vitest';
+import { beforeAll, afterAll, vi } from 'vitest';
 import { Miniflare } from 'miniflare';
-import { D1EventStore, D1SnapshotStore } from './src';
+
+import { D1EventStoreMigrations } from './src';
 
 let mf: Miniflare;
 
@@ -12,9 +13,13 @@ beforeAll(async () => {
   });
   const db = await mf.getD1Database('DB');
 
-  // Create tables directly using the static methods
-  await D1EventStore.createTable(db);
-  await D1SnapshotStore.createTable(db);
+  // Create tables using the migration system
+  const logger = {
+    runningMigration: vi.fn(),
+    rollingBackMigration: vi.fn(),
+  };
+  const migrations = new D1EventStoreMigrations({ db, logger });
+  await migrations.up();
 
   globalThis.__MINIFLARE_DB__ = db;
 });

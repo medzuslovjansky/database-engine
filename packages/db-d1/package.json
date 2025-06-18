@@ -1,5 +1,5 @@
 {
-  "name": "@interslavic/database-engine-auth",
+  "name": "@interslavic/database-engine-db-d1",
   "version": "0.1.0",
   "private": true,
   "main": "./src/index.ts",
@@ -19,8 +19,6 @@
     "src"
   ],
   "dependencies": {
-    "@interslavic/database-engine-db-d1": "workspace:*",
-    "jose": "^6.0.11",
     "zod": "^3.24.2"
   },
   "devDependencies": {

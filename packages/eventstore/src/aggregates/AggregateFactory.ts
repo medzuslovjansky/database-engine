@@ -16,6 +16,6 @@ export interface AggregateRegistration<
 > {
   prefix: string;
   factory: AggregateFactory<S, E, T>;
-  serialize?: (state: S) => unknown;
-  deserialize?: (serialized: unknown) => S;
+  serialize?: (state: S) => string;
+  deserialize?: (serialized: string) => S;
 }

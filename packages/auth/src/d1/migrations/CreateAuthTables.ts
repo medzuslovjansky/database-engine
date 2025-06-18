@@ -1,8 +1,7 @@
 import type { D1Database } from '@cloudflare/workers-types';
+import type { D1MigrationDefinition } from '@interslavic/database-engine-db-d1';
 
 import { AUTH_PROVIDERS_TABLE_NAME, PAT_TOKENS_TABLE_NAME, USER_PROFILES_TABLE_NAME } from '../consts';
-
-import type { D1MigrationDefinition } from './types';
 
 export const CreateAuthTables: D1MigrationDefinition = {
   name: '001_create_auth_tables',

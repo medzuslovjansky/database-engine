@@ -18,7 +18,8 @@
     "src"
   ],
   "dependencies": {
-    "@interslavic/database-engine-eventstore": "workspace:*"
+    "@interslavic/database-engine-eventstore": "workspace:*",
+    "@interslavic/database-engine-db-d1": "workspace:*"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20250508.0",

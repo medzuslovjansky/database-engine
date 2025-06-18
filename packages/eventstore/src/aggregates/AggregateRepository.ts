@@ -42,8 +42,9 @@ export class AggregateRepository {
       const snapshots = await this.config.snapshotStore.getLatest(streams);
       for (const snapshot of snapshots) {
         const streamKey = snapshot.stream.toString();
+        const deserializedState = this.config.aggregateRegistry.deserialize(snapshot.stream, snapshot.data as string);
         streamStates.set(streamKey, {
-          state: snapshot.data,
+          state: deserializedState,
           revision: snapshot.revision
         });
       }
@@ -113,11 +114,13 @@ export class AggregateRepository {
   }
 
   #maybeStageSnapshot(aggregate: AggregateRoot, events: Event[]): void {
+    // Serialize the aggregate state using the aggregate registry
+    const serializedData = this.config.aggregateRegistry.serialize(aggregate.stream, aggregate.state);
     const snapshot: Snapshot = {
       stream: aggregate.stream,
       revision: aggregate.revision,
       ts: Date.now(),
-      data: aggregate.state,
+      data: serializedData,
     };
 
     if (this.config.shouldSaveSnapshot(aggregate, events)) {
