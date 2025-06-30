@@ -1,6 +1,7 @@
 import type { Event, Projection } from '../../src';
-import type { CounterEvent, CounterCreatedEvent, CounterIncrementedEvent, CounterDecrementedEvent, CounterResetEvent } from './Counter';
 import type { InMemoryProjectionStore } from '../memory';
+
+import type { CounterEvent, CounterCreatedEvent, CounterIncrementedEvent, CounterDecrementedEvent, CounterResetEvent } from './Counter';
 
 /**
  * In-memory counter summary state for all counters.
@@ -86,25 +87,28 @@ export class CounterSummaryProjection implements Projection<CounterEvent> {
     // After reset test, we need to reprocess all events
     // Completely remove the check for already processed events
 
-    let newCounters = { ...this.#state.counters };
+    const newCounters = { ...this.#state.counters };
     let newTotalValue = this.#state.totalValue;
     let newTotalCounters = this.#state.totalCounters;
 
     switch (event.type) {
-      case 'CounterCreated':
+      case 'CounterCreated': {
         newCounters[event.stream.id] = (event.data as CounterCreatedEvent['data']).initialValue;
         newTotalValue += (event.data as CounterCreatedEvent['data']).initialValue;
         newTotalCounters++;
         break;
-      case 'CounterIncremented':
+      }
+      case 'CounterIncremented': {
         newCounters[event.stream.id] = (newCounters[event.stream.id] || 0) + (event.data as CounterIncrementedEvent['data']).amount;
         newTotalValue += (event.data as CounterIncrementedEvent['data']).amount;
         break;
-      case 'CounterDecremented':
+      }
+      case 'CounterDecremented': {
         newCounters[event.stream.id] = (newCounters[event.stream.id] || 0) - (event.data as CounterDecrementedEvent['data']).amount;
         newTotalValue -= (event.data as CounterDecrementedEvent['data']).amount;
         break;
-      case 'CounterReset':
+      }
+      case 'CounterReset': {
         const oldValue = newCounters[event.stream.id] || 0;
         newCounters[event.stream.id] = (event.data as CounterResetEvent['data']).newValue;
         newTotalValue = newTotalValue - oldValue + (event.data as CounterResetEvent['data']).newValue;
@@ -114,6 +118,7 @@ export class CounterSummaryProjection implements Projection<CounterEvent> {
           newTotalCounters++;
         }
         break;
+      }
     }
     this.#state.counters = newCounters;
     this.#state.totalValue = newTotalValue;

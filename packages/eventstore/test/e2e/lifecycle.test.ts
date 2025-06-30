@@ -1,11 +1,19 @@
 import { describe, test, expect, beforeEach } from 'vitest';
-import { AggregateFactory, AggregateRepository, AggregateRegistry, createThresholdSnapshotStrategy } from '../../src';
+
+import type {AggregateRegistry} from '../../src';
+import { AggregateRepository, createThresholdSnapshotStrategy } from '../../src';
 import {
   InMemoryEventStore,
   InMemorySnapshotStore,
   InMemoryUnitOfWork
 } from '../memory';
-import { Counter, CounterState, CounterEvent } from '../domain';
+import type {
+  CounterDecrementedEvent,
+  CounterIncrementedEvent,
+  CounterResetEvent
+} from '../domain';
+import { Counter } from '../domain';
+
 import { createFreshAggregateRegistry } from './test-helpers';
 
 describe('CQRS Lifecycle', () => {
@@ -16,10 +24,6 @@ describe('CQRS Lifecycle', () => {
   const unitOfWork = new InMemoryUnitOfWork({ eventStore, snapshotStore });
   // Use helper to create a fresh registry for each test
   let aggregateRegistry: AggregateRegistry;
-
-  // Aggregate factory
-  const counterFactory: AggregateFactory<CounterState, CounterEvent, Counter> =
-    (id, revision, state) => new Counter(id.id, revision, state as CounterState);
 
   // Repository with snapshot support
   let repository: AggregateRepository;
@@ -35,7 +39,7 @@ describe('CQRS Lifecycle', () => {
     // Register Counter aggregate
     aggregateRegistry.register({
       prefix: 'counter',
-      factory: counterFactory
+      constructor: Counter
     });
 
     // Create a fresh repository
@@ -145,15 +149,15 @@ describe('CQRS Lifecycle', () => {
     const events = eventStore.allEvents;
     expect(events.length).toBe(10);
 
-    const createdEvent = events[0] as any;
-    expect(createdEvent.type).toBe('CounterCreated');
-    expect(createdEvent.data.initialValue).toBe(10);
+    const createdEvent = events[0] as CounterResetEvent;
+    expect(createdEvent.type).toBe('CounterReset');
+    expect(createdEvent.data.newValue).toBe(10);
 
-    const incrementedEvent = events[1] as any;
+    const incrementedEvent = events[1] as CounterIncrementedEvent;
     expect(incrementedEvent.type).toBe('CounterIncremented');
     expect(incrementedEvent.data.amount).toBe(5);
 
-    const decrementedEvent = events[9] as any;
+    const decrementedEvent = events[9] as CounterDecrementedEvent;
     expect(decrementedEvent.type).toBe('CounterDecremented');
     expect(decrementedEvent.data.amount).toBe(10);
   });

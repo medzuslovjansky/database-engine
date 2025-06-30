@@ -1,34 +1,23 @@
-import { vi, describe, it, expect, beforeEach, MockedFunction } from 'vitest';
+import type { MockedFunction } from 'vitest';
+import { vi, describe, it, expect, beforeEach } from 'vitest';
+
 import { StreamIdentifier } from '../primitives';
 import { AggregateNotFoundError } from '../errors';
+import type { Event, Snapshot } from '../envelopes';
+import type { EventStore, SnapshotStore, UnitOfWork } from '../stores';
+
 import { AggregateRepository } from './AggregateRepository';
 import { AggregateRoot } from './AggregateRoot';
 import { AggregateRegistry } from './AggregateRegistry';
-import type { Event, Snapshot } from '../envelopes';
-import type { EventStore, SnapshotStore, UnitOfWork } from '../stores';
-import { SnapshotSaveStrategy } from './utils';
+import type { SnapshotSaveStrategy } from './utils';
 
 type MockAggregateState = { lastEventType: string };
 
 class MockAggregateRoot extends AggregateRoot<MockAggregateState> {
-  #state: MockAggregateState;
-
-  constructor(
-    streamIdentifier: StreamIdentifier,
-    revision: number = 0,
-    state: MockAggregateState = { lastEventType: '' }
-  ) {
-    super(streamIdentifier, revision, state);
-    this.#state = state;
-  }
-
-  static create(stream: string | StreamIdentifier, revision: number = 1, state: MockAggregateState = { lastEventType: '' }) {
-    const streamId = typeof stream === 'string' ? StreamIdentifier.fromString(stream) : stream;
-    return new MockAggregateRoot(streamId, revision, state);
-  }
-
-  get state(): MockAggregateState {
-    return this.#state;
+  static create(id: string): MockAggregateRoot {
+    const aggregate = new MockAggregateRoot(StreamIdentifier.fromString(`test/${id}`), 0, { lastEventType: '' });
+    aggregate.addTestEvent('created');
+    return aggregate;
   }
 
   addTestEvent(type: string): void {
@@ -36,11 +25,7 @@ class MockAggregateRoot extends AggregateRoot<MockAggregateState> {
   }
 
   protected doApply(event: Event): void {
-    this.#state = { lastEventType: event.type };
-  }
-
-  protected getStreamName(): string {
-    return this.stream.toString();
+    this.state = { lastEventType: event.type };
   }
 }
 
@@ -63,7 +48,7 @@ describe('AggregateRepository', () => {
     mockAggregateRegistry = new AggregateRegistry()
       .register<MockAggregateState>({
         prefix: 'test',
-        factory: MockAggregateRoot.create,
+        constructor: MockAggregateRoot,
       });
 
     // spy on the factory method
@@ -85,7 +70,7 @@ describe('AggregateRepository', () => {
     mockUnitOfWork = {
       stageEvents: vi.fn(),
       stageSnapshots: vi.fn(),
-      commit: vi.fn().mockResolvedValue(undefined),
+      commit: vi.fn().mockResolvedValue(void 0),
     };
 
     mockSnapshotStrategy = vi.fn().mockReturnValue(false);
@@ -103,7 +88,7 @@ describe('AggregateRepository', () => {
   describe('load', () => {
     beforeEach(() => {
       // Ensure the mock aggregate has a non-zero revision
-      testAggregate = MockAggregateRoot.create('test/123', 1);
+      testAggregate = MockAggregateRoot.create('123');
 
       // Mock the instantiate function to return our test aggregate
       mockAggregateRegistry.instantiate = vi.fn().mockReturnValue(testAggregate);
@@ -143,7 +128,7 @@ describe('AggregateRepository', () => {
 
     it('should apply events from the event store to the aggregate', async () => {
       // Reset mock aggregate to revision 0 to simulate a fresh aggregate
-      testAggregate = MockAggregateRoot.create('test/123', 0);
+      testAggregate = MockAggregateRoot.create('123');
       mockAggregateRegistry.instantiate = vi.fn().mockReturnValue(testAggregate);
 
       const events: Event[] = [
@@ -151,7 +136,7 @@ describe('AggregateRepository', () => {
           type: 'test-event',
           data: { value: 1 },
           stream: StreamIdentifier.fromString('test/123'),
-          revision: 1, // Revision 1 for a fresh aggregate with revision 0
+          revision: 2, // Revision 1 for a fresh aggregate with revision 0
           ts: Date.now(),
         }
       ];
@@ -192,17 +177,14 @@ describe('AggregateRepository', () => {
 
   describe('loadBatch', () => {
     it('should load multiple aggregates at once', async () => {
-      const stream1 = new StreamIdentifier('test', '1');
-      const stream2 = new StreamIdentifier('test', '2');
-
-      const aggregate1 = MockAggregateRoot.create(stream1);
-      const aggregate2 = MockAggregateRoot.create(stream2);
+      const aggregate1 = MockAggregateRoot.create('1');
+      const aggregate2 = MockAggregateRoot.create('2');
 
       mockAggregateRegistry.instantiate = vi.fn()
         .mockImplementationOnce(() => aggregate1)
         .mockImplementationOnce(() => aggregate2);
 
-      const aggregates = await repository.loadBatch([stream1, stream2]);
+      const aggregates = await repository.loadBatch([aggregate1.stream, aggregate2.stream]);
 
       expect(mockAggregateRegistry.instantiate).toHaveBeenCalledTimes(2);
       expect(aggregates).toHaveLength(2);
@@ -212,8 +194,8 @@ describe('AggregateRepository', () => {
 
     it('should handle mix of string IDs and StreamIdentifiers', async () => {
       // Create aggregates with revision 1 so they're considered existing
-      const aggregate1 = MockAggregateRoot.create('test/1', 1);
-      const aggregate2 = MockAggregateRoot.create('test/2', 1);
+      const aggregate1 = MockAggregateRoot.create('1');
+      const aggregate2 = MockAggregateRoot.create('2');
 
       mockAggregateRegistry.instantiate = vi.fn()
         .mockImplementationOnce(() => aggregate1)
@@ -226,13 +208,13 @@ describe('AggregateRepository', () => {
         1,
         expect.objectContaining({ prefix: 'test', id: '1' }),
         0,
-        undefined
-      );
+        void 0
+    );
       expect(mockAggregateRegistry.instantiate).toHaveBeenNthCalledWith(
         2,
         expect.objectContaining({ prefix: 'test', id: '2' }),
         0,
-        undefined
+        void 0
       );
 
       expect(aggregates.length).toBe(2);
@@ -243,16 +225,16 @@ describe('AggregateRepository', () => {
       const stream2 = new StreamIdentifier('test', '2');
 
       // Create aggregates with revision 0 to accept events with revision 1
-      const aggregate1 = MockAggregateRoot.create(stream1, 0);
-      const aggregate2 = MockAggregateRoot.create(stream2, 0);
+      const aggregate1 = MockAggregateRoot.create('1');
+      const aggregate2 = MockAggregateRoot.create('2');
 
       mockAggregateRegistry.instantiate = vi.fn()
         .mockImplementationOnce(() => aggregate1)
         .mockImplementationOnce(() => aggregate2);
 
       const events: Event[] = [
-        { type: 'event1', data: {}, stream: stream1, revision: 1, ts: Date.now() },
-        { type: 'event2', data: {}, stream: stream2, revision: 1, ts: Date.now() }
+        { type: 'event1', data: {}, stream: stream1, revision: 2, ts: Date.now() },
+        { type: 'event2', data: {}, stream: stream2, revision: 2, ts: Date.now() }
       ];
 
       mockEventStore.readStreams = vi.fn().mockImplementation(function* () {
@@ -325,8 +307,8 @@ describe('AggregateRepository', () => {
 
   describe('saveBatch', () => {
     it('should save multiple aggregates at once', async () => {
-      const aggregate1 = MockAggregateRoot.create('test/1');
-      const aggregate2 = MockAggregateRoot.create('test/2');
+      const aggregate1 = MockAggregateRoot.create('1');
+      const aggregate2 = MockAggregateRoot.create('2');
 
       aggregate1.addTestEvent('event1');
       aggregate2.addTestEvent('event2');
@@ -345,23 +327,25 @@ describe('AggregateRepository', () => {
     });
 
     it('should only save aggregates with uncommitted events', async () => {
-      const aggregate1 = MockAggregateRoot.create('test/1');
-      const aggregate2 = MockAggregateRoot.create('test/2');
-
-      // Only add event to first aggregate
-      aggregate1.addTestEvent('event1');
+      const aggregate1 = MockAggregateRoot.create('1');
+      const aggregate2 = MockAggregateRoot.create('2');
 
       await repository.saveBatch([aggregate1, aggregate2]);
 
+      // Reset mock to avoid counting previous calls
+      mockUnitOfWork.stageEvents = vi.fn();
+
+      aggregate1.addTestEvent('event1');
+      await repository.saveBatch([aggregate1, aggregate2]);
       expect(mockUnitOfWork.stageEvents).toHaveBeenCalledTimes(1);
       expect(mockUnitOfWork.stageEvents).toHaveBeenCalledWith(
-        expect.arrayContaining([expect.objectContaining({ type: 'event1' })])
+        [expect.objectContaining({ type: 'event1' })]
       );
     });
 
     it('should check snapshot strategy for each aggregate', async () => {
-      const aggregate1 = MockAggregateRoot.create('test/1');
-      const aggregate2 = MockAggregateRoot.create('test/2');
+      const aggregate1 = MockAggregateRoot.create('1');
+      const aggregate2 = MockAggregateRoot.create('2');
 
       aggregate1.addTestEvent('event1');
       aggregate2.addTestEvent('event2');

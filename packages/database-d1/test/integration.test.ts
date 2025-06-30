@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeAll, beforeEach, vi } from 'vitest';
 import type {D1Database} from '@cloudflare/workers-types';
-import type {D1MigrationDefinition, D1MigrationsLogger} from '@db-d1/index';
-import { D1UnitOfWork, D1Migrations } from '@db-d1/index';
+import type {D1MigrationDefinition, D1MigrationsLogger} from '@database-d1/index';
+import { D1UnitOfWork, D1Migrations } from '@database-d1/index';
 
 describe('D1 Database Module Integration', () => {
   let db: D1Database;

@@ -1,5 +1,5 @@
 import type { D1Database } from '@cloudflare/workers-types';
-import type { D1MigrationDefinition } from '@interslavic/database-engine-db-d1';
+import type { D1MigrationDefinition } from '@interslavic/database-engine-database-d1';
 
 import { AUTH_PROVIDERS_TABLE_NAME, PAT_TOKENS_TABLE_NAME, USER_PROFILES_TABLE_NAME } from '../consts';
 

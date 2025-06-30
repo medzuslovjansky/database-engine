@@ -4,7 +4,7 @@
     "types": ["vitest/globals", "node"],
     "baseUrl": "src",
     "paths": {
-      "@db-d1/*": ["*"]
+      "@database-d1/*": ["*"]
     }
   },
 }

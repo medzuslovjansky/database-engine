@@ -1,5 +1,6 @@
+import type { StreamIdentifier } from '../primitives';
+
 import { EventStoreError } from './EventStoreError';
-import { StreamIdentifier } from '../primitives';
 
 /**
  * Error thrown when an aggregate is not found

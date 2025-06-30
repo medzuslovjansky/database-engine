@@ -1,7 +1,7 @@
 import type { Event, Snapshot, UnitOfWork } from '../../src';
 
-import { InMemoryEventStore } from './InMemoryEventStore';
-import { InMemorySnapshotStore } from './InMemorySnapshotStore';
+import type { InMemoryEventStore } from './InMemoryEventStore';
+import type { InMemorySnapshotStore } from './InMemorySnapshotStore';
 
 export interface InMemoryUnitOfWorkConfig {
   eventStore: InMemoryEventStore;

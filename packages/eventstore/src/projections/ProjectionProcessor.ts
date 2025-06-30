@@ -152,7 +152,7 @@ export class ProjectionProcessor {
       // Validate event ID against the last flushed ID + events already pending in this cycle
       const expectedEventIdConsideringPending =
         (this.#eventsPendingFlush.length > 0
-            ? this.#eventsPendingFlush[this.#eventsPendingFlush.length -1].id
+            ? this.#eventsPendingFlush.at(-1)!.id
             : this.#currentLastProcessedEventId)
         + 1;
 
@@ -214,7 +214,7 @@ export class ProjectionProcessor {
     if (this.#failureError) {
       throw this.#failureError;
     }
-    return Promise.resolve();
+    return;
   }
 
   async #executeFlush(): Promise<void> {
@@ -226,9 +226,19 @@ export class ProjectionProcessor {
 
     try {
       const flushedToEventId = await this.#projection.flush();
-      const lastEventIdInFlushedSet = eventsToFlush[eventsToFlush.length - 1].id!;
+      const lastEventIdInFlushedSet = eventsToFlush.at(-1)!.id;
 
-      if (flushedToEventId !== lastEventIdInFlushedSet) {
+      if (flushedToEventId === lastEventIdInFlushedSet) {
+        this.#currentLastProcessedEventId = flushedToEventId;
+        const flushedCount = eventsToFlush.length;
+        this.#eventsPendingFlush.splice(0, flushedCount);
+        this.#loggerFacade.flushedSuccessfully(
+          this.name,
+          flushedCount,
+          this.#currentLastProcessedEventId,
+          this.#eventsPendingFlush.length
+        );
+      } else {
         const error = new ProjectionFlushError(
           this.name,
           lastEventIdInFlushedSet,
@@ -241,19 +251,9 @@ export class ProjectionProcessor {
         );
         this.#transitionToFailed(error);
         throw error;
-      } else {
-        this.#currentLastProcessedEventId = flushedToEventId;
-        const flushedCount = eventsToFlush.length;
-        this.#eventsPendingFlush.splice(0, flushedCount);
-        this.#loggerFacade.flushedSuccessfully(
-          this.name,
-          flushedCount,
-          this.#currentLastProcessedEventId,
-          this.#eventsPendingFlush.length
-        );
       }
     } catch (error) {
-      const lastEventIdInAttempt = eventsToFlush.length > 0 ? eventsToFlush[eventsToFlush.length - 1].id! : this.#currentLastProcessedEventId;
+      const lastEventIdInAttempt = eventsToFlush.length > 0 ? eventsToFlush.at(-1)!.id : this.#currentLastProcessedEventId;
       const flushError = new ProjectionFlushError(
         this.name,
         lastEventIdInAttempt,

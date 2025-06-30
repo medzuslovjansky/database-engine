@@ -1,8 +1,10 @@
 import { vi, describe, it, expect, beforeEach } from 'vitest';
+
 import { StreamIdentifier } from '../primitives';
 import { AggregateApplyError, InvalidEventRevisionError } from '../errors';
-import { AggregateRoot } from './AggregateRoot';
 import type { Event } from '../envelopes';
+
+import { AggregateRoot } from './AggregateRoot';
 
 // Define test types for our test aggregate implementation
 interface CounterState {
@@ -17,22 +19,29 @@ interface DecrementedEventData {
   amount?: number;
 }
 
-interface ResetEventData {}
-
 // Define the event union type that matches what AggregateRoot expects
 type CounterEvent =
   | Event<'incremented', IncrementedEventData>
   | Event<'decremented', DecrementedEventData>
-  | Event<'reset', ResetEventData>;
+  | Event<'reset'>;
+
+const defaultCounterState = (): CounterState => ({ count: 0 });
 
 // Concrete implementation of AggregateRoot for testing
 class CounterAggregate extends AggregateRoot<CounterState, CounterEvent> {
   constructor(
     stream: StreamIdentifier,
     revision = 0,
-    state: CounterState = { count: 0 }
+    state = defaultCounterState(),
   ) {
     super(stream, revision, state);
+  }
+
+  static create(id: string) {
+    const stream = StreamIdentifier.fromString(`counter/${id}`);
+    const aggregate = new CounterAggregate(stream);
+    aggregate.reset();
+    return aggregate;
   }
 
   increment(amount = 1): void {
@@ -44,31 +53,35 @@ class CounterAggregate extends AggregateRoot<CounterState, CounterEvent> {
   }
 
   reset(): void {
-    this.raise('reset', {});
+    this.raise('reset', void 0);
   }
 
   protected doApply(event: CounterEvent): void {
     switch (event.type) {
-      case 'incremented':
+      case 'incremented': {
         this.state = {
           ...this.state,
           count: this.state.count + (event.data.amount || 1),
         };
         break;
+      }
 
-      case 'decremented':
+      case 'decremented': {
         this.state = {
           ...this.state,
           count: this.state.count - (event.data.amount || 1),
         };
         break;
+      }
 
-      case 'reset':
+      case 'reset': {
         this.state = { count: 0 };
         break;
+      }
 
-      default:
+      default: {
         throw new Error(`Unknown event type: ${(event as any).type}`);
+      }
     }
   }
 

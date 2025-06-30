@@ -1457,7 +1457,7 @@ __metadata:
   resolution: "@interslavic/database-engine-auth@workspace:packages/auth"
   dependencies:
     "@cloudflare/workers-types": "npm:^4.20250508.0"
-    "@interslavic/database-engine-db-d1": "workspace:*"
+    "@interslavic/database-engine-database-d1": "workspace:*"
     "@interslavic/eslint-config-cli": "workspace:*"
     "@interslavic/prettier-config-cli": "workspace:*"
     "@interslavic/typescript-config-cli": "workspace:*"
@@ -1481,9 +1481,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@interslavic/database-engine-db-d1@workspace:*, @interslavic/database-engine-db-d1@workspace:packages/db-d1":
+"@interslavic/database-engine-database-d1@workspace:*, @interslavic/database-engine-database-d1@workspace:packages/database-d1":
   version: 0.0.0-use.local
-  resolution: "@interslavic/database-engine-db-d1@workspace:packages/db-d1"
+  resolution: "@interslavic/database-engine-database-d1@workspace:packages/database-d1"
   dependencies:
     "@cloudflare/workers-types": "npm:^4.20250508.0"
     "@interslavic/eslint-config-cli": "workspace:*"
@@ -1500,6 +1500,7 @@ __metadata:
   resolution: "@interslavic/database-engine-eventstore-d1@workspace:packages/eventstore-d1"
   dependencies:
     "@cloudflare/workers-types": "npm:^4.20250508.0"
+    "@interslavic/database-engine-database-d1": "workspace:*"
     "@interslavic/database-engine-eventstore": "workspace:*"
     "@interslavic/eslint-config-cli": "workspace:*"
     "@interslavic/prettier-config-cli": "workspace:*"

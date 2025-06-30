@@ -1,6 +1,5 @@
 import type { Event } from '../../envelopes';
-
-import { AggregateRoot } from "../AggregateRoot";
+import type { AggregateRoot } from '../AggregateRoot';
 
 /**
  * Determines whether a snapshot should be saved for an aggregate root after applying events.

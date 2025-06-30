@@ -1,4 +1,5 @@
-import { AggregateRoot, StreamIdentifier, Event } from '../../src';
+import type { Event } from '../../src';
+import { AggregateRoot, StreamIdentifier } from '../../src';
 
 /**
  * Specific event interfaces for the Counter aggregate
@@ -43,16 +44,12 @@ export interface CounterState {
  * Simple Counter aggregate for testing
  */
 export class Counter extends AggregateRoot<CounterState, CounterEvent> {
-  constructor(id: string, revision = 0, state: CounterState = { value: 0 }) {
-    super(new StreamIdentifier('counter', id), revision, state);
-  }
-
   /**
    * Create a new counter
    */
-  static create(id: string, initialValue = 0): Counter {
-    const counter = new Counter(id);
-    counter.raise('CounterCreated', { initialValue });
+  static create(id: string, value?: number): Counter {
+    const counter = new Counter(new StreamIdentifier('counter', id), 0, { value: 0 });
+    counter.reset(value);
     return counter;
   }
 
@@ -80,20 +77,24 @@ export class Counter extends AggregateRoot<CounterState, CounterEvent> {
   /**
    * Apply events to update the state
    */
-  protected doApply(event: CounterEvent): void {
+  protected override doApply(event: CounterEvent): void {
     switch (event.type) {
-      case 'CounterCreated':
+      case 'CounterCreated': {
         this.state = { value: event.data.initialValue };
         break;
-      case 'CounterIncremented':
+      }
+      case 'CounterIncremented': {
         this.state = { value: this.state.value + event.data.amount };
         break;
-      case 'CounterDecremented':
+      }
+      case 'CounterDecremented': {
         this.state = { value: this.state.value - event.data.amount };
         break;
-      case 'CounterReset':
+      }
+      case 'CounterReset': {
         this.state = { value: event.data.newValue };
         break;
+      }
     }
   }
 }

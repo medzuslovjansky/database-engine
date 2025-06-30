@@ -1,5 +1,6 @@
+import { EmptyIdError, EmptyAggregateTypeError, InvalidStreamIdFormatError } from '../errors';
+
 import { StreamIdentifier } from './StreamIdentifier';
-import { EmptyIdError, EmptyAggregateTypeError, InvalidStreamIdFormatError } from "../errors";
 
 describe('StreamIdentifier', () => {
   describe('constructor', () => {

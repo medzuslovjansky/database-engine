@@ -1,6 +1,7 @@
 import type { Event } from '../../envelopes';
 import { InvalidSnapshotThresholdError } from '../../errors';
 import type { AggregateRoot } from '../AggregateRoot';
+
 import type { SnapshotSaveStrategy } from './SnapshotSaveStrategy';
 
 

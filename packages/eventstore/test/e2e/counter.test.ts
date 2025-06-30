@@ -1,12 +1,15 @@
-import { describe, test, expect, beforeEach } from 'vitest';
-import { AggregateRepository, ProjectionRunner, AggregateRegistry } from '../../src';
+import { describe, test, expect, beforeEach, vi } from 'vitest';
+
+import type {AggregateRegistry, ProjectionRegistry} from '../../src';
+import { AggregateRepository, ProjectionRunner } from '../../src';
 import {
   InMemoryEventStore,
   InMemorySnapshotStore,
   InMemoryProjectionStore,
   InMemoryUnitOfWork
 } from '../memory';
-import { Counter, CounterState, CounterSummaryProjection } from '../domain';
+import { Counter, CounterSummaryProjection } from '../domain';
+
 import { createFreshAggregateRegistry, createFreshProjectionRegistry } from './test-helpers';
 
 describe('Counter e2e', () => {
@@ -17,7 +20,7 @@ describe('Counter e2e', () => {
   const unitOfWork = new InMemoryUnitOfWork({ eventStore, snapshotStore });
 
   let aggregateRegistry: AggregateRegistry;
-  let projectionRegistry: import('../../src').ProjectionRegistry;
+  let projectionRegistry: ProjectionRegistry;
   let repository: AggregateRepository;
   let projectionRunner: ProjectionRunner;
 
@@ -29,7 +32,7 @@ describe('Counter e2e', () => {
     // Register Counter aggregate
     aggregateRegistry.register({
       prefix: 'counter',
-      factory: (id, revision, state) => new Counter(id.id, revision, state as CounterState),
+      constructor: Counter,
     });
 
     repository = new AggregateRepository({

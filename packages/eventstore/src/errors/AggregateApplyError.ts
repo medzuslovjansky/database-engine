@@ -1,5 +1,6 @@
 import type { Event } from '../envelopes';
-import { StreamIdentifier } from '../primitives';
+import type { StreamIdentifier } from '../primitives';
+
 import { EventStoreError } from './EventStoreError';
 
 /**

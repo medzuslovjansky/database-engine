@@ -1,5 +1,5 @@
 import type { D1Database } from '@cloudflare/workers-types';
-import type { D1MigrationDefinition } from '@interslavic/database-engine-db-d1';
+import type { D1MigrationDefinition } from '@interslavic/database-engine-database-d1';
 
 export class CreateEventStoreTables implements D1MigrationDefinition {
   name = 'create_eventstore_tables_001';

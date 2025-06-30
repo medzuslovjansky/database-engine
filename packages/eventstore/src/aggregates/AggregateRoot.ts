@@ -1,6 +1,6 @@
-import type { Event } from '../envelopes';
-import { AggregateApplyError, InvalidEventRevisionError } from '../errors';
-import { StreamIdentifier } from '../primitives';
+import type {Event} from '../envelopes';
+import {AggregateApplyError, InvalidEventRevisionError} from '../errors';
+import type {StreamIdentifier} from '../primitives';
 
 export abstract class AggregateRoot<S = unknown, E extends Event = Event> {
   #stream: StreamIdentifier;
@@ -9,8 +9,8 @@ export abstract class AggregateRoot<S = unknown, E extends Event = Event> {
   #uncommitted: E[] = [];
   #error: unknown;
 
-  protected constructor(stream: StreamIdentifier | string, revision: number, state: S) {
-    this.#stream = typeof stream === 'string' ? StreamIdentifier.fromString(stream) : stream;
+  constructor(stream: StreamIdentifier, revision: number, state: S) {
+    this.#stream = stream;
     this.#revision = revision;
     this.#state = state;
   }
@@ -81,5 +81,5 @@ export abstract class AggregateRoot<S = unknown, E extends Event = Event> {
     }
   }
 
-  protected abstract doApply(event: E): void;
+  protected doApply(_event: E): void {}
 }

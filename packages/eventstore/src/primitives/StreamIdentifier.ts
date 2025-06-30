@@ -1,4 +1,4 @@
-import { EmptyIdError, EmptyAggregateTypeError, InvalidStreamIdFormatError } from "../errors";
+import { EmptyIdError, EmptyAggregateTypeError, InvalidStreamIdFormatError } from '../errors';
 
 /**
  * Immutable stream ID that encapsulates the aggregate type and instance ID

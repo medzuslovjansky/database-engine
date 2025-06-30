@@ -4,7 +4,8 @@ import { ProjectionNotFoundError, NoProjectionsFoundError } from '../errors';
 
 import type { ProjectionRegistry } from './ProjectionRegistry';
 import { ProjectionProcessor, type ProjectionProcessorConfig } from './ProjectionProcessor';
-import { DefaultProjectionLoggerFacade, ProjectionLoggerFacade } from './ProjectionLoggerFacade';
+import type { ProjectionLoggerFacade } from './ProjectionLoggerFacade';
+import { DefaultProjectionLoggerFacade } from './ProjectionLoggerFacade';
 
 /**
  * Options for configuring the ProjectionRunner.
@@ -43,7 +44,7 @@ export class ProjectionRunner {
     const names = projections.map(p => p.name);
     const initialPositions = await this.#config.projectionStore.getPositions(names);
 
-    let processors = projections.map(projection => {
+    const processors = projections.map(projection => {
       const processorConfig: ProjectionProcessorConfig = {
         projection: projection,
         initialPosition: initialPositions[projection.name] ?? 0,
@@ -76,9 +77,9 @@ export class ProjectionRunner {
     }
 
     this.#logger.projectionRunCompleted(this.#runnerName, eventCount, processors.length);
-    processors.forEach(p => {
+    for (const p of processors) {
       this.#logger.processorStatusSummary(this.#runnerName, p.name, p.currentLastProcessedEventId, p.hasFailed);
-    });
+    }
   }
 
   async resetAll(): Promise<void> {

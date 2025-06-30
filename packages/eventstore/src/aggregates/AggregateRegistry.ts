@@ -22,12 +22,12 @@ export class AggregateRegistry {
 
   instantiate<S, T extends AggregateRoot<S>>(
     streamOrId: string | StreamIdentifier,
-    revision = 0,
-    state?: S
+    revision: number,
+    state: S
   ): T {
     const stream = typeof streamOrId === 'string' ? StreamIdentifier.fromString(streamOrId) : streamOrId;
     const registration = this.#getRegistrationForStream(stream) as AggregateRegistration<S, Event, T>;
-    return registration.factory(stream, revision, state) as T;
+    return new registration.constructor(stream, revision, state) as T;
   }
 
   serialize<S>(stream: StreamIdentifier, state: S): string {

@@ -6,16 +6,15 @@ import {
   type Event,
   type StreamPointer,
 } from '@interslavic/database-engine-eventstore';
+import type { D1UnitOfWork } from '@interslavic/database-engine-database-d1';
 
-import type { D1UnitOfWork } from './D1UnitOfWork';
+import {EVENTS_TABLE_NAME} from './consts';
 
 export interface D1EventStoreOptions {
   db: D1Database;
   tableName?: string;
   batchSize?: number;
 }
-
-const DEFAULT_EVENTS_TABLE_NAME = 'Events';
 
 // Data Access Object type for events from D1
 interface CommittedEventDAO {
@@ -34,7 +33,7 @@ export class D1EventStore implements EventStore {
 
   constructor(options: Readonly<D1EventStoreOptions>) {
     this.db = options.db;
-    this.tableName = options.tableName ?? DEFAULT_EVENTS_TABLE_NAME;
+    this.tableName = options.tableName ?? EVENTS_TABLE_NAME;
     this.batchSize = options.batchSize ?? 50;
   }
 

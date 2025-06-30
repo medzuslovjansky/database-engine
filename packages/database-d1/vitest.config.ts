@@ -5,8 +5,8 @@ import { defineConfig } from 'vitest/config';
 export default defineConfig({
   resolve: {
     alias: [
-      { find: /^@db-d1$/, replacement: path.resolve(__dirname, 'src') },
-      { find: /^@db-d1\/(.*)$/, replacement: path.resolve(__dirname, 'src/$1') },
+      { find: /^@database-d1$/, replacement: path.resolve(__dirname, 'src') },
+      { find: /^@database-d1\/(.*)$/, replacement: path.resolve(__dirname, 'src/$1') },
     ],
   },
   test: {

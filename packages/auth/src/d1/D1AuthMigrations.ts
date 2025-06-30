@@ -1,7 +1,7 @@
 import {
   D1Migrations,
   type D1MigrationsConfig,
-} from '@interslavic/database-engine-db-d1';
+} from '@interslavic/database-engine-database-d1';
 
 import * as migrations from './migrations';
 

@@ -1,11 +1,13 @@
 import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
+
 import type { CommittedEvent } from '../envelopes';
 import * as errors from '../errors';
+import { StreamIdentifier } from '../primitives';
+
 import type { Projection } from './Projection';
 import { ProjectionProcessor, type ProjectionProcessorConfig } from './ProjectionProcessor';
 import type { ProjectionLoggerFacade } from './ProjectionLoggerFacade';
 
-import { StreamIdentifier } from '../primitives';
 
 // Mock ProjectionLoggerFacade
 const mockLoggerFacade: ProjectionLoggerFacade = {

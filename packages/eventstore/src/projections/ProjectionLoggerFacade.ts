@@ -1,4 +1,4 @@
-import type { Logger } from "../types";
+import type { Logger } from '../types';
 
 /**
  * Facade for logging specific events occurring within the ProjectionProcessor.
@@ -45,7 +45,7 @@ export class DefaultProjectionLoggerFacade implements ProjectionLoggerFacade {
     this.#logger.error(`Projection [${projectionName}] CATCH_UP Error: Expected event ID ${expectedEventId} (after ${lastProcessedEventId}), but received ${receivedEventId}. Gap detected.`);
   }
   catchUpComplete(projectionName: string, lastProcessedEventId: number, nextState: string, startingEventId: number | undefined): void {
-    this.#logger.warn(`Projection [${projectionName}] Catch-up complete. Last processed ID: ${lastProcessedEventId}. Transitioning to ${nextState} state${startingEventId !== undefined ? ` starting with event ID ${startingEventId}` : ''}.`);
+    this.#logger.warn(`Projection [${projectionName}] Catch-up complete. Last processed ID: ${lastProcessedEventId}. Transitioning to ${nextState} state${startingEventId === undefined ? '' : ` starting with event ID ${startingEventId}`}.`);
   }
   processingBatchOutOfOrder(projectionName: string, expectedEventId: number, lastFlushedId: number, receivedEventId: number): void {
     this.#logger.error(`Projection [${projectionName}] PROCESSING Error: Event batch out of order. Expected event ID ${expectedEventId} (after last flushed ${lastFlushedId}), received ${receivedEventId}.`);

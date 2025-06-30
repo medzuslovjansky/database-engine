@@ -1,19 +1,19 @@
 import type { D1Database } from '@cloudflare/workers-types';
-import {
-  StreamIdentifier,
-  type SnapshotStore,
-  type Snapshot,
-  type StreamPointer,
+import { StreamIdentifier } from '@interslavic/database-engine-eventstore';
+import type { AggregateRegistry,
+  SnapshotStore,
+  Snapshot,
+  StreamPointer
 } from '@interslavic/database-engine-eventstore';
+import type { D1UnitOfWork } from '@interslavic/database-engine-database-d1';
 
-import type { D1UnitOfWork } from './D1UnitOfWork';
+import {SNAPSHOTS_TABLE_NAME} from './consts';
 
 export interface D1SnapshotStoreOptions {
   db: D1Database;
+  aggregateRegistry: AggregateRegistry;
   tableName?: string;
 }
-
-const DEFAULT_SNAPSHOTS_TABLE_NAME = 'Snapshots';
 
 interface SnapshotDAO {
   stream: string;
@@ -24,20 +24,24 @@ interface SnapshotDAO {
 
 export class D1SnapshotStore implements SnapshotStore {
   private readonly db: D1Database;
+  private readonly aggregateRegistry: AggregateRegistry;
   private readonly tableName: string;
 
   constructor(options: Readonly<D1SnapshotStoreOptions>) {
     this.db = options.db;
-    this.tableName = options.tableName ?? DEFAULT_SNAPSHOTS_TABLE_NAME;
+    this.aggregateRegistry = options.aggregateRegistry;
+    this.tableName = options.tableName ?? SNAPSHOTS_TABLE_NAME;
   }
 
-  private mapDaoToSnapshot<S>(dao: SnapshotDAO): Snapshot<S> {
+  private _mapDaoToSnapshot<S>(dao: SnapshotDAO): Snapshot<S> {
+    const stream = StreamIdentifier.fromString(dao.stream);
+
     return {
-      stream: StreamIdentifier.fromString(dao.stream),
+      stream,
       revision: dao.revision,
       ts: dao.ts,
-      data: JSON.parse(dao.data),
-    } as Snapshot<S>; // Type assertion for S
+      data: this.aggregateRegistry.deserialize(stream, dao.data),
+    } as Snapshot<S>;
   }
 
   async getBatch<S = unknown>(pointers: StreamPointer[]): Promise<Snapshot<S>[]> {
@@ -59,7 +63,7 @@ export class D1SnapshotStore implements SnapshotStore {
     // Each result is a D1Result; get the first row if present
     const snapshots: Snapshot<S>[] = batchResults.map((result: any) => {
       const dao = result.results?.[0];
-      return dao ? this.mapDaoToSnapshot<S>(dao) : undefined;
+      return dao ? this._mapDaoToSnapshot<S>(dao) : undefined;
     }).filter(Boolean) as Snapshot<S>[];
 
     return snapshots;
@@ -95,7 +99,7 @@ export class D1SnapshotStore implements SnapshotStore {
         String(snapshot.stream),
         snapshot.revision,
         snapshot.ts,
-        JSON.stringify(snapshot.data)
+        this.aggregateRegistry.serialize(snapshot.stream, snapshot.data),
       );
     });
     d1UnitOfWork.addStatements(statements);

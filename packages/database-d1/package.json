@@ -1,5 +1,5 @@
 {
-  "name": "@interslavic/database-engine-db-d1",
+  "name": "@interslavic/database-engine-database-d1",
   "version": "0.1.0",
   "private": true,
   "main": "./src/index.ts",
