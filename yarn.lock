@@ -1452,12 +1452,28 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@interslavic/database-engine-auth-d1@workspace:packages/auth-d1":
+  version: 0.0.0-use.local
+  resolution: "@interslavic/database-engine-auth-d1@workspace:packages/auth-d1"
+  dependencies:
+    "@cloudflare/workers-types": "npm:^4.20250508.0"
+    "@interslavic/database-engine-auth": "workspace:*"
+    "@interslavic/database-engine-database-d1": "workspace:*"
+    "@interslavic/eslint-config-cli": "workspace:*"
+    "@interslavic/prettier-config-cli": "workspace:*"
+    "@interslavic/typescript-config-cli": "workspace:*"
+    jose: "npm:^6.0.11"
+    miniflare: "npm:^4.20250507.0"
+    vitest: "npm:^3.1.3"
+    zod: "npm:^3.24.2"
+  languageName: unknown
+  linkType: soft
+
 "@interslavic/database-engine-auth@workspace:*, @interslavic/database-engine-auth@workspace:packages/auth":
   version: 0.0.0-use.local
   resolution: "@interslavic/database-engine-auth@workspace:packages/auth"
   dependencies:
     "@cloudflare/workers-types": "npm:^4.20250508.0"
-    "@interslavic/database-engine-database-d1": "workspace:*"
     "@interslavic/eslint-config-cli": "workspace:*"
     "@interslavic/prettier-config-cli": "workspace:*"
     "@interslavic/typescript-config-cli": "workspace:*"
@@ -1472,7 +1488,9 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@interslavic/database-engine-core@workspace:packages/core"
   dependencies:
+    "@interslavic/database-engine-errors": "workspace:*"
     "@interslavic/database-engine-eventstore": "workspace:*"
+    "@interslavic/database-engine-eventstore-memory": "workspace:*"
     "@interslavic/eslint-config-cli": "workspace:*"
     "@interslavic/jest-config-cli": "workspace:*"
     "@interslavic/prettier-config-cli": "workspace:*"
@@ -1495,6 +1513,17 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@interslavic/database-engine-errors@workspace:*, @interslavic/database-engine-errors@workspace:packages/errors":
+  version: 0.0.0-use.local
+  resolution: "@interslavic/database-engine-errors@workspace:packages/errors"
+  dependencies:
+    "@interslavic/eslint-config-cli": "workspace:*"
+    "@interslavic/prettier-config-cli": "workspace:*"
+    "@interslavic/typescript-config-cli": "workspace:*"
+    vitest: "npm:^3.1.3"
+  languageName: unknown
+  linkType: soft
+
 "@interslavic/database-engine-eventstore-d1@workspace:*, @interslavic/database-engine-eventstore-d1@workspace:packages/eventstore-d1":
   version: 0.0.0-use.local
   resolution: "@interslavic/database-engine-eventstore-d1@workspace:packages/eventstore-d1"
@@ -1502,12 +1531,25 @@ __metadata:
     "@cloudflare/workers-types": "npm:^4.20250508.0"
     "@interslavic/database-engine-database-d1": "workspace:*"
     "@interslavic/database-engine-eventstore": "workspace:*"
+    "@interslavic/database-engine-eventstore-memory": "workspace:*"
     "@interslavic/eslint-config-cli": "workspace:*"
     "@interslavic/prettier-config-cli": "workspace:*"
     "@interslavic/typescript-config-cli": "workspace:*"
     miniflare: "npm:^4.20250507.0"
     tsx: "npm:^4.19.4"
     typescript: "npm:^5.8.3"
+    vitest: "npm:^3.1.3"
+  languageName: unknown
+  linkType: soft
+
+"@interslavic/database-engine-eventstore-memory@workspace:*, @interslavic/database-engine-eventstore-memory@workspace:packages/eventstore-memory":
+  version: 0.0.0-use.local
+  resolution: "@interslavic/database-engine-eventstore-memory@workspace:packages/eventstore-memory"
+  dependencies:
+    "@interslavic/database-engine-eventstore": "workspace:*"
+    "@interslavic/eslint-config-cli": "workspace:*"
+    "@interslavic/prettier-config-cli": "workspace:*"
+    "@interslavic/typescript-config-cli": "workspace:*"
     vitest: "npm:^3.1.3"
   languageName: unknown
   linkType: soft

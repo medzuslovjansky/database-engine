@@ -1,4 +1,4 @@
-import { Lemma, LemmaJSON, LemmaOptions } from './Lemma';
+import type { Lemma, LemmaJSON, LemmaOptions } from './Lemma';
 
 export type InterslavicLemma = Lemma<SteenbergenLemmaMetadata>;
 

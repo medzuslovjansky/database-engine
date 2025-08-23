@@ -150,7 +150,7 @@ describe('AggregateRepository', () => {
       const aggregate = await repository.load('test/123');
 
       expect(applyBatchSpy).toHaveBeenCalledWith(events);
-      expect(aggregate.state).toEqual({ lastEventType: 'test-event' });
+      expect(aggregate!.state).toEqual({ lastEventType: 'test-event' });
     });
 
     it('should use snapshot data if available', async () => {

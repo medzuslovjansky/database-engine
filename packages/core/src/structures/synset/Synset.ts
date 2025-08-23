@@ -1,5 +1,6 @@
 import { isIterable } from '../../utils';
-import { Lemma as LemmaBase, LemmaJSON } from '../lemma';
+import type { LemmaJSON } from '../lemma';
+import { Lemma as LemmaBase } from '../lemma';
 
 import { parseSynset } from './parseSynset';
 

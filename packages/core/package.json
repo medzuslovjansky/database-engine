@@ -18,10 +18,12 @@
     "test:update": "jest -u"
   },
   "dependencies": {
+    "@interslavic/database-engine-errors": "workspace:*",
     "@interslavic/database-engine-eventstore": "workspace:*",
     "zod": "^3.24.4"
   },
   "devDependencies": {
+    "@interslavic/database-engine-eventstore-memory": "workspace:*",
     "@interslavic/eslint-config-cli": "workspace:*",
     "@interslavic/jest-config-cli": "workspace:*",
     "@interslavic/prettier-config-cli": "workspace:*",

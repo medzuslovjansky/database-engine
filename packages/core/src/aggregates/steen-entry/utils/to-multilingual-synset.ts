@@ -1,6 +1,6 @@
-import { MultilingualSynset, Synset } from '../../../structures';
-import type { SteenEntryImportedPayload } from '../events';
-import type { Language } from '../../../constants';
+import type { SteenEntryImportedPayload } from '@core/aggregates';
+import { MultilingualSynset, Synset } from '@core/structures';
+import type { Language } from '@core/constants';
 
 export function fromSteenEntryImportedEvent(event: SteenEntryImportedPayload): MultilingualSynset {
   const multi = new MultilingualSynset();

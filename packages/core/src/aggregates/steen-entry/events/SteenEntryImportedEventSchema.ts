@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { BCP47LanguageCodeSchema } from '@core/primitives';
+import { BCP47LanguageCodeSchema } from '@core/schema';
 
 export const SteenEntryImportedEventSchema = z.object({
   id: z.number(), // required, will be Math.abs(id) in logic

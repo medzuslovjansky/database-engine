@@ -1,4 +1,4 @@
-import { IntelligibilityMark } from "@core/primitives";
+import type { IntelligibilityMark } from '@core/schema';
 
 export interface IntelligibilityRecord {
   id: number;

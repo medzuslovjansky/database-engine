@@ -9,9 +9,8 @@ import {
   type AggregateRepositoryOptions,
   type CommittedEvent,
 } from '@interslavic/database-engine-eventstore';
-import { Counter, type CounterState } from '@interslavic/database-engine-eventstore/test';
-
-import { D1EventStore, D1EventStoreUnitOfWork, D1SnapshotStore, D1EventStoreMigrations } from '../src';
+import { Counter, type CounterState } from '@interslavic/database-engine-eventstore-memory/test';
+import { D1EventStore, D1EventStoreUnitOfWork, D1SnapshotStore, D1EventStoreMigrations } from '@interslavic/database-engine-eventstore-d1';
 
 // Import Counter from eventstore test domain
 
@@ -88,7 +87,7 @@ describe('D1 EventStore End-to-End Integration Suite', () => {
     await aggregateRepository.save(counter);
     await repoUoW.commit();
 
-    const loadedCounter = await aggregateRepository.load<Counter>(counter.stream);
+    const loadedCounter = await aggregateRepository.loadStrict<Counter>(counter.stream);
 
     expect(loadedCounter.revision).toBe(3);
     expect(loadedCounter.state.value).toBe(13); // 10 + 5 - 2 = 13
@@ -168,7 +167,7 @@ describe('D1 EventStore End-to-End Integration Suite', () => {
 
     // Verify that we can load the counter from scratch
     // This should use the snapshot + newer events
-    const loadedCounter = await aggregateRepository.load<Counter>(counter.stream);
+    const loadedCounter = await aggregateRepository.loadStrict<Counter>(counter.stream);
 
     // Verify the counter was reconstructed correctly
     expect(loadedCounter.revision).toBe(5);
@@ -205,8 +204,8 @@ describe('D1 EventStore End-to-End Integration Suite', () => {
     await repoUoW.commit();
 
     // Load the same counter twice (both at revision 1)
-    const counter1 = await aggregateRepository.load<Counter>(counter.stream);
-    const counter2 = await aggregateRepository.load<Counter>(counter.stream);
+    const counter1 = await aggregateRepository.loadStrict<Counter>(counter.stream);
+    const counter2 = await aggregateRepository.loadStrict<Counter>(counter.stream);
 
     console.log('\n==== CONCURRENCY TEST INITIAL STATE ====');
     console.log('Counter 1 revision:', counter1.revision);

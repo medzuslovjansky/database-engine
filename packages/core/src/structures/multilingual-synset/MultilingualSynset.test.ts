@@ -1,5 +1,6 @@
-import { MultilingualSynset } from './MultilingualSynset';
 import { Synset } from '../synset';
+
+import { MultilingualSynset } from './MultilingualSynset';
 
 describe('MultilingualSynset', () => {
   it('should be serializable and deserializable with JSON', () => {

@@ -1,6 +1,7 @@
+import type { Language } from '@core/constants';
+import type { IntelligibilityMark } from '@core/schema';
+
 import { IntelligibilityVectorV1 } from './IntelligibilityVectorV1';
-import { Language } from '../../constants';
-import { IntelligibilityMark } from '../../primitives';
 
 describe('IntelligibilityVectorV1', () => {
   const UK = 'uk' as Language;
@@ -66,7 +67,7 @@ describe('IntelligibilityVectorV1', () => {
 
     test('removes language entry when mark is undefined', () => {
       const vec = IntelligibilityVectorV1.fromString('uk+ bg- pl~');
-      vec.update(UK, undefined);
+      vec.update(UK);
       expect(vec.getMark(UK)).toBeUndefined();
       expect(vec.getValue(UK)).toBeUndefined();
       expect(vec.toString()).toBe('bg- pl~');

@@ -1,6 +1,8 @@
 import { areArraysEqual, areObjectsEqual } from '@core/utils';
-import { parseLemma } from './parseLemma';
+
 import { IntelligibilityVectorV1 } from '../intelligibility-vector';
+
+import { parseLemma } from './parseLemma';
 
 export interface LemmaJSON<Metadata extends Record<string, unknown> = Record<string, unknown>> {
   value?: string;
@@ -59,11 +61,7 @@ export class Lemma<Metadata extends Record<string, unknown> = Record<string, unk
   }
 
   public set intelligibility(value: IntelligibilityVectorV1 | string) {
-    if (typeof value === 'string') {
-      this.#intelligibility = IntelligibilityVectorV1.fromString(value);
-    } else {
-      this.#intelligibility = value;
-    }
+    this.#intelligibility = typeof value === 'string' ? IntelligibilityVectorV1.fromString(value) : value;
   }
 
   public get metadata(): Metadata | undefined {

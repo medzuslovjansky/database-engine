@@ -1,7 +1,8 @@
 import type { Language } from '@core/constants';
 import { areSetsEqual } from '@core/utils';
 
-import { Synset, SynsetJSON } from '../synset';
+import type { SynsetJSON } from '../synset';
+import { Synset } from '../synset';
 
 export type MultilingualSynsetJSON = {
   id?: number;
@@ -64,7 +65,7 @@ export class MultilingualSynset {
       ),
       steen: this.steen
         ? {
-            debated: this.steen.debated ? Array.from(this.steen.debated) : undefined,
+            debated: this.steen.debated ? [...this.steen.debated] : undefined,
           }
         : undefined,
     };

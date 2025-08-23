@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { BCP47LanguageCodeSchema, IntelligibilityMarkSchema } from '@core/primitives';
+import { BCP47LanguageCodeSchema, IntelligibilityMarkSchema } from '@core/schema';
 
 export const IntelligibilityRatedEventSchema = z.object({
   id: z.number(),

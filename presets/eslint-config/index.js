@@ -13,6 +13,7 @@ export default tseslint.config(
     ignores: [
       '**/jest.config.js',
       'jest.config.js',
+      'coverage/**',
       'e2e/**',
     ],
   },

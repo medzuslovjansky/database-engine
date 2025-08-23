@@ -33,6 +33,7 @@ export interface PATTokenStager {
 
 export interface UserProfileQuery {
   findById(id: string): Promise<UserProfileDTO | null>;
+  getUserCount(): Promise<number>;
 }
 
 export interface AuthProviderLinkQuery {

@@ -20,14 +20,23 @@ export class AggregateRepository {
   constructor(private readonly config: AggregateRepositoryOptions) {}
 
   async load<T extends AggregateRoot>(
-    streamOrId: string | StreamIdentifier
+    streamOrId: string | StreamIdentifier,
+    strict = false
+  ): Promise<T | null> {
+    const [first] = await this.loadBatch<T>([streamOrId], strict);
+    return first || null;
+  }
+
+  async loadStrict<T extends AggregateRoot>(
+    streamOrId: string | StreamIdentifier,
   ): Promise<T> {
-    const [first] = await this.loadBatch<T>([streamOrId]);
-    return first;
+    const [first] = await this.loadBatch<T>([streamOrId], true);
+    return first!;
   }
 
   async loadBatch<T extends AggregateRoot>(
-    streamsOrIds: Array<string | StreamIdentifier>
+    streamsOrIds: Array<string | StreamIdentifier>,
+    strict = false
   ): Promise<T[]> {
     const streams = streamsOrIds.map(streamOrId =>
       typeof streamOrId === 'string' ? StreamIdentifier.fromString(streamOrId) : streamOrId
@@ -86,12 +95,12 @@ export class AggregateRepository {
       }
     }
 
-    const missingAggregate = aggregates.find(aggregate => aggregate.revision === 0);
-    if (missingAggregate) {
+    const missingAggregate = aggregates.find(isMissing);
+    if (strict && missingAggregate) {
       throw new AggregateNotFoundError(missingAggregate.stream);
     }
 
-    return aggregates as T[];
+    return aggregates.filter(isExisting) as T[];
   }
 
   async save(aggregate: AggregateRoot): Promise<void> {
@@ -124,4 +133,12 @@ export class AggregateRepository {
       this.config.unitOfWork.stageSnapshots([snapshot]);
     }
   }
+}
+
+function isMissing(aggregate: AggregateRoot): boolean {
+  return aggregate.revision === 0;
+}
+
+function isExisting(aggregate: AggregateRoot): boolean {
+  return aggregate.revision > 0;
 }

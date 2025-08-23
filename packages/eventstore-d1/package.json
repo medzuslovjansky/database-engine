@@ -23,6 +23,7 @@
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20250508.0",
+    "@interslavic/database-engine-eventstore-memory": "workspace:*",
     "@interslavic/eslint-config-cli": "workspace:*",
     "@interslavic/prettier-config-cli": "workspace:*",
     "@interslavic/typescript-config-cli": "workspace:*",

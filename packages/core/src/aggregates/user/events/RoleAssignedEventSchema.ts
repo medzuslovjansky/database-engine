@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import {BCP47LanguageCodeSchema, UserRoleSchema} from '@core/primitives';
+import {BCP47LanguageCodeSchema, UserRoleSchema} from '@core/schema';
 
 export const RoleAssignedEventDataSchema = z.object({
   user_id: z.string().uuid(),

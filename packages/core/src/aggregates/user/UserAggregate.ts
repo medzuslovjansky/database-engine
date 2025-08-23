@@ -2,7 +2,7 @@ import {
   AggregateRoot,
   StreamIdentifier
 } from '@interslavic/database-engine-eventstore';
-import type {UserRole} from '@core/primitives';
+import type {UserRole} from '@core/schema';
 
 import type {UserEvent} from './events';
 
@@ -19,12 +19,10 @@ function defaultUserState(userId: string): UserState {
 }
 
 export class UserAggregate extends AggregateRoot<UserState, UserEvent> {
-  constructor(userId: string, revision = 0, state: UserState = defaultUserState(userId)) {
-    super(
-      StreamIdentifier.fromString(`users/${userId}`),
-      revision,
-      state
-    );
+  constructor(stream: StreamIdentifier, revision = 0, state?: UserState) {
+    const userId = stream.id;
+    const defaultState = defaultUserState(userId);
+    super(stream, revision, state || defaultState);
   }
 
   protected doApply(event: UserEvent): void {
@@ -137,8 +135,11 @@ export class UserAggregate extends AggregateRoot<UserState, UserEvent> {
     return language ? `${role}:${language}` : role;
   }
 
-  // Static factory method for aggregate registry
-  static factory(streamId: StreamIdentifier, revision: number, state?: UserState): UserAggregate {
-    return new UserAggregate(streamId.id, revision, state);
+  // Static factory method for creating new users
+  static create(userId: string): UserAggregate {
+    const stream = StreamIdentifier.fromString(`users/${userId}`);
+    const aggregate = new UserAggregate(stream);
+    aggregate.initializeUser();
+    return aggregate;
   }
 }

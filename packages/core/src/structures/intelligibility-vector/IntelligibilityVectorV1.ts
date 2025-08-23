@@ -1,4 +1,4 @@
-import { IntelligibilityMark } from '@core/primitives';
+import type { IntelligibilityMark } from '@core/schema';
 
 const MARK_TO_VALUE: Record<IntelligibilityMark, number> = {
   '.': 1,
@@ -58,9 +58,16 @@ export class IntelligibilityVectorV1 {
     for (const [lang, mark] of [...this._intelligibility.entries()].sort()) {
       let symbol: string;
       switch (mark) {
-        case '.': symbol = '+'; break;
-        case 'n': symbol = '-'; break;
-        case 't': case 'f': case 'r': case 'a': case 'z': case 'k': case 'm': case '?': default: symbol = '~'; break;
+        case '.': { symbol = '+'; break;
+        }
+        case 'n': { symbol = '-'; break;
+        }
+        case 't': case 'f': case 'r': case 'a': case 'z': case 'k': case 'm': case '?': {
+          symbol = '~'; break;
+ }
+          default: {
+            symbol = '~'; break;
+          }
       }
       parts.push(`${lang}${symbol}`);
     }
@@ -81,14 +88,19 @@ export class IntelligibilityVectorV1 {
     const parts = str.trim().split(/\s+/);
     for (const part of parts) {
       if (!part) continue;
-      const match = part.match(/^([a-z]{2,4})([\+\-\~])$/);
+      const match = part.match(/^([a-z]{2,4})([+~-])$/);
       if (match) {
         const [, lang, symbol] = match;
         let mark: IntelligibilityMark;
         switch (symbol) {
-          case '+': mark = '.'; break;
-          case '-': mark = 'n'; break;
-          case '~': default: mark = '?'; break;
+          case '+': { mark = '.'; break;
+          }
+          case '-': { mark = 'n'; break;
+          }
+          case '~': { mark = '?'; break;
+          }
+          default: { mark = '?'; break;
+          }
         }
         vector._intelligibility.set(lang, mark);
       }

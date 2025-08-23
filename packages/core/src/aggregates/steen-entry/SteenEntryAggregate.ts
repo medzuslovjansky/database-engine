@@ -67,7 +67,7 @@ export class SteenEntryAggregate extends AggregateRoot<MultilingualSynset, Steen
   }
 
   protected applyIntelligibility(event: IntelligibilityRatedPayload): void {
-    if (event.source_language !== 'isv') return;
+    if (event.source_language !== 'isv') return; // (!) Neolatino
     const lemma = this.state.synsets.isv!.find(event.lemma);
     if (!lemma) return;
 
